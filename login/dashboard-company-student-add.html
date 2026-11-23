@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.png" type="image/png">
 <title>Add Student — Company Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,15 +86,25 @@
   .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .menu-btn { display: none; }
   .nav-backdrop[hidden] { display: none !important; }
-  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
-  .top-right { display: flex; align-items: center; gap: 12px; }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+  .crumb { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+  .crumb a {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none;
+  }
+  .crumb a:hover { color: var(--green); }
+  .crumb a svg { width: 16px; height: 16px; flex: none; }
+  .crumb-sep { color: #b7c2cc; font-size: 14px; }
+  .crumb-current { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .top-right { display: flex; align-items: center; gap: 16px; }
   .user-chip {
     display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
     border: 1px solid var(--line); border-radius: 999px; background: #fff;
   }
   .avatar {
-    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
-    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d5dee6;
+    background: #eef3f7; color: #5d6d7e;
+    display: grid; place-items: center; font-family: var(--font); font-size: 12px; font-weight: 700;
   }
   .user-meta { line-height: 1.15; }
   .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
@@ -384,7 +395,7 @@
     .nav-item { min-height: 44px; }
     .content, .topbar { padding-left: 16px; padding-right: 16px; }
     .content { padding-bottom: 0; }
-    .user-chip, .signout, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-chip, .signout { display: none; }
     .ux-bar { padding: 10px; }
     .ux-bar .label { display: none; }
     .mode-toggle { display: flex; width: 100%; }
@@ -483,22 +494,17 @@
         <h1 class="top-title">Add Student</h1>
       </div>
       <div class="top-right">
-        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
-          <i data-lucide="user-round"></i>
-        </button>
         <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
-        <div class="user-chip">
-          <span class="avatar">AU</span>
-          <div class="user-meta">
-            <strong>company manager cm</strong>
-            <span>Company Admin</span>
-          </div>
-        </div>
-        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+        <span class="avatar" aria-label="Account">AU</span>
       </div>
     </header>
 
     <div class="content">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="dashboard-company-users.html"><i data-lucide="chevron-left"></i> Students</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current">Add Student</span>
+      </nav>
       <div class="banner" role="status">
         <i data-lucide="triangle-alert"></i>
         <div><strong>System Maintenance:</strong> The system will be under maintenance from 11:00 PM to 1:00 AM CST. Please save your work.</div>
@@ -934,9 +940,8 @@
   menuBtn.addEventListener("click", function () {
     setNav(!document.body.classList.contains("nav-open"));
   });
-  document.getElementById("user-btn").addEventListener("click", function () {
-    setNav(true);
-  });
+  var userBtn = document.getElementById("user-btn");
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
   backdrop.addEventListener("click", function () { setNav(false); });
   document.querySelectorAll(".side a, .side button").forEach(function (el) {
     el.addEventListener("click", function () { setNav(false); });

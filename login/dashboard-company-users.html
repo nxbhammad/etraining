@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.png" type="image/png">
 <title>Students — Company Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,15 +86,16 @@
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
     padding: 16px 28px; background: #fff; border-bottom: 1px solid var(--line);
   }
-  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
-  .top-right { display: flex; align-items: center; gap: 12px; }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+  .top-right { display: flex; align-items: center; gap: 16px; }
   .user-chip {
     display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
     border: 1px solid var(--line); border-radius: 999px; background: #fff;
   }
   .avatar {
-    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
-    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d5dee6;
+    background: #eef3f7; color: #5d6d7e;
+    display: grid; place-items: center; font-family: var(--font); font-size: 12px; font-weight: 700;
   }
   .user-meta { line-height: 1.15; }
   .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
@@ -140,19 +142,6 @@
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
     padding-bottom: 14px;
   }
-  .preview-switches { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 0 0 12px; }
-  .filter-preview {
-    display: flex; align-items: center; gap: 8px; margin: 0;
-  }
-  .filter-preview p {
-    margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .filter-preview button {
-    min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
-    background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
-  }
-  .filter-preview button.is-on { background: var(--green); border-color: var(--green); color: #fff; }
   .filter-anchor { position: relative; }
   #filters-btn.is-open { background: var(--green); border-color: var(--green); color: #fff; }
   .filter-count {
@@ -163,11 +152,8 @@
   #filters-btn.is-open .filter-count { background: #fff; color: var(--green-dark); }
   .filter-surface {
     display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
-    padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px;
-  }
-  #view-students[data-filter-ux="1"] .filter-surface { flex: 1 0 100%; }
-  #view-students[data-filter-ux="2"] .filter-surface {
-    position: absolute; z-index: 30; margin: 0;
+    position: absolute; z-index: 30; margin: 0; padding: 12px;
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
     box-shadow: 0 12px 32px rgba(16, 24, 40, .12);
   }
   #filter-apply { display: none; }
@@ -218,7 +204,7 @@
     font-size: 13px; font-weight: 600;
   }
   .everyday { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
-  .bulk-bar, .bulk-swap { display: none; }
+  .bulk-bar { display: none; }
   .bulk-count { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; }
   .bulk-select {
     display: inline-flex; align-items: center; gap: 8px; flex: none;
@@ -232,18 +218,7 @@
     align-items: center; gap: 10px; margin: 0 0 12px; padding: 10px 12px;
     background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: auto;
   }
-  #view-students[data-bulk-ux="1"].has-selection .bulk-bar { display: flex; }
-  #view-students[data-bulk-ux="2"].has-selection .everyday { display: none; }
-  #view-students[data-bulk-ux="2"].has-selection .bulk-swap { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  @media (min-width: 801px) {
-    #view-students[data-bulk-ux="2"].has-selection .search { max-width: 160px; min-width: 120px; }
-    #view-students[data-bulk-ux="2"].has-selection .toolbar { flex-wrap: nowrap; }
-    #view-students[data-bulk-ux="2"].has-selection .toolbar-right { min-width: 0; flex: 1 1 auto; }
-    #view-students[data-bulk-ux="2"].has-selection .toolbar-actions { min-width: 0; flex: 1 1 auto; flex-shrink: 1; }
-    #view-students[data-bulk-ux="2"].has-selection .bulk-swap { flex: 1 1 auto; overflow: hidden; }
-    #view-students[data-bulk-ux="2"].has-selection .bulk-actions { min-width: 0; overflow-x: auto; scrollbar-width: none; }
-    #view-students[data-bulk-ux="2"].has-selection .bulk-actions::-webkit-scrollbar { display: none; }
-  }
+  #view-students.has-selection .bulk-bar { display: flex; }
   .list {
     display: block; width: 100%;
   }
@@ -302,7 +277,22 @@
     width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
     color: var(--muted); display: inline-flex; align-items: center; justify-content: center;
   }
-  .icon-ghost:hover { background: var(--ground); color: var(--ink); }
+  .icon-ghost:hover, .icon-ghost.is-open { background: var(--ground); color: var(--ink); }
+  .row-menu {
+    position: fixed; z-index: 50; min-width: 196px; padding: 6px;
+    max-height: calc(100vh - 16px); overflow: auto;
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, .14);
+  }
+  .row-menu button {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px;
+    padding: 0 10px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; text-align: left;
+  }
+  .row-menu button:hover { background: var(--ground); }
+  .row-menu svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+  .row-menu .is-danger, .row-menu .is-danger svg { color: var(--red); }
+  .row-menu-rule { height: 1px; margin: 4px 6px; background: var(--line); }
   .person [data-view] svg { width: 14px; height: 14px; transition: transform .15s ease; }
   .person.is-open [data-view] { background: var(--green-soft); border-color: #b7dbc4; color: var(--green-dark); }
   .person.is-open [data-view] svg { transform: rotate(180deg); }
@@ -369,6 +359,23 @@
   .group-ico svg { width: 20px; height: 20px; }
   .group-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
+  .admin-select-page {
+    display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 4px;
+    font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap;
+  }
+  .admin-select-page input { width: 16px; height: 16px; accent-color: var(--green); margin: 0; }
+  .admin-card {
+    display: block; width: 100%; min-height: 76px; margin: 0 0 8px; box-sizing: border-box;
+    padding: 14px 16px; background: #fff; border-radius: 14px;
+    box-shadow: 0 0 0 1px #e5ebe8, 0 1px 2px rgba(16,24,40,.04);
+  }
+  .admin-card:hover { box-shadow: 0 0 0 1px #b7dbc4, 0 6px 18px rgba(16,24,40,.06); }
+  .admin-main {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; width: 100%;
+  }
+  .admin-main .who { flex: 1 1 220px; }
+  .admin-main .metrics { flex: 0 1 180px; }
+
   @media (max-width: 800px) {
     body { grid-template-columns: 1fr; padding-bottom: 76px; }
     .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
@@ -382,7 +389,7 @@
     .nav-item { min-height: 44px; }
     .nav-item.nav-mobile-only { display: flex; }
     .content, .topbar { padding-left: 16px; padding-right: 16px; }
-    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-chip, .signout, .logged-in, .user-meta { display: none; }
     .user-btn {
       display: grid; width: 40px; height: 40px; border-radius: 50%;
       border: 1px solid var(--line); color: var(--ink);
@@ -406,21 +413,117 @@
     .toolbar-actions { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .everyday { display: contents; }
     .toolbar-actions .btn, .bulk-actions .btn { min-height: 44px; height: auto; justify-content: center; padding: 0 10px; }
-    #view-students[data-bulk-ux="2"].has-selection .toolbar-actions { display: flex; overflow: auto; }
     .bulk-bar { max-width: 100%; }
-    .filter-preview button { min-height: 44px; }
     .search { max-width: none; }
     #view-students .search { flex: 1 1 auto; min-width: 0; }
     #view-students .filter-anchor { flex: none; }
     #view-students .filter-surface {
       position: absolute; z-index: 30; left: 0; width: 100%; flex: none;
       flex-direction: column; flex-wrap: nowrap; align-items: stretch;
-      max-height: min(62vh, 440px); overflow: auto;
+      max-height: none; overflow: visible;
       box-shadow: 0 12px 32px rgba(16, 24, 40, .12);
     }
     #view-students .filter-field { flex: none; min-width: 0; width: 100%; }
     #view-students .filter-clear { width: 100%; min-height: 44px; }
     #view-students .filter-field .select { height: 44px; font-size: 16px; }
+    .tabs {
+      overflow-x: auto; flex-wrap: nowrap; margin: 0 -16px; padding: 0 16px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: none; white-space: nowrap; min-height: 44px; }
+    .person { padding: 12px; }
+    .person-main {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) 40px;
+      grid-template-areas:
+        "check who more"
+        "course course course"
+        "test test test"
+        "view view view";
+      align-items: center;
+      gap: 10px 8px;
+    }
+    .person .person-main > input[type=checkbox] { grid-area: check; width: 22px; height: 22px; justify-self: center; }
+    .person .who { grid-area: who; min-width: 0; flex: none; }
+    .person .nm, .person .em, .person .un {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .person .metrics {
+      min-width: 0; display: grid; grid-template-columns: 58px minmax(0, 1fr);
+      gap: 8px; align-items: center;
+    }
+    .person .metrics:nth-child(3) { grid-area: course; }
+    .person .metrics:nth-child(4) { grid-area: test; }
+    .person .metrics-label { margin: 0; }
+    .person .pills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .person .pill { justify-content: center; min-width: 0; padding: 0 6px; }
+    .person .row-actions { display: contents; }
+    .person .row-actions .icon-ghost { grid-area: more; width: 40px; height: 40px; }
+    .person .row-actions .btn {
+      grid-area: view; width: 100%; height: 40px; justify-content: center;
+    }
+    .assigned table, .assigned tbody, .assigned tr { display: block; min-width: 0; width: 100%; }
+    .assigned thead { display: none; }
+    .assigned-wrap { overflow: visible; }
+    .assigned tr {
+      margin: 0 0 8px; padding: 10px 12px;
+      border: 1px solid var(--line); border-radius: 12px; background: var(--ground);
+    }
+    .assigned td {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+      width: auto; padding: 5px 0; border: 0; text-align: right;
+    }
+    .assigned td::before {
+      content: attr(data-label); flex: none; text-align: left;
+      color: var(--muted); font-size: 12px; font-weight: 650;
+    }
+    .assigned td > span { min-width: 0; }
+    .assigned td:first-child { display: block; text-align: left; padding-bottom: 8px; }
+    .assigned td:first-child::before { content: none; }
+    .assigned .course-name { white-space: normal; }
+    .assigned td.assigned-empty { display: block; text-align: left; }
+    .assigned td.assigned-empty::before { content: none; }
+    #view-students.has-selection .bulk-bar {
+      flex-wrap: wrap; overflow: hidden; align-items: center;
+    }
+    .bulk-select { border-right: 0; padding-right: 0; }
+    .bulk-actions {
+      flex: 1 0 100%; flex-wrap: nowrap; min-width: 0;
+      overflow-x: auto; overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .bulk-actions::-webkit-scrollbar { display: none; }
+    .bulk-actions .btn { flex: none; }
+    .pager { align-items: stretch; }
+    .pager-info { text-align: center; }
+    .pages { flex-wrap: wrap; justify-content: center; }
+    .page-btn { min-width: 40px; height: 40px; }
+    .pager-right { justify-content: space-between; }
+    .group-card { grid-template-columns: 40px minmax(0, 1fr); }
+    .group-card .nm { overflow-wrap: anywhere; }
+    .group-card .row-actions { grid-column: 1 / -1; margin-left: 0; justify-content: flex-end; }
+    .admin-card { padding: 12px; }
+    .admin-main {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) 40px;
+      grid-template-areas: "check who more" "role role role";
+      align-items: center; gap: 10px 8px;
+    }
+    .admin-main > input[type=checkbox] { grid-area: check; width: 22px; height: 22px; justify-self: center; }
+    .admin-main .who { grid-area: who; min-width: 0; flex: none; }
+    .admin-main .nm, .admin-main .em, .admin-main .un {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .admin-main .metrics {
+      grid-area: role; min-width: 0;
+      display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 8px; align-items: center;
+    }
+    .admin-main .metrics-label { margin: 0; }
+    .admin-main .row-actions { display: contents; }
+    .admin-main .icon-ghost { grid-area: more; width: 40px; height: 40px; }
+    .admin-select-page { min-height: 44px; }
+    #view-admins .toolbar-right .btn { width: 100%; justify-content: center; min-height: 44px; }
   }
   @media (min-width: 801px) and (max-width: 1440px) {
     #view-students .search { min-width: 140px; max-width: 340px; flex: 1 1 140px; }
@@ -492,18 +595,8 @@
         <h1 class="top-title" id="page-title">Students</h1>
       </div>
       <div class="top-right">
-        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
-          <i data-lucide="user-round"></i>
-        </button>
         <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
-        <div class="user-chip">
-          <span class="avatar">AU</span>
-          <div class="user-meta">
-            <strong>company manager cm</strong>
-            <span>Company Admin</span>
-          </div>
-        </div>
-        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+        <span class="avatar" aria-label="Account">AU</span>
       </div>
     </header>
 
@@ -515,19 +608,7 @@
         <button class="tab" type="button" role="tab" aria-selected="false" data-view="groups">Student Groups <span class="count" id="count-groups">8</span></button>
       </div>
 
-      <div id="view-students" data-filter-ux="1" data-bulk-ux="1">
-        <div class="preview-switches">
-          <div class="filter-preview" role="group" aria-label="Filter layout preview">
-            <p>Filter layout</p>
-            <button type="button" data-filter-ux="1" class="is-on" aria-pressed="true">1 · Row</button>
-            <button type="button" data-filter-ux="2" aria-pressed="false">2 · Panel</button>
-          </div>
-          <div class="filter-preview" role="group" aria-label="Bulk action preview">
-            <p>Bulk actions</p>
-            <button type="button" data-bulk-ux="1" class="is-on" aria-pressed="true">1 · Bar</button>
-            <button type="button" data-bulk-ux="2" aria-pressed="false">2 · Swap</button>
-          </div>
-        </div>
+      <div id="view-students">
         <div class="toolbar">
           <label class="search">
             <i data-lucide="search"></i>
@@ -556,17 +637,6 @@
                 <a class="btn btn-outline" href="dashboard-company-student-add.html"><i data-lucide="plus"></i> Add Student</a>
                 <a class="btn btn-ghost" id="bulk-upload" href="dashboard-company-bulk-upload.html" aria-label="Bulk Upload"><i data-lucide="upload"></i> <span>Bulk Upload</span></a>
                 <button class="btn btn-ghost" type="button" id="export-students" aria-label="Export"><i data-lucide="download"></i> <span>Export</span></button>
-              </div>
-              <div class="bulk-swap">
-                <label class="bulk-select"><input type="checkbox" data-select-all-students aria-label="Select all students"> <span>Select all students</span></label>
-                <p class="bulk-count">0 selected</p>
-                <div class="bulk-actions">
-                  <button class="btn btn-ghost" type="button" data-bulk="Reset Password"><i data-lucide="key-round"></i> Reset Password</button>
-                  <button class="btn btn-ghost" type="button" data-bulk="Mark Inactive"><i data-lucide="user-x"></i> Mark Inactive</button>
-                  <button class="btn btn-ghost" type="button" data-bulk="Mark Active"><i data-lucide="user-check"></i> Mark Active</button>
-                  <button class="btn btn-ghost" type="button" data-bulk="Change Group"><i data-lucide="users-round"></i> Change Group</button>
-                  <button class="btn btn-ghost" type="button" data-bulk-clear>Clear</button>
-                </div>
               </div>
             </div>
           </div>
@@ -642,10 +712,43 @@
       </div>
 
       <div id="view-admins" hidden>
-        <div class="list" id="list-admins"></div>
+        <div class="toolbar">
+          <label class="search">
+            <i data-lucide="search"></i>
+            <input type="search" id="admin-search" placeholder="Name, username or email" aria-label="Search company admins">
+          </label>
+          <select class="select" id="admin-sort" aria-label="Sort by">
+            <option value="name-asc">Sort By: Name A–Z</option>
+            <option value="name-desc">Sort By: Name Z–A</option>
+          </select>
+          <select class="select" id="admin-status" aria-label="Status">
+            <option value="all">Status: All</option>
+            <option value="active">Status: Active</option>
+            <option value="inactive">Status: Inactive</option>
+          </select>
+          <button class="btn btn-ghost" type="button" id="admin-filters"><i data-lucide="sliders-horizontal"></i> Filters</button>
+          <div class="toolbar-right">
+            <label class="admin-select-page"><input type="checkbox" id="admin-select-all" aria-label="Select all on page"> Select all on page</label>
+            <button class="btn btn-outline" type="button" id="admin-actions" aria-haspopup="menu" aria-expanded="false"><i data-lucide="list"></i> Actions <i data-lucide="chevron-down"></i></button>
+          </div>
+        </div>
+        <p class="file-note" id="admin-note" hidden></p>
+        <div class="list" id="list-admins" aria-live="polite"></div>
         <div class="empty" id="empty-admins" hidden>
           <strong>No company admins</strong>
-          Invite a company admin to help manage this account.
+          Try another search or status.
+        </div>
+        <div class="pager">
+          <div class="pager-info" id="admin-count">Showing 1–1 of 1 record</div>
+          <div class="pages" id="admin-pages"></div>
+          <div class="pager-right">
+            <label for="admin-per-page">Records per page</label>
+            <select class="select" id="admin-per-page" aria-label="Records per page">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+            </select>
+          </div>
         </div>
       </div>
       <div id="view-managers" hidden>
@@ -665,6 +768,25 @@
       <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
       <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
     </nav>
+
+  <div class="row-menu" id="row-menu" hidden role="menu" aria-label="Student actions">
+    <button type="button" role="menuitem" data-menu="edit"><i data-lucide="pencil"></i> Edit</button>
+    <button type="button" role="menuitem" data-menu="records"><i data-lucide="clipboard-list"></i> Training Records</button>
+    <button type="button" role="menuitem" data-menu="login"><i data-lucide="log-in"></i> Login As</button>
+    <button type="button" role="menuitem" data-menu="role"><i data-lucide="users"></i> Change Role</button>
+    <button type="button" role="menuitem" data-menu="password"><i data-lucide="key-round"></i> Reset Password</button>
+    <div class="row-menu-rule"></div>
+    <button type="button" role="menuitem" data-menu="inactive"><i data-lucide="user-x"></i> Mark Inactive</button>
+    <button class="is-danger" type="button" role="menuitem" data-menu="delete"><i data-lucide="trash-2"></i> <span id="menu-delete-label">Delete Student</span></button>
+  </div>
+
+  <div class="row-menu" id="admin-actions-menu" hidden role="menu" aria-label="Company admin actions">
+    <button type="button" role="menuitem" data-admin-action="password"><i data-lucide="key-round"></i> Reset Password</button>
+    <button type="button" role="menuitem" data-admin-action="inactive"><i data-lucide="user-x"></i> Mark Inactive</button>
+    <button type="button" role="menuitem" data-admin-action="active"><i data-lucide="user-check"></i> Mark Active</button>
+    <div class="row-menu-rule"></div>
+    <button class="is-danger" type="button" role="menuitem" data-admin-action="delete"><i data-lucide="trash-2"></i> Delete</button>
+  </div>
 
 <script src="https://unpkg.com/lucide@0.468.0"></script>
 <script>
@@ -835,13 +957,13 @@
       var status = c.status === "Completed" ? "done" : "progress";
       var test = c.test === "Passed" ? "pass" : c.test === "Failed" ? "fail" : "none";
       return "<tr>" +
-        '<td><span class="course-name"><i data-lucide="book-open"></i>' + c.name + "</span></td>" +
-        "<td>" + c.assigned + "</td>" +
-        "<td>" + c.start + "</td>" +
-        "<td>" + c.completed + "</td>" +
-        '<td><span class="tag ' + status + '">' + c.status + "</span></td>" +
-        '<td><span class="tag ' + test + '">' + c.test + "</span></td>" +
-        "<td>" + c.progress + "</td>" +
+        '<td data-label="Course"><span class="course-name"><i data-lucide="book-open"></i>' + c.name + "</span></td>" +
+        '<td data-label="Assigned"><span>' + c.assigned + "</span></td>" +
+        '<td data-label="Started"><span>' + c.start + "</span></td>" +
+        '<td data-label="Completed"><span>' + c.completed + "</span></td>" +
+        '<td data-label="Status"><span class="tag ' + status + '">' + c.status + "</span></td>" +
+        '<td data-label="Test"><span class="tag ' + test + '">' + c.test + "</span></td>" +
+        '<td data-label="Progress"><span>' + c.progress + "</span></td>" +
       "</tr>";
     }).join("") : '<tr><td class="assigned-empty" colspan="7">No courses assigned.</td></tr>';
     return (
@@ -884,7 +1006,7 @@
           '</div>' +
           '<div class="row-actions">' +
             '<button class="btn btn-ghost" type="button" data-view aria-expanded="' + (open ? "true" : "false") + '" style="height:34px">View <i data-lucide="chevron-down"></i></button>' +
-            '<button class="icon-ghost" type="button" aria-label="More actions for ' + s.name + '">...</button>' +
+            '<button class="icon-ghost" type="button" data-more aria-haspopup="menu" aria-expanded="false" aria-label="More actions for ' + s.name + '"><i data-lucide="ellipsis-vertical"></i></button>' +
           '</div>' +
         '</div>' +
         assignedHtml(s) +
@@ -893,6 +1015,7 @@
   }
 
   function paint() {
+    closeRowMenu();
     if (!listEl) return;
     var all = filtered();
     var pages = Math.max(1, Math.ceil(all.length / state.perPage));
@@ -955,6 +1078,86 @@
     icons();
   }
 
+  var adminState = { q: "", sort: "name-asc", status: "all", page: 1, perPage: 10, selected: {} };
+  function filteredAdmins() {
+    var q = adminState.q.trim().toLowerCase();
+    var out = admins.filter(function (s) {
+      if (adminState.status !== "all" && s.status !== adminState.status) return false;
+      if (!q) return true;
+      return (s.name + " " + s.email + " " + (s.user || "")).toLowerCase().indexOf(q) !== -1;
+    });
+    out.sort(function (a, b) {
+      return adminState.sort === "name-desc" ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
+    });
+    return out;
+  }
+  function adminPage() {
+    var all = filteredAdmins();
+    var pages = Math.max(1, Math.ceil(all.length / adminState.perPage));
+    if (adminState.page > pages) adminState.page = pages;
+    var start = (adminState.page - 1) * adminState.perPage;
+    return { all: all, slice: all.slice(start, start + adminState.perPage), start: start, pages: pages };
+  }
+  function adminRowHtml(s) {
+    var checked = adminState.selected[s.id] ? " checked" : "";
+    var showUser = s.user && s.user !== s.email;
+    return (
+      '<article class="admin-card" data-id="' + s.id + '">' +
+        '<div class="admin-main">' +
+          '<input type="checkbox" data-admin-check aria-label="Select ' + s.name + '"' + checked + '>' +
+          '<div class="who">' +
+            '<span class="av ' + s.color + '">' + s.initials + '</span>' +
+            '<div class="who-text">' +
+              '<p class="nm"><a href="' + detailHref(s) + '">' + s.name + '</a></p>' +
+              '<p class="em">' + s.email + '</p>' +
+              (showUser ? '<p class="un">@' + s.user + '</p>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="metrics">' +
+            '<p class="metrics-label">Role</p>' +
+            '<div class="pills"><span class="pill green">Company Admin</span></div>' +
+          '</div>' +
+          '<div class="row-actions">' +
+            '<button class="icon-ghost" type="button" data-more aria-haspopup="menu" aria-expanded="false" aria-label="More actions for ' + s.name + '"><i data-lucide="ellipsis-vertical"></i></button>' +
+          '</div>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+  function paintAdmins() {
+    var el = document.getElementById("list-admins");
+    var empty = document.getElementById("empty-admins");
+    var page = adminPage();
+    el.innerHTML = page.slice.map(adminRowHtml).join("");
+    el.hidden = page.slice.length === 0;
+    if (empty) empty.hidden = page.slice.length > 0;
+    var from = page.all.length ? page.start + 1 : 0;
+    var to = Math.min(page.start + adminState.perPage, page.all.length);
+    var count = document.getElementById("admin-count");
+    if (count) {
+      count.textContent = "Showing " + from + "-" + to + " of " + page.all.length + " records · Page " + adminState.page + " of " + page.pages;
+    }
+    var pagesEl = document.getElementById("admin-pages");
+    if (pagesEl) {
+      var html = '<button class="page-btn" type="button" data-admin-page="prev" aria-label="Previous"' + (adminState.page <= 1 ? " disabled" : "") + '>&lt;</button>';
+      for (var p = 1; p <= page.pages; p++) {
+        html += '<button class="page-btn' + (p === adminState.page ? " is-on" : "") + '" type="button" data-admin-page="' + p + '">' + p + "</button>";
+      }
+      html += '<button class="page-btn" type="button" data-admin-page="next" aria-label="Next"' + (adminState.page >= page.pages ? " disabled" : "") + '>&gt;</button>';
+      pagesEl.innerHTML = html;
+    }
+    var box = document.getElementById("admin-select-all");
+    if (box) {
+      var allOn = page.slice.length > 0 && page.slice.every(function (s) { return adminState.selected[s.id]; });
+      var some = page.slice.some(function (s) { return adminState.selected[s.id]; });
+      box.checked = allOn;
+      box.indeterminate = some && !allOn;
+    }
+    var countEl = document.getElementById("count-admins");
+    if (countEl) countEl.textContent = String(admins.length);
+    icons();
+  }
+
   function paintGroups() {
     var el = document.getElementById("list-groups");
     el.innerHTML = groups.map(function (g) {
@@ -971,6 +1174,226 @@
     document.getElementById("count-groups").textContent = groups.length;
     icons();
   }
+
+  var rowMenu = document.getElementById("row-menu");
+  var menuBtn = null;
+  var menuRow = null;
+  function personById(id) {
+    var lists = [students, admins, managers];
+    for (var i = 0; i < lists.length; i++) {
+      for (var j = 0; j < lists[i].length; j++) {
+        if (lists[i][j].id === id) return lists[i][j];
+      }
+    }
+    return null;
+  }
+  function closeRowMenu() {
+    if (!rowMenu) return;
+    rowMenu.hidden = true;
+    if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
+    if (menuBtn) menuBtn.classList.remove("is-open");
+    menuBtn = null;
+    menuRow = null;
+  }
+  function placeRowMenu() {
+    if (!menuBtn || rowMenu.hidden) return;
+    var r = menuBtn.getBoundingClientRect();
+    var spaceBelow = window.innerHeight - r.bottom - 12;
+    var spaceAbove = r.top - 12;
+    var room = Math.max(spaceBelow, spaceAbove, 160);
+    rowMenu.style.maxHeight = Math.min(room, window.innerHeight - 16) + "px";
+    var w = rowMenu.offsetWidth;
+    var h = rowMenu.offsetHeight;
+    var left = r.right - w;
+    if (left < 8) left = 8;
+    if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
+    var top = spaceBelow >= h || spaceBelow >= spaceAbove ? r.bottom + 6 : r.top - h - 6;
+    if (top < 8) top = 8;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, window.innerHeight - h - 8);
+    rowMenu.style.left = left + "px";
+    rowMenu.style.top = top + "px";
+  }
+  function openRowMenu(btn) {
+    if (menuBtn === btn && !rowMenu.hidden) {
+      closeRowMenu();
+      return;
+    }
+    closeRowMenu();
+    menuBtn = btn;
+    menuRow = btn.closest(".person") || btn.closest(".admin-card");
+    var adminCard = menuRow && menuRow.classList.contains("admin-card");
+    var recordsItem = rowMenu.querySelector('[data-menu="records"]');
+    var deleteLabel = document.getElementById("menu-delete-label");
+    if (recordsItem) recordsItem.hidden = !!adminCard;
+    if (deleteLabel) deleteLabel.textContent = adminCard ? "Delete" : "Delete Student";
+    btn.setAttribute("aria-expanded", "true");
+    btn.classList.add("is-open");
+    rowMenu.hidden = false;
+    placeRowMenu();
+  }
+  function showNote(text) {
+    var adminsOpen = document.getElementById("view-admins") && !document.getElementById("view-admins").hidden;
+    var note = document.getElementById(adminsOpen ? "admin-note" : "file-note");
+    if (!note) return;
+    note.textContent = text;
+    note.hidden = false;
+    clearTimeout(note._timer);
+    note._timer = setTimeout(function () { note.hidden = true; }, 3200);
+  }
+  function setAssigned(row, open) {
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    if (open) openRows[id] = true; else delete openRows[id];
+    row.classList.toggle("is-open", open);
+    var view = row.querySelector("[data-view]");
+    if (view) view.setAttribute("aria-expanded", open ? "true" : "false");
+    var panel = row.querySelector(".assigned");
+    if (panel) panel.hidden = !open;
+  }
+  rowMenu.addEventListener("click", function (e) {
+    var item = e.target.closest("[data-menu]");
+    if (!item) return;
+    var action = item.getAttribute("data-menu");
+    var row = menuRow;
+    var person = row ? personById(row.getAttribute("data-id")) : null;
+    closeRowMenu();
+    if (!person) return;
+    if (action === "edit") {
+      window.location.href = detailHref(person);
+      return;
+    }
+    if (action === "records") {
+      setAssigned(row, true);
+      var panel = row.querySelector(".assigned");
+      if (panel) panel.scrollIntoView({ block: "nearest" });
+      return;
+    }
+    var labels = {
+      login: "Login As",
+      role: "Change Role",
+      password: "Reset Password",
+      inactive: "Mark Inactive",
+      delete: row && row.classList.contains("admin-card") ? "Delete" : "Delete Student"
+    };
+    showNote(labels[action] + " for " + person.name + " is not in this preview.");
+  });
+  var adminMenu = document.getElementById("admin-actions-menu");
+  var adminActionsBtn = document.getElementById("admin-actions");
+  function closeAdminMenu() {
+    if (!adminMenu) return;
+    adminMenu.hidden = true;
+    if (adminActionsBtn) adminActionsBtn.setAttribute("aria-expanded", "false");
+  }
+  function placeAdminMenu() {
+    var r = adminActionsBtn.getBoundingClientRect();
+    var w = adminMenu.offsetWidth;
+    var h = adminMenu.offsetHeight;
+    var left = r.right - w;
+    if (left < 8) left = 8;
+    var top = r.bottom + 6;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+    adminMenu.style.left = left + "px";
+    adminMenu.style.top = top + "px";
+  }
+  function selectedAdmins() {
+    return admins.filter(function (s) { return adminState.selected[s.id]; });
+  }
+  if (adminActionsBtn) {
+    adminActionsBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = adminMenu.hidden;
+      closeRowMenu();
+      closeAdminMenu();
+      if (!open) return;
+      adminMenu.hidden = false;
+      adminActionsBtn.setAttribute("aria-expanded", "true");
+      placeAdminMenu();
+    });
+  }
+  if (adminMenu) {
+    adminMenu.addEventListener("click", function (e) {
+      var item = e.target.closest("[data-admin-action]");
+      if (!item) return;
+      e.stopPropagation();
+      var picked = selectedAdmins();
+      closeAdminMenu();
+      if (!picked.length) {
+        showNote("Select a company admin first.");
+        return;
+      }
+      var labels = { password: "Reset Password", inactive: "Mark Inactive", active: "Mark Active", delete: "Delete" };
+      showNote(labels[item.getAttribute("data-admin-action")] + " for " + picked.length + " company admin" + (picked.length === 1 ? "" : "s") + " is not in this preview.");
+    });
+  }
+  var adminSearch = document.getElementById("admin-search");
+  if (adminSearch) adminSearch.addEventListener("input", function (e) {
+    adminState.q = e.target.value;
+    adminState.page = 1;
+    paintAdmins();
+  });
+  var adminSort = document.getElementById("admin-sort");
+  if (adminSort) adminSort.addEventListener("change", function (e) {
+    adminState.sort = e.target.value;
+    paintAdmins();
+  });
+  var adminStatus = document.getElementById("admin-status");
+  if (adminStatus) adminStatus.addEventListener("change", function (e) {
+    adminState.status = e.target.value;
+    adminState.page = 1;
+    paintAdmins();
+  });
+  var adminPer = document.getElementById("admin-per-page");
+  if (adminPer) adminPer.addEventListener("change", function (e) {
+    adminState.perPage = parseInt(e.target.value, 10);
+    adminState.page = 1;
+    paintAdmins();
+  });
+  var adminSelectAll = document.getElementById("admin-select-all");
+  if (adminSelectAll) adminSelectAll.addEventListener("change", function (e) {
+    adminPage().slice.forEach(function (s) {
+      if (e.target.checked) adminState.selected[s.id] = true; else delete adminState.selected[s.id];
+    });
+    paintAdmins();
+  });
+  var adminList = document.getElementById("list-admins");
+  if (adminList) adminList.addEventListener("change", function (e) {
+    if (!e.target.matches("[data-admin-check]")) return;
+    var row = e.target.closest(".admin-card");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    if (e.target.checked) adminState.selected[id] = true; else delete adminState.selected[id];
+    paintAdmins();
+  });
+  var adminFilters = document.getElementById("admin-filters");
+  if (adminFilters) adminFilters.addEventListener("click", function () {
+    showNote("More company admin filters are not in this preview.");
+  });
+  var adminPages = document.getElementById("admin-pages");
+  if (adminPages) adminPages.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-admin-page]");
+    if (!btn || btn.disabled) return;
+    var v = btn.getAttribute("data-admin-page");
+    var pages = Math.max(1, Math.ceil(filteredAdmins().length / adminState.perPage));
+    if (v === "prev") adminState.page = Math.max(1, adminState.page - 1);
+    else if (v === "next") adminState.page = Math.min(pages, adminState.page + 1);
+    else adminState.page = parseInt(v, 10);
+    paintAdmins();
+  });
+
+  document.addEventListener("click", function (e) {
+    var more = e.target.closest("[data-more]");
+    if (more) {
+      closeAdminMenu();
+      openRowMenu(more);
+      return;
+    }
+    if (rowMenu.contains(e.target)) return;
+    closeRowMenu();
+    if (adminMenu && !adminMenu.hidden && !adminMenu.contains(e.target) && e.target !== adminActionsBtn && !adminActionsBtn.contains(e.target)) closeAdminMenu();
+  });
+  window.addEventListener("scroll", function () {
+    if (!rowMenu.hidden) closeRowMenu();
+  }, true);
 
   document.addEventListener("click", function (e) {
     var btn = e.target.closest("[data-view]");
@@ -1032,7 +1455,6 @@
     paintFilterButton();
   });
 
-  var studentView = document.getElementById("view-students");
   var filtersBtn = document.getElementById("filters-btn");
   var filterSurface = document.getElementById("filter-surface");
   var filterCount = document.getElementById("filter-count");
@@ -1042,9 +1464,6 @@
     gender: document.getElementById("filter-gender"),
     testAttr: document.getElementById("filter-attr")
   };
-  function filterUx() {
-    return studentView.getAttribute("data-filter-ux") || "1";
-  }
   function readFilters() {
     return {
       department: filterFields.department.value,
@@ -1116,7 +1535,6 @@
   }
   function placeFilterPanel() {
     if (filterSurface.hidden) return;
-    if (!isPhone() && filterUx() !== "2") return;
     var toolbar = filterSurface.parentElement;
     var btn = filtersBtn.getBoundingClientRect();
     var bar = toolbar.getBoundingClientRect();
@@ -1131,16 +1549,9 @@
     filterSurface.style.top = (btn.bottom - bar.top + 8) + "px";
   }
   function openFilters() {
-    if (filterUx() === "2") {
-      writeFilters(state.filters);
-      sortEl.value = state.sort;
-      statusEl.value = state.status;
-    }
-    if (!isPhone() && filterUx() !== "2") {
-      filterSurface.style.left = "";
-      filterSurface.style.top = "";
-      filterSurface.style.width = "";
-    }
+    writeFilters(state.filters);
+    sortEl.value = state.sort;
+    statusEl.value = state.status;
     filterSurface.hidden = false;
     filtersBtn.classList.add("is-open");
     filtersBtn.setAttribute("aria-expanded", "true");
@@ -1175,17 +1586,6 @@
     }
     applyFiltersFromFields();
   });
-  document.querySelectorAll("[data-bulk-ux]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var next = btn.getAttribute("data-bulk-ux");
-      studentView.setAttribute("data-bulk-ux", next);
-      document.querySelectorAll("[data-bulk-ux]").forEach(function (b) {
-        var on = b === btn;
-        b.classList.toggle("is-on", on);
-        b.setAttribute("aria-pressed", on ? "true" : "false");
-      });
-    });
-  });
   document.querySelectorAll("[data-bulk]").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var note = document.getElementById("file-note");
@@ -1202,32 +1602,15 @@
       paint();
     });
   });
-  document.querySelectorAll(".filter-preview [data-filter-ux]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var next = btn.getAttribute("data-filter-ux");
-      studentView.setAttribute("data-filter-ux", next);
-      document.querySelectorAll(".filter-preview [data-filter-ux]").forEach(function (b) {
-        var on = b === btn;
-        b.classList.toggle("is-on", on);
-        b.setAttribute("aria-pressed", on ? "true" : "false");
-      });
-      closeFilters();
-      if (next === "1") {
-        filterSurface.style.left = "";
-        filterSurface.style.top = "";
-        filterSurface.style.width = "";
-        applyFiltersFromFields();
-      } else paintFilterButton();
-    });
-  });
   document.addEventListener("click", function (e) {
-    var menu = filterUx() === "2" || isPhone();
-    if (!menu || filterSurface.hidden) return;
+    if (filterSurface.hidden) return;
     if (filterSurface.contains(e.target) || filtersBtn.contains(e.target)) return;
     closeFilters();
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !filterSurface.hidden && (filterUx() === "2" || isPhone())) closeFilters();
+    if (e.key !== "Escape") return;
+    if (!rowMenu.hidden) closeRowMenu();
+    if (!filterSurface.hidden) closeFilters();
   });
   var wasPhone = isPhone();
   window.addEventListener("resize", function () {
@@ -1265,7 +1648,7 @@
         document.getElementById("view-" + id).hidden = id !== view;
       });
       pageTitle.textContent = titles[view];
-      if (view === "admins") paintPeople(admins, "list-admins", "empty-admins");
+      if (view === "admins") paintAdmins();
       if (view === "managers") paintPeople(managers, "list-managers");
       if (view === "groups") paintGroups();
     });
@@ -1273,7 +1656,7 @@
 
   try {
     paint();
-    paintPeople(admins, "list-admins", "empty-admins");
+    paintAdmins();
     paintPeople(managers, "list-managers");
     paintGroups();
   } catch (err) {

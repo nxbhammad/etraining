@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.png" type="image/png">
 <title>Bulk Upload Students — Company Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,15 +81,16 @@
     padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line);
   }
   .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
-  .top-right { display: flex; align-items: center; gap: 12px; }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+  .top-right { display: flex; align-items: center; gap: 16px; }
   .user-chip {
     display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
     border: 1px solid var(--line); border-radius: 999px; background: #fff;
   }
   .avatar {
-    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
-    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d5dee6;
+    background: #eef3f7; color: #5d6d7e;
+    display: grid; place-items: center; font-family: var(--font); font-size: 12px; font-weight: 700;
   }
   .user-meta { line-height: 1.15; }
   .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
@@ -104,8 +106,15 @@
   .signout { font-size: 13px; font-weight: 600; color: var(--green); }
   .content { padding: 16px 28px 32px; display: flex; flex-direction: column; gap: 12px; }
 
-  .crumb { margin: 0; font-size: 13px; color: var(--muted); }
-  .crumb a { color: var(--green); font-weight: 700; }
+  .crumb { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+  .crumb a {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none;
+  }
+  .crumb a:hover { color: var(--green); }
+  .crumb a svg { width: 16px; height: 16px; flex: none; }
+  .crumb-sep { color: #b7c2cc; font-size: 14px; }
+  .crumb-current { font-size: 14px; font-weight: 700; color: var(--ink); }
   .page-head h1 {
     margin: 4px 0 0; font-family: var(--font); font-size: 26px; font-weight: 650; letter-spacing: -.02em;
   }
@@ -365,7 +374,7 @@
     .nav-item { min-height: 44px; }
     .nav-item.nav-mobile-only { display: flex; }
     .content, .topbar { padding-left: 16px; padding-right: 16px; }
-    .user-chip, .signout, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-chip, .signout { display: none; }
     .user-btn {
       display: grid; width: 40px; height: 40px; border-radius: 50%;
       border: 1px solid var(--line); color: var(--ink);
@@ -385,14 +394,16 @@
     .bottom-nav .is-on { color: var(--green-dark); }
     .content { padding-bottom: 88px; }
     .btn, .email-opt, .video, .mode-btn, .sheet-mail select { min-height: 44px; }
+    a[download].btn-primary,
+    [data-upload].btn-primary { align-self: stretch; width: 100%; }
     .mode { width: 100%; }
     .mode-btn { flex: 1; }
     .sheet-actions { width: 100%; justify-content: stretch; }
     .sheet-mail, .sheet-mail select { width: 100%; min-width: 0; }
     .results-pass-head { flex-direction: column; }
     .results-actions .btn { flex: 1; }
-    #csv-review .sheet-bar { flex-direction: column; align-items: stretch; }
-    #csv-review .review-actions { justify-content: flex-start; }
+    #csv-review .sheet-bar { flex-wrap: nowrap; align-items: center; gap: 12px; }
+    #csv-review .review-actions { flex: none; flex-wrap: nowrap; justify-content: flex-end; }
     .sheet-scroll { max-height: calc(100vh - 320px); }
     .page-head h1 { font-size: 22px; }
   }
@@ -446,28 +457,19 @@
         <h1 class="top-title">Bulk Upload Students</h1>
       </div>
       <div class="top-right">
-        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
-          <i data-lucide="user-round"></i>
-        </button>
         <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
-        <div class="user-chip">
-          <span class="avatar">AU</span>
-          <div class="user-meta">
-            <strong>company manager cm</strong>
-            <span>Company Admin</span>
-          </div>
-        </div>
-        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+        <span class="avatar" aria-label="Account">AU</span>
       </div>
     </header>
 
     <div class="content" id="bulk-page">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="dashboard-company-users.html"><i data-lucide="chevron-left"></i> Students</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current" id="crumb-current">Bulk Upload Students</span>
+      </nav>
       <p class="note" id="preview-note" hidden></p>
-      <div class="mode" role="tablist" aria-label="How to add students">
-        <button class="mode-btn is-on" type="button" role="tab" id="mode-csv" aria-selected="true" aria-controls="csv-view" data-mode="csv">Upload a CSV</button>
-        <button class="mode-btn" type="button" role="tab" id="mode-sheet" aria-selected="false" aria-controls="sheet-view" data-mode="sheet">Fill a sheet</button>
-      </div>
-      <div class="split" id="csv-view" role="tabpanel" aria-labelledby="mode-csv">
+      <div class="split" id="csv-view">
         <section class="work">
           <div class="step-block">
             <h2>1. Download the template</h2>
@@ -779,7 +781,8 @@
       document.getElementById("csv-loading").hidden = true;
       document.getElementById("csv-review").hidden = true;
       document.getElementById("csv-results").hidden = true;
-      document.querySelector(".mode").hidden = false;
+      var modeSwitch = document.querySelector(".mode");
+      if (modeSwitch) modeSwitch.hidden = false;
       document.getElementById("csv-view").hidden = mode !== "csv";
       document.getElementById("sheet-view").hidden = mode !== "sheet";
     });
@@ -1002,7 +1005,9 @@
     document.getElementById("csv-review").hidden = true;
     document.getElementById("csv-results").hidden = true;
     document.querySelector(".top-title").textContent = "Bulk Upload Students";
-    document.querySelector(".mode").hidden = false;
+    document.getElementById("crumb-current").textContent = "Bulk Upload Students";
+    var modeSwitch = document.querySelector(".mode");
+    if (modeSwitch) modeSwitch.hidden = false;
     document.getElementById("csv-view").hidden = false;
     document.getElementById("sheet-view").hidden = true;
     document.querySelectorAll(".mode-btn").forEach(function (item) {
@@ -1019,7 +1024,8 @@
     drop.classList.remove("has-file");
   }
   function startCsvReview(file) {
-    document.querySelector(".mode").hidden = true;
+    var modeSwitch = document.querySelector(".mode");
+    if (modeSwitch) modeSwitch.hidden = true;
     document.getElementById("csv-view").hidden = true;
     document.getElementById("sheet-view").hidden = true;
     document.getElementById("csv-review").hidden = true;
@@ -1101,11 +1107,13 @@
       }).join("\n");
       document.getElementById("csv-results").dataset.people = JSON.stringify(people);
     }
-    document.querySelector(".mode").hidden = true;
+    var modeSwitch = document.querySelector(".mode");
+    if (modeSwitch) modeSwitch.hidden = true;
     document.getElementById("csv-view").hidden = true;
     document.getElementById("csv-review").hidden = true;
     document.getElementById("csv-results").hidden = false;
     document.querySelector(".top-title").textContent = "Bulk Upload Results";
+    document.getElementById("crumb-current").textContent = "Bulk Upload Results";
     if (window.lucide) lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
   }
   document.getElementById("copy-all").addEventListener("click", function () {
@@ -1151,7 +1159,8 @@
     backdrop.hidden = !open;
   }
   menuBtn.addEventListener("click", function () { setNav(!document.body.classList.contains("nav-open")); });
-  document.getElementById("user-btn").addEventListener("click", function () { setNav(true); });
+  var userBtn = document.getElementById("user-btn");
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
   document.getElementById("side-close").addEventListener("click", function () { setNav(false); });
   backdrop.addEventListener("click", function () { setNav(false); });
 })();
