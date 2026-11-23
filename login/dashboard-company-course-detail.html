@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Back Safety in Construction Environments — Course Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --warn: #d97706;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff;
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .crumb {
+    display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap;
+  }
+  .crumb a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .crumb a:hover { color: var(--green); }
+  .crumb a svg { width: 16px; height: 16px; }
+  .crumb-sep { color: #c5ced6; font-size: 12px; }
+  .crumb-current {
+    font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px;
+  }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .side-close { margin-left: auto; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); margin-left: 4px; }
+  .signout:hover { text-decoration: underline; }
+
+  .content { padding: 18px 28px 36px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* Compact course hero */
+  .hero {
+    display: grid; grid-template-columns: 120px 1fr auto; gap: 16px; align-items: center;
+    padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  }
+  .hero-thumb {
+    width: 120px; height: 80px; border-radius: 10px;
+    background: linear-gradient(145deg, #1c3348, #0f1c28); color: #8ec5ff;
+    display: grid; place-items: center; flex: none;
+  }
+  .hero-thumb svg { width: 36px; height: 36px; }
+  .hero-body { min-width: 0; }
+  .hero-kicker {
+    margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .pill {
+    height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .pill-green { background: var(--green-soft); color: var(--green-dark); }
+  .pill-muted { background: #eef2f5; color: var(--muted); }
+  .hero-title {
+    margin: 0; font-family: var(--font); font-size: 20px; font-weight: 650;
+    letter-spacing: -.02em; line-height: 1.25;
+  }
+  .meta {
+    margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 14px;
+    font-size: 12px; color: var(--muted);
+  }
+  .meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .meta svg { width: 14px; height: 14px; color: var(--green); flex: none; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+  .hero-actions {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end;
+    gap: 8px; align-self: start; max-width: 420px;
+  }
+  .btn {
+    height: 36px; padding: 0 12px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .btn svg { width: 15px; height: 15px; flex: none; }
+  .btn-outline {
+    border: 1.5px solid var(--green); background: #fff; color: var(--green);
+  }
+  .btn-outline:hover { background: var(--green-soft); }
+  .btn-primary {
+    border: 0; background: var(--green); color: #fff;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost {
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+  }
+  .btn-ghost:hover { background: var(--ground); }
+  .btn-ghost:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-danger {
+    border: 1.5px solid #f0b8b2; background: #fff; color: #b42318;
+  }
+  .btn-danger:hover { background: #fef3f2; }
+  .btn-icon {
+    width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 9px;
+    background: #fff; color: var(--muted); display: grid; place-items: center;
+  }
+  .btn-icon:hover { color: var(--ink); background: var(--ground); }
+
+  /* Single course tab row */
+  .tabs {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    padding: 4px; background: #eef2f0; border-radius: 12px; width: fit-content; max-width: 100%;
+  }
+  .tab {
+    border: 0; background: transparent; min-height: 34px; padding: 0 12px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .tab:hover { color: var(--ink); background: rgba(255,255,255,.55); }
+  .tab.is-on { background: var(--green); color: #fff; }
+  .tab-panel[hidden] { display: none !important; }
+
+  /* Stats — clickable filter strip */
+  .stats {
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  }
+  .stat {
+    appearance: none; border: 0; border-right: 1px solid var(--line); background: #fff;
+    padding: 14px 12px 12px; min-width: 0; text-align: left; cursor: pointer;
+    transition: background .12s ease, box-shadow .12s ease;
+    position: relative; font: inherit; color: inherit;
+  }
+  .stat:last-child { border-right: 0; }
+  .stat:hover { background: #f7faf8; }
+  .stat:focus-visible { outline: 3px solid #8db8ec; outline-offset: -3px; z-index: 1; }
+  .stat.is-on { background: #f3faf6; }
+  .stat.is-on::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--green);
+  }
+  .stat-top {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  }
+  .stat-ico {
+    width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; flex: none;
+  }
+  .stat-ico svg { width: 15px; height: 15px; }
+  .stat.enrolled .stat-ico { background: #eff6ff; color: #2563eb; }
+  .stat.done .stat-ico { background: var(--green-soft); color: var(--green-dark); }
+  .stat.progress .stat-ico { background: #fff7ed; color: var(--warn); }
+  .stat.idle .stat-ico { background: #f1f5f9; color: #64748b; }
+  .stat.pass .stat-ico { background: var(--green-soft); color: var(--green-dark); }
+  .stat.fail .stat-ico { background: #fef2f2; color: #ef4444; }
+  .stat.enrolled.is-on::after { background: #2563eb; }
+  .stat.progress.is-on::after { background: var(--warn); }
+  .stat.idle.is-on::after { background: #94a3b8; }
+  .stat.fail.is-on::after { background: #ef4444; }
+  .stat-label {
+    margin-top: 10px; font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: .02em; text-transform: uppercase;
+  }
+  .stat-value {
+    margin-top: 2px; font-family: var(--font); font-size: 24px; font-weight: 700;
+    letter-spacing: -.03em; line-height: 1; color: var(--ink);
+  }
+  .stat.is-on .stat-value { color: var(--green-dark); }
+  .stat.enrolled.is-on .stat-value { color: #1d4ed8; }
+  .stat.fail.is-on .stat-value { color: #b91c1c; }
+  .stat.progress.is-on .stat-value { color: #b45309; }
+  .status.completed { background: var(--green-soft); color: var(--green-dark); }
+  .status.in-progress { background: #fff7ed; color: #b45309; }
+  .status.passed { background: var(--green-soft); color: var(--green-dark); }
+  .status.failed { background: #fef2f2; color: #b91c1c; }
+  .status.not-started { background: #f1f5f9; color: #64748b; }
+  .table-empty {
+    padding: 36px 16px; text-align: center; color: var(--muted); font-size: 14px;
+  }
+  .table-empty strong { display: block; color: var(--ink); margin-bottom: 4px; font-family: var(--font); }
+
+  /* Panel */
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 14px 16px; border-bottom: 1px solid var(--line);
+  }
+  .panel-title {
+    margin: 0; font-family: var(--font); font-size: 16px; font-weight: 650; letter-spacing: -.01em;
+  }
+  .panel-note {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-left: 4px; padding: 4px 10px; border-radius: 999px;
+    background: #f3f6f8; color: var(--muted); font-size: 12px; font-weight: 500;
+  }
+  .panel-note svg { width: 14px; height: 14px; }
+  .panel-tools {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto;
+  }
+  .search {
+    display: flex; align-items: center; gap: 8px; width: 220px;
+    height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff;
+  }
+  .search input {
+    flex: 1; min-width: 0; border: 0; outline: none; font-size: 13px; color: var(--ink); background: transparent;
+  }
+  .search input::placeholder { color: #9aa8b5; }
+  .search svg { color: var(--muted); flex: none; width: 15px; height: 15px; }
+
+  .table-wrap { overflow: auto; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  th {
+    text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+    background: #fafbfb; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td {
+    padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle;
+    color: var(--ink);
+  }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #fafcfb; }
+  .check { width: 40px; }
+  .check input { width: 15px; height: 15px; accent-color: var(--green); }
+  .student {
+    display: flex; align-items: center; gap: 10px; font-weight: 600;
+  }
+  .student-avatar {
+    width: 30px; height: 30px; border-radius: 50%; background: #dbeafe; color: #1e40af;
+    display: grid; place-items: center; font-size: 11px; font-weight: 700; flex: none;
+  }
+  .progress-cell { min-width: 140px; }
+  .progress-row { display: flex; align-items: center; gap: 8px; }
+  .bar {
+    flex: 1; height: 6px; border-radius: 999px; background: #e8eef3; overflow: hidden;
+  }
+  .bar > span { display: block; height: 100%; width: 0; background: var(--green); border-radius: inherit; }
+  .pct { font-size: 12px; font-weight: 600; color: var(--muted); width: 28px; }
+  .status {
+    display: inline-flex; align-items: center; height: 24px; padding: 0 9px;
+    border-radius: 999px; font-size: 12px; font-weight: 600; background: #f1f5f9; color: #64748b;
+  }
+  .muted-cell { color: var(--muted); }
+  .dash { color: #c5ced6; }
+
+  .info-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+  }
+  .info {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 14px 12px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .info-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--green-soft); color: var(--green-dark);
+    display: grid; place-items: center; flex: none;
+  }
+  .info-icon svg { width: 18px; height: 18px; }
+  .info h3 {
+    margin: 0 0 4px; font-family: var(--font); font-size: 14px; font-weight: 650;
+  }
+  .info p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--muted); }
+
+  .placeholder {
+    padding: 48px 20px; text-align: center; color: var(--muted); font-size: 14px;
+  }
+  .placeholder strong {
+    display: block; margin-bottom: 4px; color: var(--ink);
+    font-family: var(--font); font-size: 16px;
+  }
+
+  /* Assign / enroll — design mock */
+  .assign {
+    --g: #157F3D; --g-d: #116B33; --g-s: #E3F3E8; --g-t: #14693A;
+    --ink2: #0F1B2D; --mute2: #5B6577; --line2: #E3E8F0; --line3: #DFE5EE;
+    --danger: #B42318; --danger-b: #F0B8B2; --danger-t: #A1261B; --danger-s: #FEF3F2;
+    background: #fff; border: 1px solid var(--line2); border-radius: 20px;
+    padding: 28px; display: flex; flex-direction: column; gap: 22px;
+  }
+  .assign-top {
+    display: flex; flex-wrap: wrap; gap: 18px 32px; align-items: flex-start; justify-content: space-between;
+  }
+  .assign-intro { display: flex; gap: 16px; align-items: flex-start; flex: 1 1 420px; min-width: 0; }
+  .assign-ico {
+    width: 48px; height: 48px; flex: none; border-radius: 14px; background: var(--g-s); color: var(--g);
+    display: grid; place-items: center;
+  }
+  .assign-ico svg { width: 24px; height: 24px; }
+  .assign-intro h2 { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 700; color: var(--ink2); }
+  .assign-intro p { margin: 4px 0 0; color: var(--mute2); max-width: 560px; font-size: 14px; line-height: 1.45; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+  .step { display: flex; align-items: center; gap: 10px; color: var(--mute2); font-weight: 500; font-size: 14px; }
+  .step .n {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 13px; font-weight: 600; background: #EEF1F6; color: #475569;
+  }
+  .step.on { color: var(--ink2); font-weight: 600; }
+  .step.on .n { background: var(--g); color: #fff; }
+  .step.done .n { background: var(--g-s); color: var(--g-t); }
+
+  .toast {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--g-s); color: var(--g-t); border-radius: 14px; padding: 12px 16px; font-weight: 600;
+  }
+  .toast span { display: flex; align-items: center; gap: 10px; }
+  .toast button { background: none; border: 0; color: var(--g-t); cursor: pointer; display: grid; padding: 4px; }
+
+  .shuttle { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
+  .card-lane {
+    flex: 1 1 400px; min-width: 0; background: #fff; border: 1.5px solid var(--line3);
+    border-radius: 18px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card-lane-head {
+    padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .card-lane-head h3 {
+    margin: 0; font-family: var(--font); font-size: 17px; font-weight: 700; color: var(--ink2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .assign .tag {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; background: #EEF1F6; color: #475569; white-space: nowrap;
+  }
+  .assign .tag.green { background: var(--g-s); color: var(--g-t); }
+  .assign .tag.red { background: #FDE8E6; color: var(--danger-t); }
+  .sel-note { font-weight: 600; font-size: 14px; }
+  .sel-note.green { color: var(--g-t); }
+  .sel-note.red { color: var(--danger-t); }
+
+  .card-tools { padding: 0 20px 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .field-wrap { position: relative; flex: 1 1 200px; min-width: 0; }
+  .field-wrap > svg, .field-wrap > i {
+    position: absolute; left: 14px; top: 12px; color: #6B7587; pointer-events: none; width: 20px; height: 20px;
+  }
+  .field {
+    width: 100%; height: 44px; border: 1.5px solid #CBD3DF; border-radius: 12px; background: #fff;
+    color: var(--ink2); padding: 0 14px 0 42px; font-size: 14px; outline: none;
+  }
+  .field::placeholder { color: #6B7587; }
+  .field:focus { outline: 3px solid #BFE5CC; border-color: var(--g); }
+  .sel-wrap { position: relative; flex: 0 1 190px; min-width: 150px; }
+  .sel-box {
+    width: 100%; height: 44px; border: 1.5px solid #CBD3DF; border-radius: 12px; background: #fff;
+    color: var(--ink2); padding: 0 38px 0 14px; appearance: none; cursor: pointer; font-size: 14px;
+  }
+  .sel-box:focus { outline: 3px solid #BFE5CC; border-color: var(--g); }
+  .sel-wrap > svg, .sel-wrap > i {
+    position: absolute; right: 12px; top: 14px; color: #475569; pointer-events: none; width: 16px; height: 16px;
+  }
+
+  .select-bar {
+    padding: 10px 20px; background: #F6F8FB; border-top: 1px solid #E8ECF3; border-bottom: 1px solid #E8ECF3;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .select-bar label {
+    display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink2);
+  }
+  .select-bar .shown { color: var(--mute2); font-size: 13px; }
+  .assign .cb {
+    appearance: none; -webkit-appearance: none; width: 20px; height: 20px; margin: 0; flex: none;
+    border: 1.5px solid #7E8BA1; border-radius: 6px; background: #fff; display: grid; place-content: center; cursor: pointer;
+  }
+  .assign .cb:checked { background: var(--g); border-color: var(--g); }
+  .assign .cb:checked::after {
+    content: ""; width: 10px; height: 5px; border-left: 2.2px solid #fff; border-bottom: 2.2px solid #fff;
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+  .assign .cb:focus-visible { outline: 3px solid #9AD7B1; outline-offset: 2px; }
+
+  .row-list { height: 420px; overflow-y: auto; }
+  .assign .row {
+    display: flex; align-items: center; gap: 14px; padding: 12px 20px; cursor: pointer;
+    border-bottom: 1px solid #EEF1F6; background: #fff; transition: background .12s;
+  }
+  .assign .row:hover { background: #F6F9F7; }
+  .assign .row.sel { background: #EAF6EE; }
+  .assign .row.pe { background: #F1FAF4; }
+  .assign .row.pr { background: #FEF4F2; }
+  .assign .row.sel.pe, .assign .row.sel.pr { background: #E1F2E7; }
+  .assign .av {
+    width: 42px; height: 42px; flex: none; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 600; font-size: 14px; letter-spacing: .2px;
+  }
+  .assign .who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .assign .nm {
+    font-weight: 600; font-size: 15.5px; color: var(--ink2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .em {
+    font-size: 13px; color: var(--mute2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .meta2 {
+    font-size: 12.5px; color: var(--mute2); display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .meta2 svg { width: 13px; height: 13px; flex: none; }
+  .assign .side-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
+  .assign .loc { font-size: 12px; color: var(--mute2); letter-spacing: .4px; font-weight: 500; }
+  .assign .track { width: 96px; height: 6px; border-radius: 99px; background: #E4E9F0; overflow: hidden; }
+  .assign .fill { height: 100%; background: var(--g); border-radius: 99px; display: block; }
+  .assign .prog-row { display: flex; align-items: center; gap: 8px; }
+  .assign .prog-pct { font-size: 12.5px; font-weight: 600; color: #475569; min-width: 28px; text-align: right; }
+  .lane-empty { padding: 48px 24px; text-align: center; color: var(--mute2); }
+  .lane-empty strong { display: block; font-weight: 600; color: var(--ink2); font-size: 16px; margin-bottom: 4px; }
+  .sticky-pills .tag { font-size: 14px; padding: 4px 12px; }
+
+  .xfer {
+    flex: none; width: 178px; display: flex; flex-direction: column; justify-content: center;
+    align-self: center; gap: 12px; text-align: center;
+  }
+  .xfer .grp { display: flex; flex-direction: column; gap: 8px; }
+  .xfer .hint { margin: 0; font-size: 13px; color: var(--mute2); line-height: 1.35; }
+  .xfer hr { width: 100%; border: 0; border-top: 1px solid var(--line2); margin: 4px 0; }
+  .btn-lg {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 46px; padding: 0 20px; border-radius: 12px; font-weight: 600; font-size: 15px;
+    cursor: pointer; border: 1.5px solid transparent; width: 100%;
+  }
+  .btn-lg:disabled { background: #E3E8EF; color: #7A8699; border-color: transparent; cursor: not-allowed; }
+  .btn-lg.primary { background: var(--g); color: #fff; border: 0; }
+  .btn-lg.primary:hover:not(:disabled) { background: var(--g-d); }
+  .btn-lg.danger { background: #fff; color: var(--danger); border-color: var(--danger-b); }
+  .btn-lg.danger:hover:not(:disabled) { background: var(--danger-s); }
+  .btn-lg.danger:disabled { color: #8A94A6; border-color: #E3E8EF; background: #fff; }
+  .btn-lg.ghost { background: #fff; color: #334155; border-color: #CBD3DF; }
+  .btn-lg.ghost:hover:not(:disabled) { background: #F3F5F9; }
+  .btn-lg.ghost:disabled { color: #8A94A6; border-color: #E3E8EF; }
+  .btn-lg svg { width: 18px; height: 18px; }
+
+  .sticky-bar {
+    position: sticky; bottom: 16px; z-index: 4; background: #fff; border: 1.5px solid var(--line3);
+    border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 27, 45, .10);
+    padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  }
+  .sticky-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .sticky-ico {
+    width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--g-s); color: var(--g);
+    display: grid; place-items: center;
+  }
+  .sticky-ico svg { width: 22px; height: 22px; }
+  .sticky-meta { display: flex; flex-direction: column; gap: 4px; }
+  .sticky-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; color: var(--ink2); }
+  .sticky-hint { color: var(--mute2); font-size: 13.5px; }
+  .sticky-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sticky-actions .btn-lg { width: auto; min-width: 140px; }
+
+  /* Assign layout preview toggle */
+  /* Preview toggle lives on Users → Student → Assign Courses instead */
+  .assign-mode-bar { display: none !important; }
+  .assign-mode-bar-off {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 14px; border-radius: 14px; background: #F4F7FB; border: 1px solid #E3E8F0;
+    position: sticky; top: 8px; z-index: 6;
+  }
+  .assign-mode-bar .label {
+    font-size: 13px; font-weight: 600; color: #5B6577;
+  }
+  .mode-toggle {
+    display: inline-flex; flex-wrap: wrap; gap: 6px; padding: 4px; border-radius: 12px;
+    background: #fff; border: 1px solid #D7DEE8;
+  }
+  .mode-toggle button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    height: 36px; padding: 0 14px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; color: #475569;
+  }
+  .mode-toggle button:hover { background: #F3F5F9; color: var(--ink2); }
+  .mode-toggle button.is-on {
+    background: var(--g); color: #fff;
+  }
+  .mode-toggle button:focus-visible { outline: 3px solid #BFE5CC; outline-offset: 1px; }
+  .assign-opt[hidden] { display: none !important; }
+
+  /* Option 2 — single list */
+  .bulk-tools {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .bulk-tools .field-wrap { flex: 1 1 240px; }
+  .bulk-tools .sel-wrap { flex: 0 1 180px; }
+  .bulk-lane {
+    background: #fff; border: 1.5px solid var(--line3); border-radius: 18px; overflow: hidden;
+  }
+  .bulk-list { max-height: 520px; overflow-y: auto; }
+  .status-pill {
+    display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; background: #EEF1F6; color: #475569;
+  }
+  .status-pill.on { background: var(--g-s); color: var(--g-t); }
+  .status-pill.off { background: #F1F5F9; color: #64748B; }
+  .bulk-actions-inline {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto;
+  }
+  .bulk-actions-inline .btn-lg { width: auto; min-width: 0; height: 40px; font-size: 14px; padding: 0 14px; }
+
+  /* Option 3 — groups first */
+  .group-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  }
+  .group-card {
+    display: flex; gap: 12px; align-items: flex-start; text-align: left;
+    padding: 14px 16px; border: 1.5px solid var(--line3); border-radius: 16px;
+    background: #fff; cursor: pointer; transition: border-color .12s, background .12s, box-shadow .12s;
+  }
+  .group-card:hover { border-color: #B7E0C5; background: #F8FCF9; }
+  .group-card.is-on {
+    border-color: var(--g); background: #F1FAF4; box-shadow: 0 0 0 3px #D7F0E1;
+  }
+  .group-card .cb { margin-top: 2px; }
+  .group-card .g-body { flex: 1; min-width: 0; }
+  .group-card .g-name { margin: 0; font-size: 15.5px; font-weight: 700; color: var(--ink2); }
+  .group-card .g-meta { margin: 4px 0 0; font-size: 13px; color: var(--mute2); line-height: 1.4; }
+  .group-card .g-stats {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .group-preview {
+    border: 1.5px dashed #CBD3DF; border-radius: 16px; padding: 16px 18px; background: #F8FAFC;
+  }
+  .group-preview h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--ink2); }
+  .group-preview p { margin: 0; font-size: 13.5px; color: var(--mute2); line-height: 1.45; }
+  .indiv-block {
+    border: 1.5px solid var(--line3); border-radius: 18px; overflow: hidden;
+  }
+  .indiv-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; background: #F6F8FB; border-bottom: 1px solid #E8ECF3;
+  }
+  .indiv-head h4 { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink2); }
+  .indiv-head button {
+    appearance: none; border: 0; background: none; color: var(--g-t); font-weight: 600;
+    font-size: 13.5px; cursor: pointer; padding: 4px 0;
+  }
+  .indiv-body { padding: 14px 18px 18px; display: none; }
+  .indiv-block.is-open .indiv-body { display: block; }
+  .indiv-list { max-height: 280px; overflow-y: auto; margin-top: 12px; border: 1px solid #EEF1F6; border-radius: 12px; }
+
+  @media (max-width: 900px) {
+    .group-grid { grid-template-columns: 1fr; }
+  }
+
+  body.assign-mode .hero { padding: 10px 14px; }
+  body.assign-mode .hero-thumb { width: 72px; height: 52px; }
+  body.assign-mode .hero-thumb svg { width: 24px; height: 24px; }
+  body.assign-mode .hero-title { font-size: 17px; }
+  body.assign-mode .meta { margin-top: 4px; }
+  body.assign-mode .info-grid { display: none; }
+
+  @media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat:nth-child(3n) { border-right: 0; }
+    .stat:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
+    .info-grid { grid-template-columns: 1fr; }
+    .hero { grid-template-columns: 100px 1fr; }
+    .hero-actions { grid-column: 1 / -1; justify-content: flex-end; }
+    .xfer {
+      width: 100%; flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: center;
+    }
+    .xfer .grp { flex: 1 1 220px; }
+    .xfer hr { display: none; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding-bottom: 76px; }
+    .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease; box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .crumb-current { max-width: 46vw; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650;
+      font-family: inherit; text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .sticky-bar { bottom: 88px; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .user-meta { display: none; }
+    .search { width: 100%; }
+    .panel-tools { width: 100%; margin-left: 0; }
+    .assign { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item is-on" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <nav class="crumb" aria-label="Breadcrumb">
+        <a href="dashboard-company-courses.html"><i data-lucide="arrow-left"></i> Student Catalog</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current">Back Safety in Construction Environments</span>
+      </nav>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="hero" aria-labelledby="course-title">
+        <div class="hero-thumb" aria-hidden="true"><i data-lucide="hard-hat"></i></div>
+        <div class="hero-body">
+          <div class="hero-kicker">
+            <span class="pill pill-green"><i data-lucide="hard-hat" style="width:12px;height:12px"></i> Excavation</span>
+            <span class="pill pill-muted">eTraining</span>
+          </div>
+          <h1 class="hero-title" id="course-title">Back Safety in Construction Environments</h1>
+          <div class="meta">
+            <span><i data-lucide="languages"></i> Language: <strong>English</strong></span>
+            <span><i data-lucide="building-2"></i> Provider: <strong>test company netsole</strong></span>
+            <span><i data-lucide="award"></i> Certificate: <strong>After completion</strong></span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-outline" type="button"><i data-lucide="square-pen"></i> Edit</button>
+          <button class="btn btn-ghost" type="button"><i data-lucide="sliders-horizontal"></i> Settings</button>
+          <button class="btn btn-ghost" type="button"><i data-lucide="settings"></i> Additional Settings</button>
+          <button class="btn btn-danger" type="button"><i data-lucide="trash-2"></i> Remove From Student Catalog</button>
+        </div>
+      </section>
+
+      <div class="tabs" role="tablist" aria-label="Course sections">
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="course">Course</button>
+        <button class="tab is-on" type="button" role="tab" aria-selected="true" data-panel="participants">Participants</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="assign">Assign Course</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="group">Course Group</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="prereq">Prerequisite</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="requests">Enrollment Requests</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-panel="ratings">Ratings</button>
+      </div>
+
+      <div class="tab-panel" id="panel-participants" data-panel="participants">
+        <div class="stats" role="tablist" aria-label="Filter students by status">
+          <button class="stat enrolled is-on" type="button" role="tab" aria-selected="true" data-filter="enrolled">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="users"></i></span></div>
+            <div class="stat-label">Enrolled</div>
+            <div class="stat-value" data-count="enrolled">6</div>
+          </button>
+          <button class="stat done" type="button" role="tab" aria-selected="false" data-filter="completed">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="circle-check"></i></span></div>
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" data-count="completed">2</div>
+          </button>
+          <button class="stat progress" type="button" role="tab" aria-selected="false" data-filter="in-progress">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="clock-3"></i></span></div>
+            <div class="stat-label">In Progress</div>
+            <div class="stat-value" data-count="in-progress">2</div>
+          </button>
+          <button class="stat idle" type="button" role="tab" aria-selected="false" data-filter="not-started">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="circle-dashed"></i></span></div>
+            <div class="stat-label">Not Started</div>
+            <div class="stat-value" data-count="not-started">2</div>
+          </button>
+          <button class="stat pass" type="button" role="tab" aria-selected="false" data-filter="passed">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="badge-check"></i></span></div>
+            <div class="stat-label">Passed</div>
+            <div class="stat-value" data-count="passed">1</div>
+          </button>
+          <button class="stat fail" type="button" role="tab" aria-selected="false" data-filter="failed">
+            <div class="stat-top"><span class="stat-ico"><i data-lucide="circle-x"></i></span></div>
+            <div class="stat-label">Failed</div>
+            <div class="stat-value" data-count="failed">1</div>
+          </button>
+        </div>
+
+        <section class="panel" style="margin-top:14px" aria-labelledby="students-heading">
+          <div class="panel-head">
+            <h2 class="panel-title" id="students-heading">Students</h2>
+            <span class="panel-note" id="filter-note"><i data-lucide="calendar-clock"></i> No deadline — own pace</span>
+            <div class="panel-tools">
+              <label class="search">
+                <i data-lucide="search"></i>
+                <input type="search" id="student-search" placeholder="Search student" aria-label="Search student">
+              </label>
+              <button class="btn btn-ghost" type="button" disabled title="Select students first"><i data-lucide="bell-ring"></i> Send Reminders</button>
+              <button class="btn btn-ghost" type="button"><i data-lucide="download"></i> Export</button>
+              <button class="btn btn-primary" type="button" id="enroll-jump"><i data-lucide="user-plus"></i> Enroll Students</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="check"><input type="checkbox" aria-label="Select all students" id="select-all"></th>
+                  <th>Student</th>
+                  <th>Progress</th>
+                  <th>Status</th>
+                  <th>Assigned</th>
+                  <th>Last Accessed</th>
+                  <th>Assessment</th>
+                  <th>Certificate</th>
+                </tr>
+              </thead>
+              <tbody id="student-rows">
+                <tr data-name="smith lucy" data-status="not-started" data-assessment="" data-progress="0">
+                  <td class="check"><input type="checkbox" aria-label="Select Smith Lucy"></td>
+                  <td><div class="student"><span class="student-avatar">SL</span>Smith Lucy</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:0%"></span></div><span class="pct">0%</span></div></td>
+                  <td><span class="status not-started">Not Started</span></td>
+                  <td class="muted-cell">Nov 4, 2026</td>
+                  <td class="muted-cell">—</td>
+                  <td class="dash">—</td>
+                  <td class="dash">—</td>
+                </tr>
+                <tr data-name="ayesha malik" data-status="in-progress" data-assessment="" data-progress="45">
+                  <td class="check"><input type="checkbox" aria-label="Select Ayesha Malik"></td>
+                  <td><div class="student"><span class="student-avatar" style="background:#fce7f3;color:#9d174d">AM</span>Ayesha Malik</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:45%"></span></div><span class="pct">45%</span></div></td>
+                  <td><span class="status in-progress">In Progress</span></td>
+                  <td class="muted-cell">Oct 28, 2026</td>
+                  <td class="muted-cell">Nov 8, 2026</td>
+                  <td class="dash">—</td>
+                  <td class="dash">—</td>
+                </tr>
+                <tr data-name="daniel carter" data-status="in-progress" data-assessment="" data-progress="72">
+                  <td class="check"><input type="checkbox" aria-label="Select Daniel Carter"></td>
+                  <td><div class="student"><span class="student-avatar" style="background:#e0e7ff;color:#3730a3">DC</span>Daniel Carter</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:72%"></span></div><span class="pct">72%</span></div></td>
+                  <td><span class="status in-progress">In Progress</span></td>
+                  <td class="muted-cell">Oct 20, 2026</td>
+                  <td class="muted-cell">Nov 7, 2026</td>
+                  <td class="dash">—</td>
+                  <td class="dash">—</td>
+                </tr>
+                <tr data-name="fatima noor" data-status="completed" data-assessment="passed" data-progress="100">
+                  <td class="check"><input type="checkbox" aria-label="Select Fatima Noor"></td>
+                  <td><div class="student"><span class="student-avatar" style="background:#dcfce7;color:#166534">FN</span>Fatima Noor</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:100%"></span></div><span class="pct">100%</span></div></td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td class="muted-cell">Sep 12, 2026</td>
+                  <td class="muted-cell">Nov 2, 2026</td>
+                  <td><span class="status passed">Passed</span></td>
+                  <td class="muted-cell">Issued</td>
+                </tr>
+                <tr data-name="hassan raza" data-status="completed" data-assessment="failed" data-progress="100">
+                  <td class="check"><input type="checkbox" aria-label="Select Hassan Raza"></td>
+                  <td><div class="student"><span class="student-avatar" style="background:#ffedd5;color:#c2410c">HR</span>Hassan Raza</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:100%"></span></div><span class="pct">100%</span></div></td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td class="muted-cell">Sep 18, 2026</td>
+                  <td class="muted-cell">Oct 30, 2026</td>
+                  <td><span class="status failed">Failed</span></td>
+                  <td class="dash">—</td>
+                </tr>
+                <tr data-name="bilal ahmed" data-status="not-started" data-assessment="" data-progress="0">
+                  <td class="check"><input type="checkbox" aria-label="Select Bilal Ahmed"></td>
+                  <td><div class="student"><span class="student-avatar" style="background:#dbeafe;color:#1e40af">BA</span>Bilal Ahmed</div></td>
+                  <td class="progress-cell"><div class="progress-row"><div class="bar" aria-hidden="true"><span style="width:0%"></span></div><span class="pct">0%</span></div></td>
+                  <td><span class="status not-started">Not Started</span></td>
+                  <td class="muted-cell">Nov 6, 2026</td>
+                  <td class="muted-cell">—</td>
+                  <td class="dash">—</td>
+                  <td class="dash">—</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="table-empty" id="student-empty" hidden>
+              <strong>No students in this view</strong>
+              Try another status filter or clear your search.
+            </div>
+          </div>
+        </section>
+
+        <div class="info-grid" style="margin-top:14px">
+          <article class="info">
+            <div class="info-icon"><i data-lucide="clipboard-check"></i></div>
+            <div>
+              <h3>Assessment &amp; Passing</h3>
+              <p>Quiz required. Passing score set by course provider. Retakes allowed per company policy.</p>
+            </div>
+          </article>
+          <article class="info">
+            <div class="info-icon"><i data-lucide="award"></i></div>
+            <div>
+              <h3>Certificate &amp; Compliance</h3>
+              <p>Certificate available after completion. Track compliance from Reports.</p>
+            </div>
+          </article>
+          <article class="info">
+            <div class="info-icon"><i data-lucide="book-open"></i></div>
+            <div>
+              <h3>About This Course</h3>
+              <p>Safe lifting, posture, and back injury prevention for construction environments.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="tab-panel panel" id="panel-course" data-panel="course" hidden>
+        <div class="placeholder">
+          <strong>Course content</strong>
+          Modules and lesson outline appear here.
+        </div>
+      </div>
+      <div class="tab-panel" id="panel-assign" data-panel="assign" hidden>
+        <section class="assign" aria-labelledby="assign-heading">
+          <div class="assign-mode-bar">
+            <span class="label">Assign layout preview — try each option</span>
+            <div class="mode-toggle" role="tablist" aria-label="Assign course layout options">
+              <button type="button" role="tab" class="is-on" data-opt="1" aria-selected="true">1 · Dual shuttle</button>
+              <button type="button" role="tab" data-opt="2" aria-selected="false">2 · Single list</button>
+              <button type="button" role="tab" data-opt="3" aria-selected="false">3 · By groups</button>
+            </div>
+          </div>
+
+          <div class="assign-top">
+            <div class="assign-intro">
+              <span class="assign-ico" id="assign-ico"><i data-lucide="users"></i></span>
+              <div>
+                <h2 id="assign-heading">Enroll students</h2>
+                <p id="assign-desc">Move students between the two lists, then save once. You can also remove students who are already enrolled.</p>
+              </div>
+            </div>
+            <ol class="steps" aria-label="Steps" id="assign-steps">
+              <li class="step on" id="step-1"><span class="n">1</span><span class="step-label">Select students</span></li>
+              <li class="step" id="step-2"><span class="n">2</span><span class="step-label">Enroll or remove</span></li>
+              <li class="step" id="step-3"><span class="n">3</span><span class="step-label">Save changes</span></li>
+            </ol>
+          </div>
+
+          <div class="toast" id="assign-toast" hidden>
+            <span><i data-lucide="check"></i> <span id="toast-text"></span></span>
+            <button type="button" id="toast-dismiss" aria-label="Dismiss"><i data-lucide="x"></i></button>
+          </div>
+
+          <!-- Option 1: Dual-list shuttle -->
+          <div class="assign-opt" id="assign-opt1" data-opt-panel="1">
+            <div class="shuttle">
+              <section class="card-lane" aria-labelledby="uTitle">
+                <div class="card-lane-head">
+                  <h3 id="uTitle">Available students <span class="tag" id="out-count">13</span></h3>
+                  <span class="sel-note green" id="out-sel"></span>
+                </div>
+                <div class="card-tools">
+                  <div class="field-wrap">
+                    <i data-lucide="search"></i>
+                    <input class="field" type="search" id="out-search" placeholder="Search name, email or username" aria-label="Search available students">
+                  </div>
+                  <div class="sel-wrap">
+                    <select class="sel-box" id="out-sort" aria-label="Sort available students">
+                      <option value="last">Last name (A–Z)</option>
+                      <option value="last-desc">Last name (Z–A)</option>
+                      <option value="first">First name (A–Z)</option>
+                    </select>
+                    <i data-lucide="chevron-down"></i>
+                  </div>
+                </div>
+                <div class="select-bar">
+                  <label><input class="cb" type="checkbox" id="out-all"> Select all shown</label>
+                  <span class="shown" id="out-shown">Showing 0 of 0</span>
+                </div>
+                <div class="row-list" id="out-list"></div>
+              </section>
+
+              <div class="xfer" aria-label="Move students">
+                <div class="grp">
+                  <button class="btn-lg primary" type="button" id="btn-enroll" disabled>Enroll <i data-lucide="arrow-right"></i></button>
+                  <p class="hint" id="enroll-hint">Select students on the left to enroll them.</p>
+                </div>
+                <hr>
+                <div class="grp">
+                  <button class="btn-lg danger" type="button" id="btn-remove" disabled><i data-lucide="arrow-left"></i> Remove</button>
+                  <p class="hint" id="remove-hint">Select students on the right to remove them.</p>
+                </div>
+              </div>
+
+              <section class="card-lane" aria-labelledby="eTitle">
+                <div class="card-lane-head">
+                  <h3 id="eTitle">Enrolled in this course <span class="tag green" id="in-count">1</span></h3>
+                  <span class="sel-note red" id="in-sel"></span>
+                </div>
+                <div class="card-tools">
+                  <div class="field-wrap">
+                    <i data-lucide="search"></i>
+                    <input class="field" type="search" id="in-search" placeholder="Search name, email or username" aria-label="Search enrolled students">
+                  </div>
+                  <div class="sel-wrap">
+                    <select class="sel-box" id="in-sort" aria-label="Sort enrolled students">
+                      <option value="last">Last name (A–Z)</option>
+                      <option value="last-desc">Last name (Z–A)</option>
+                      <option value="first">First name (A–Z)</option>
+                    </select>
+                    <i data-lucide="chevron-down"></i>
+                  </div>
+                </div>
+                <div class="select-bar">
+                  <label><input class="cb" type="checkbox" id="in-all"> Select all shown</label>
+                  <span class="shown" id="in-shown">Showing 0 of 0</span>
+                </div>
+                <div class="row-list" id="in-list"></div>
+              </section>
+            </div>
+          </div>
+
+          <!-- Option 2: Single list + bulk -->
+          <div class="assign-opt" id="assign-opt2" data-opt-panel="2" hidden>
+            <div class="bulk-tools">
+              <div class="field-wrap">
+                <i data-lucide="search"></i>
+                <input class="field" type="search" id="bulk-search" placeholder="Search name, email or username" aria-label="Search students">
+              </div>
+              <div class="sel-wrap">
+                <select class="sel-box" id="bulk-filter" aria-label="Filter by enrollment">
+                  <option value="all">Status: All</option>
+                  <option value="out">Not enrolled</option>
+                  <option value="in">Enrolled</option>
+                  <option value="pending">Pending changes</option>
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+              <div class="sel-wrap">
+                <select class="sel-box" id="bulk-sort" aria-label="Sort students">
+                  <option value="last">Sort: Last name A–Z</option>
+                  <option value="last-desc">Sort: Last name Z–A</option>
+                  <option value="first">Sort: First name A–Z</option>
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+              <div class="bulk-actions-inline">
+                <button class="btn-lg primary" type="button" id="bulk-enroll" disabled>Enroll selected</button>
+                <button class="btn-lg danger" type="button" id="bulk-remove" disabled>Unenroll selected</button>
+              </div>
+            </div>
+            <div class="bulk-lane">
+              <div class="select-bar">
+                <label><input class="cb" type="checkbox" id="bulk-all"> Select all shown</label>
+                <span class="shown" id="bulk-shown">Showing 0 of 0</span>
+              </div>
+              <div class="bulk-list" id="bulk-list"></div>
+            </div>
+          </div>
+
+          <!-- Option 3: Groups first -->
+          <div class="assign-opt" id="assign-opt3" data-opt-panel="3" hidden>
+            <div class="group-grid" id="group-grid" role="group" aria-label="Student groups"></div>
+            <div class="group-preview" id="group-preview">
+              <h4>No groups selected</h4>
+              <p>Pick one or more crews/cohorts to preview who will be enrolled. Already-enrolled members are skipped.</p>
+            </div>
+            <div class="indiv-block" id="indiv-block">
+              <div class="indiv-head">
+                <h4>Add individuals (optional)</h4>
+                <button type="button" id="indiv-toggle">Show</button>
+              </div>
+              <div class="indiv-body">
+                <div class="field-wrap">
+                  <i data-lucide="search"></i>
+                  <input class="field" type="search" id="indiv-search" placeholder="Search students not in selected groups" aria-label="Search individuals">
+                </div>
+                <div class="indiv-list" id="indiv-list"></div>
+              </div>
+            </div>
+            <div class="bulk-actions-inline" style="margin:0">
+              <button class="btn-lg primary" type="button" id="group-assign" disabled>Assign selected groups</button>
+              <button class="btn-lg ghost" type="button" id="group-clear" disabled>Clear selection</button>
+            </div>
+          </div>
+
+          <div class="sticky-bar">
+            <div class="sticky-left">
+              <span class="sticky-ico"><i data-lucide="arrow-left-right"></i></span>
+              <div class="sticky-meta">
+                <div class="sticky-pills" id="assign-summary"><span>No pending changes</span></div>
+                <span class="sticky-hint" id="bar-hint">Select students above to get started.</span>
+              </div>
+            </div>
+            <div class="sticky-actions">
+              <button class="btn-lg ghost" type="button" id="btn-discard" disabled>Discard changes</button>
+              <button class="btn-lg primary" type="button" id="btn-save" disabled>Save changes</button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="tab-panel panel" id="panel-group" data-panel="group" hidden>
+        <div class="placeholder">
+          <strong>Course Group</strong>
+          Manage which catalog group this course belongs to.
+        </div>
+      </div>
+      <div class="tab-panel panel" id="panel-prereq" data-panel="prereq" hidden>
+        <div class="placeholder">
+          <strong>Prerequisite</strong>
+          Set courses that must be completed first.
+        </div>
+      </div>
+      <div class="tab-panel panel" id="panel-requests" data-panel="requests" hidden>
+        <div class="placeholder">
+          <strong>Enrollment Requests</strong>
+          No pending enrollment requests.
+        </div>
+      </div>
+      <div class="tab-panel panel" id="panel-ratings" data-panel="ratings" hidden>
+        <div class="placeholder">
+          <strong>Ratings</strong>
+          Student feedback will show here once ratings are submitted.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a class="is-on" href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  function icons() {
+    lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  }
+  icons();
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
+
+  function showPanel(id) {
+    tabs.forEach(function (tab) {
+      var on = tab.getAttribute("data-panel") === id;
+      tab.classList.toggle("is-on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-panel") !== id;
+    });
+    document.body.classList.toggle("assign-mode", id === "assign");
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      showPanel(tab.getAttribute("data-panel"));
+    });
+  });
+
+  var search = document.getElementById("student-search");
+  var tbody = document.getElementById("student-rows");
+  var emptyEl = document.getElementById("student-empty");
+  var filterNote = document.getElementById("filter-note");
+  var statusFilter = "enrolled";
+  var filterLabels = {
+    enrolled: "All enrolled",
+    completed: "Completed",
+    "in-progress": "In Progress",
+    "not-started": "Not Started",
+    passed: "Passed",
+    failed: "Failed"
+  };
+
+  function rowMatches(row, filter) {
+    var status = row.getAttribute("data-status") || "";
+    var assessment = row.getAttribute("data-assessment") || "";
+    if (filter === "enrolled") return true;
+    if (filter === "completed") return status === "completed";
+    if (filter === "in-progress") return status === "in-progress";
+    if (filter === "not-started") return status === "not-started";
+    if (filter === "passed") return assessment === "passed";
+    if (filter === "failed") return assessment === "failed";
+    return true;
+  }
+
+  function sortKey(row) {
+    var status = row.getAttribute("data-status") || "";
+    var progress = parseInt(row.getAttribute("data-progress") || "0", 10);
+    var name = row.getAttribute("data-name") || "";
+    if (statusFilter === "enrolled") return [0, -progress, name];
+    if (statusFilter === "in-progress") return [0, -progress, name];
+    if (statusFilter === "not-started") return [0, name];
+    if (statusFilter === "completed") return [0, name];
+    if (statusFilter === "passed" || statusFilter === "failed") return [0, name];
+    return [status === "not-started" ? 1 : 0, -progress, name];
+  }
+
+  function paintStudents() {
+    var q = (search.value || "").trim().toLowerCase();
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+    rows.sort(function (a, b) {
+      var ka = sortKey(a);
+      var kb = sortKey(b);
+      for (var i = 0; i < ka.length; i++) {
+        if (ka[i] < kb[i]) return -1;
+        if (ka[i] > kb[i]) return 1;
+      }
+      return 0;
+    });
+    var visible = 0;
+    rows.forEach(function (row) {
+      var name = row.getAttribute("data-name") || "";
+      var okFilter = rowMatches(row, statusFilter);
+      var okSearch = !q || name.indexOf(q) !== -1;
+      var show = okFilter && okSearch;
+      row.hidden = !show;
+      tbody.appendChild(row);
+      if (show) visible += 1;
+    });
+    emptyEl.hidden = visible > 0;
+    tbody.hidden = visible === 0;
+    filterNote.innerHTML = '<i data-lucide="filter"></i> ' + filterLabels[statusFilter] +
+      ' · ' + visible + (visible === 1 ? " student" : " students");
+    icons();
+  }
+
+  document.querySelectorAll(".stats .stat").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      statusFilter = btn.getAttribute("data-filter");
+      document.querySelectorAll(".stats .stat").forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle("is-on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      paintStudents();
+    });
+  });
+
+  search.addEventListener("input", paintStudents);
+
+  var selectAll = document.getElementById("select-all");
+  selectAll.addEventListener("change", function () {
+    tbody.querySelectorAll("tr:not([hidden]) input[type=checkbox]").forEach(function (cb) {
+      cb.checked = selectAll.checked;
+    });
+  });
+
+  document.getElementById("enroll-jump").addEventListener("click", function () {
+    showPanel("assign");
+  });
+
+  paintStudents();
+
+  /* ---- Assign course: 3 layout options (shared roster) ---- */
+  var TINTS = [
+    ["#E3F3E8", "#14693A"],
+    ["#ECE8FB", "#4B33A8"],
+    ["#E1ECFE", "#1B4FC4"],
+    ["#FDEBD9", "#8A4A0B"]
+  ];
+  var roster = [
+    { id: "s4", first: "4", last: "student", email: "stu4@yopmail.com", username: "student6", loc: "", progress: 0 },
+    { id: "cm", first: "cm", last: "company manager", email: "cm1+dub1@yopmail.com", username: "companymanager.cm", loc: "", progress: 0 },
+    { id: "mei", first: "Hou", last: "Mei", email: "mei@yopmail.com", username: "mei@yopmail.com", loc: "", progress: 0 },
+    { id: "imran", first: "Imran", last: "Quratulain", email: "annieshah025@gmail.com", username: "new", loc: "LAHORE", progress: 0 },
+    { id: "zara", first: "Noor", last: "Zara", email: "zara@yopmail.com", username: "zara@yopmail.com", loc: "", progress: 0 },
+    { id: "robo", first: "Robo", last: "Mark", email: "markrobo@yopmail.com", username: "markrobo@yopmail.com", loc: "", progress: 0 },
+    { id: "js", first: "smith", last: "john", email: "js@yopmail.com", username: "js", loc: "", progress: 0 },
+    { id: "a1", first: "Ayesha", last: "Malik", email: "ayesha.malik@yopmail.com", username: "ayeshamalik", loc: "KARACHI", progress: 0 },
+    { id: "a2", first: "Bilal", last: "Ahmed", email: "bilal.ahmed@yopmail.com", username: "bilala", loc: "", progress: 0 },
+    { id: "a3", first: "Daniel", last: "Carter", email: "dcarter@yopmail.com", username: "dcarter", loc: "", progress: 0 },
+    { id: "a4", first: "Fatima", last: "Noor", email: "fatima.noor@yopmail.com", username: "fatimanoor", loc: "LAHORE", progress: 0 },
+    { id: "a5", first: "Hassan", last: "Raza", email: "hraza@yopmail.com", username: "hraza", loc: "", progress: 0 },
+    { id: "a6", first: "Maria", last: "Lopez", email: "maria.lopez@yopmail.com", username: "mlopez", loc: "", progress: 0 },
+    { id: "lucy", first: "Smith", last: "Lucy", email: "lucyssm@yopmail.com", username: "lucyssm", loc: "", progress: 0 }
+  ];
+  var groups = [
+    { id: "g1", name: "Excavation Crew — Lahore", memberIds: ["imran", "a4", "a2", "a5", "mei"] },
+    { id: "g2", name: "Scaffolding Team A", memberIds: ["a1", "a3", "a6", "js"] },
+    { id: "g3", name: "Fall Protection Cohort", memberIds: ["lucy", "zara", "robo", "a1", "a4"] },
+    { id: "g4", name: "OSHA New Hires 2026", memberIds: ["s4", "a2", "a3", "mei", "imran", "a5"] },
+    { id: "g5", name: "HAZWOPER Site Ops", memberIds: ["a6", "cm", "js"] },
+    { id: "g6", name: "Fire Safety Wardens", memberIds: ["lucy", "a1", "a4", "zara"] },
+    { id: "g7", name: "Electrical Maintenance", memberIds: ["robo", "a5", "a3"] },
+    { id: "g8", name: "Equipment Operators", memberIds: ["imran", "a2", "mei", "s4", "a6"] }
+  ];
+
+  var enrolled = { lucy: true };
+  var saved = { lucy: true };
+  var sel = {};
+  var groupSel = {};
+  var indivSel = {};
+  var assignOpt = "1";
+
+  var outList = document.getElementById("out-list");
+  var inList = document.getElementById("in-list");
+  var outSearch = document.getElementById("out-search");
+  var inSearch = document.getElementById("in-search");
+  var outSort = document.getElementById("out-sort");
+  var inSort = document.getElementById("in-sort");
+  var btnEnroll = document.getElementById("btn-enroll");
+  var btnRemove = document.getElementById("btn-remove");
+  var btnSave = document.getElementById("btn-save");
+  var btnDiscard = document.getElementById("btn-discard");
+  var toastEl = document.getElementById("assign-toast");
+  var toastText = document.getElementById("toast-text");
+  var bulkList = document.getElementById("bulk-list");
+  var bulkSearch = document.getElementById("bulk-search");
+  var bulkFilter = document.getElementById("bulk-filter");
+  var bulkSort = document.getElementById("bulk-sort");
+  var groupGrid = document.getElementById("group-grid");
+  var groupPreview = document.getElementById("group-preview");
+  var indivBlock = document.getElementById("indiv-block");
+  var indivList = document.getElementById("indiv-list");
+  var indivSearch = document.getElementById("indiv-search");
+
+  var OPT_COPY = {
+    "1": {
+      title: "Enroll students",
+      desc: "Move students between the two lists, then save once. You can also remove students who are already enrolled.",
+      icon: "users",
+      steps: ["Select students", "Enroll or remove", "Save changes"]
+    },
+    "2": {
+      title: "Bulk enroll from one list",
+      desc: "Search the full company roster, filter by status, select students, then enroll or unenroll in bulk before saving.",
+      icon: "list-checks",
+      steps: ["Filter & select", "Enroll or unenroll", "Save changes"]
+    },
+    "3": {
+      title: "Assign by student groups",
+      desc: "Pick crews or cohorts first. Preview who will be added, then optionally include individual exceptions.",
+      icon: "users-round",
+      steps: ["Select groups", "Review preview", "Assign & save"]
+    }
+  };
+
+  function nameOf(s) { return (s.first + " " + s.last).trim(); }
+  function initials(s) {
+    return ((s.last[0] || "") + (s.first[0] || "")).toUpperCase();
+  }
+  function byId(id) {
+    for (var i = 0; i < roster.length; i++) if (roster[i].id === id) return roster[i];
+    return null;
+  }
+  function view(list, q, sort) {
+    var needle = (q || "").trim().toLowerCase();
+    var out = list.filter(function (s) {
+      if (!needle) return true;
+      return (s.first + " " + s.last + " " + s.email + " " + s.username).toLowerCase().indexOf(needle) !== -1;
+    });
+    var key = sort === "first" ? "first" : "last";
+    out.sort(function (a, b) {
+      var cmp = a[key].localeCompare(b[key], undefined, { sensitivity: "base" });
+      return cmp || a.first.localeCompare(b.first, undefined, { sensitivity: "base" });
+    });
+    if (sort === "last-desc") out.reverse();
+    return out;
+  }
+  function lists() {
+    var uAll = roster.filter(function (s) { return !enrolled[s.id]; });
+    var eAll = roster.filter(function (s) { return !!enrolled[s.id]; });
+    return {
+      uAll: uAll, eAll: eAll,
+      uVis: view(uAll, outSearch.value, outSort.value),
+      eVis: view(eAll, inSearch.value, inSort.value)
+    };
+  }
+  function diff() {
+    return {
+      toEnroll: roster.filter(function (s) { return enrolled[s.id] && !saved[s.id]; }).length,
+      toRemove: roster.filter(function (s) { return !enrolled[s.id] && saved[s.id]; }).length
+    };
+  }
+  function updateSticky(extraSel) {
+    var D = diff();
+    var pending = D.toEnroll + D.toRemove;
+    var summary = document.getElementById("assign-summary");
+    if (pending === 0) {
+      summary.innerHTML = "<span>No pending changes</span>";
+    } else {
+      summary.innerHTML =
+        '<span class="tag green">+' + D.toEnroll + " to enroll</span>" +
+        '<span class="tag red">−' + D.toRemove + " to remove</span>";
+    }
+    document.getElementById("bar-hint").textContent = pending === 0
+      ? (extraSel ? "Selection ready — apply enroll/unenroll, then save." : "Select above to get started.")
+      : "Nothing is applied until you save. Review pending changes, then save.";
+    btnSave.disabled = pending === 0;
+    btnDiscard.disabled = pending === 0;
+    return { D: D, pending: pending };
+  }
+  function setStep(n) {
+    [1, 2, 3].forEach(function (i) {
+      var el = document.getElementById("step-" + i);
+      el.className = "step" + (i < n ? " done" : i === n ? " on" : "");
+    });
+  }
+  function applyOptCopy() {
+    var c = OPT_COPY[assignOpt];
+    document.getElementById("assign-heading").textContent = c.title;
+    document.getElementById("assign-desc").textContent = c.desc;
+    document.getElementById("assign-ico").innerHTML = '<i data-lucide="' + c.icon + '"></i>';
+    [1, 2, 3].forEach(function (i) {
+      var lab = document.querySelector("#step-" + i + " .step-label");
+      if (lab) lab.textContent = c.steps[i - 1];
+    });
+  }
+  function setAssignOpt(opt) {
+    assignOpt = String(opt);
+    document.querySelectorAll(".mode-toggle [data-opt]").forEach(function (btn) {
+      var on = btn.getAttribute("data-opt") === assignOpt;
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll(".assign-opt").forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-opt-panel") !== assignOpt;
+    });
+    sel = {};
+    applyOptCopy();
+    paintAll();
+  }
+
+  function rowHtml(s, side, idx) {
+    var tint = TINTS[idx % TINTS.length];
+    var was = !!saved[s.id];
+    var pendEnroll = side === "e" && !was;
+    var pendRemove = side === "u" && was;
+    var checked = !!sel[s.id];
+    var cls = "row" + (checked ? " sel" : "") + (pendEnroll ? " pe" : "") + (pendRemove ? " pr" : "");
+    var showUser = s.username && s.username !== s.email;
+    var right = "";
+    if (pendRemove) {
+      right = '<span class="tag red">Will be removed</span>' + (s.loc ? '<span class="loc">' + s.loc + "</span>" : "");
+    } else if (pendEnroll) {
+      right = '<span class="tag green">Will enroll</span>';
+    } else if (side === "e") {
+      right =
+        '<span class="tag">' + (s.progress === 0 ? "Not started" : "In progress") + "</span>" +
+        '<span class="prog-row"><span class="track"><span class="fill" style="width:' + s.progress + '%"></span></span>' +
+        '<span class="prog-pct">' + s.progress + "%</span></span>";
+    } else {
+      right = '<span class="tag">Student</span>' + (s.loc ? '<span class="loc">' + s.loc + "</span>" : "");
+    }
+    return (
+      '<label class="' + cls + '" data-id="' + s.id + '">' +
+        '<input class="cb" type="checkbox"' + (checked ? " checked" : "") + ' aria-label="Select ' + nameOf(s) + '">' +
+        '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '">' + initials(s) + "</span>" +
+        '<span class="who"><span class="nm">' + nameOf(s) + '</span><span class="em">' + s.email + "</span>" +
+        (showUser ? '<span class="meta2"><i data-lucide="user-round"></i>' + s.username + "</span>" : "") +
+        '</span><span class="side-meta">' + right + "</span></label>"
+    );
+  }
+
+  function paint1() {
+    var L = lists();
+    var uSel = L.uVis.filter(function (s) { return sel[s.id]; }).length;
+    var eSel = L.eVis.filter(function (s) { return sel[s.id]; }).length;
+
+    if (L.uVis.length) {
+      outList.innerHTML = L.uVis.map(function (s) { return rowHtml(s, "u", roster.indexOf(s)); }).join("");
+    } else if (L.uAll.length) {
+      outList.innerHTML = '<div class="lane-empty"><strong>No matches for “' + outSearch.value + '”</strong>Try a different name, email or username.</div>';
+    } else {
+      outList.innerHTML = '<div class="lane-empty"><strong>Everyone is enrolled</strong>There are no students left to enroll in this course.</div>';
+    }
+
+    if (L.eVis.length) {
+      inList.innerHTML = L.eVis.map(function (s) { return rowHtml(s, "e", roster.indexOf(s)); }).join("");
+    } else if (L.eAll.length) {
+      inList.innerHTML = '<div class="lane-empty"><strong>No matches for “' + inSearch.value + '”</strong>Try a different name, email or username.</div>';
+    } else {
+      inList.innerHTML = '<div class="lane-empty"><strong>No students enrolled yet</strong>Select students on the left and choose Enroll.</div>';
+    }
+
+    document.getElementById("out-count").textContent = L.uAll.length;
+    document.getElementById("in-count").textContent = L.eAll.length;
+    document.getElementById("out-sel").textContent = uSel ? uSel + " selected" : "";
+    document.getElementById("in-sel").textContent = eSel ? eSel + " selected" : "";
+    document.getElementById("out-shown").textContent = "Showing " + L.uVis.length + " of " + L.uAll.length;
+    document.getElementById("in-shown").textContent = "Showing " + L.eVis.length + " of " + L.eAll.length;
+    document.getElementById("out-all").checked = L.uVis.length > 0 && L.uVis.every(function (s) { return sel[s.id]; });
+    document.getElementById("in-all").checked = L.eVis.length > 0 && L.eVis.every(function (s) { return sel[s.id]; });
+
+    btnEnroll.disabled = uSel === 0;
+    btnRemove.disabled = eSel === 0;
+    btnEnroll.innerHTML = (uSel ? "Enroll (" + uSel + ")" : "Enroll") + ' <i data-lucide="arrow-right"></i>';
+    btnRemove.innerHTML = '<i data-lucide="arrow-left"></i> ' + (eSel ? "Remove (" + eSel + ")" : "Remove");
+    document.getElementById("enroll-hint").textContent = uSel
+      ? uSel + (uSel === 1 ? " student" : " students") + " ready to enroll"
+      : "Select students on the left to enroll them.";
+    document.getElementById("remove-hint").textContent = eSel
+      ? eSel + (eSel === 1 ? " student" : " students") + " ready to remove"
+      : "Select students on the right to remove them.";
+
+    var st = updateSticky(uSel + eSel > 0);
+    setStep((uSel + eSel) > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function bulkVisible() {
+    var filter = bulkFilter.value;
+    var base = roster.filter(function (s) {
+      var isIn = !!enrolled[s.id];
+      var was = !!saved[s.id];
+      var pend = (isIn && !was) || (!isIn && was);
+      if (filter === "out") return !isIn;
+      if (filter === "in") return isIn;
+      if (filter === "pending") return pend;
+      return true;
+    });
+    return view(base, bulkSearch.value, bulkSort.value);
+  }
+
+  function bulkRowHtml(s, idx) {
+    var tint = TINTS[idx % TINTS.length];
+    var isIn = !!enrolled[s.id];
+    var was = !!saved[s.id];
+    var pendEnroll = isIn && !was;
+    var pendRemove = !isIn && was;
+    var checked = !!sel[s.id];
+    var cls = "row" + (checked ? " sel" : "") + (pendEnroll ? " pe" : "") + (pendRemove ? " pr" : "");
+    var status = pendEnroll
+      ? '<span class="status-pill on">Will enroll</span>'
+      : pendRemove
+        ? '<span class="tag red">Will remove</span>'
+        : isIn
+          ? '<span class="status-pill on">Enrolled</span>'
+          : '<span class="status-pill off">Not enrolled</span>';
+    return (
+      '<label class="' + cls + '" data-id="' + s.id + '">' +
+        '<input class="cb" type="checkbox"' + (checked ? " checked" : "") + ' aria-label="Select ' + nameOf(s) + '">' +
+        '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '">' + initials(s) + "</span>" +
+        '<span class="who"><span class="nm">' + nameOf(s) + '</span><span class="em">' + s.email + "</span></span>" +
+        '<span class="side-meta">' + status + "</span></label>"
+    );
+  }
+
+  function paint2() {
+    var vis = bulkVisible();
+    var selected = vis.filter(function (s) { return sel[s.id]; });
+    var canEnroll = selected.some(function (s) { return !enrolled[s.id]; });
+    var canRemove = selected.some(function (s) { return !!enrolled[s.id]; });
+
+    if (vis.length) {
+      bulkList.innerHTML = vis.map(function (s) { return bulkRowHtml(s, roster.indexOf(s)); }).join("");
+    } else {
+      bulkList.innerHTML = '<div class="lane-empty"><strong>No students match</strong>Try another search or filter.</div>';
+    }
+    document.getElementById("bulk-shown").textContent = "Showing " + vis.length + " of " + roster.length;
+    document.getElementById("bulk-all").checked = vis.length > 0 && vis.every(function (s) { return sel[s.id]; });
+    document.getElementById("bulk-enroll").disabled = !canEnroll;
+    document.getElementById("bulk-remove").disabled = !canRemove;
+    document.getElementById("bulk-enroll").textContent = canEnroll
+      ? "Enroll selected (" + selected.filter(function (s) { return !enrolled[s.id]; }).length + ")"
+      : "Enroll selected";
+    document.getElementById("bulk-remove").textContent = canRemove
+      ? "Unenroll selected (" + selected.filter(function (s) { return !!enrolled[s.id]; }).length + ")"
+      : "Unenroll selected";
+
+    var st = updateSticky(selected.length > 0);
+    setStep(selected.length > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function selectedGroupMembers() {
+    var map = {};
+    groups.forEach(function (g) {
+      if (!groupSel[g.id]) return;
+      g.memberIds.forEach(function (id) { map[id] = true; });
+    });
+    return Object.keys(map).map(byId).filter(Boolean);
+  }
+
+  function paint3() {
+    groupGrid.innerHTML = groups.map(function (g) {
+      var members = g.memberIds.map(byId).filter(Boolean);
+      var already = members.filter(function (s) { return !!enrolled[s.id]; }).length;
+      var neu = members.length - already;
+      var on = !!groupSel[g.id];
+      return (
+        '<label class="group-card' + (on ? " is-on" : "") + '" data-gid="' + g.id + '">' +
+          '<input class="cb" type="checkbox"' + (on ? " checked" : "") + ' aria-label="Select ' + g.name + '">' +
+          '<span class="g-body">' +
+            '<p class="g-name">' + g.name + "</p>" +
+            '<p class="g-meta">' + members.length + " members in roster · " + already + " already enrolled</p>" +
+            '<div class="g-stats">' +
+              '<span class="tag">' + members.length + " total</span>" +
+              '<span class="tag green">+' + neu + " new</span>" +
+              (already ? '<span class="tag">' + already + " enrolled</span>" : "") +
+            "</div></span></label>"
+      );
+    }).join("");
+
+    var members = selectedGroupMembers();
+    var groupCount = Object.keys(groupSel).filter(function (k) { return groupSel[k]; }).length;
+    var already = members.filter(function (s) { return !!enrolled[s.id]; }).length;
+    var neu = members.length - already;
+    var indivIds = Object.keys(indivSel).filter(function (k) { return indivSel[k]; });
+    var indivNew = indivIds.filter(function (id) { return !enrolled[id]; }).length;
+
+    if (groupCount === 0 && indivIds.length === 0) {
+      groupPreview.innerHTML = "<h4>No groups selected</h4><p>Pick one or more crews/cohorts to preview who will be enrolled. Already-enrolled members are skipped.</p>";
+    } else {
+      groupPreview.innerHTML =
+        "<h4>" + groupCount + (groupCount === 1 ? " group" : " groups") +
+        (indivIds.length ? " + " + indivIds.length + " individual" + (indivIds.length === 1 ? "" : "s") : "") +
+        "</h4><p>" +
+        members.length + " unique members from groups · <strong>" + neu + " new</strong> to enroll · " +
+        already + " already enrolled" +
+        (indivNew ? " · +" + indivNew + " from individuals" : "") +
+        ".</p>";
+    }
+
+    var inGroup = {};
+    members.forEach(function (s) { inGroup[s.id] = true; });
+    var indivPool = view(
+      roster.filter(function (s) { return !inGroup[s.id]; }),
+      indivSearch.value,
+      "last"
+    );
+    if (indivPool.length) {
+      indivList.innerHTML = indivPool.map(function (s, idx) {
+        var tint = TINTS[idx % TINTS.length];
+        var on = !!indivSel[s.id];
+        var isIn = !!enrolled[s.id];
+        return (
+          '<label class="row' + (on ? " sel" : "") + '" data-id="' + s.id + '">' +
+            '<input class="cb" type="checkbox"' + (on ? " checked" : "") + ' aria-label="Select ' + nameOf(s) + '">' +
+            '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '">' + initials(s) + "</span>" +
+            '<span class="who"><span class="nm">' + nameOf(s) + '</span><span class="em">' + s.email + "</span></span>" +
+            '<span class="side-meta">' + (isIn ? '<span class="status-pill on">Enrolled</span>' : '<span class="status-pill off">Not enrolled</span>') + "</span></label>"
+        );
+      }).join("");
+    } else {
+      indivList.innerHTML = '<div class="lane-empty"><strong>No extra students</strong>Everyone is already covered by selected groups or your search.</div>';
+    }
+
+    var canAssign = neu > 0 || indivNew > 0;
+    document.getElementById("group-assign").disabled = !canAssign;
+    document.getElementById("group-clear").disabled = groupCount === 0 && indivIds.length === 0;
+    document.getElementById("group-assign").textContent = canAssign
+      ? "Assign (" + (neu + indivNew) + " new)"
+      : "Assign selected groups";
+
+    var st = updateSticky(groupCount + indivIds.length > 0);
+    setStep(groupCount + indivIds.length > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function paintAll() {
+    updateSticky(false);
+    if (assignOpt === "1") paint1();
+    else if (assignOpt === "2") paint2();
+    else paint3();
+    icons();
+  }
+
+  function bindList(el, mapName) {
+    el.addEventListener("click", function (e) {
+      var row = e.target.closest(".row");
+      if (!row) return;
+      var id = row.getAttribute("data-id");
+      var map = mapName === "indiv" ? indivSel : sel;
+      if (e.target.classList.contains("cb")) {
+        map[id] = e.target.checked;
+        if (!map[id]) delete map[id];
+      } else {
+        if (map[id]) delete map[id]; else map[id] = true;
+      }
+      paintAll();
+    });
+  }
+  bindList(outList, "sel");
+  bindList(inList, "sel");
+  bindList(bulkList, "sel");
+  bindList(indivList, "indiv");
+
+  function toggleAll(side) {
+    var L = lists();
+    var vis = side === "u" ? L.uVis : L.eVis;
+    var allOn = vis.length > 0 && vis.every(function (s) { return sel[s.id]; });
+    vis.forEach(function (s) {
+      if (allOn) delete sel[s.id]; else sel[s.id] = true;
+    });
+    paintAll();
+  }
+  document.getElementById("out-all").addEventListener("change", function () { toggleAll("u"); });
+  document.getElementById("in-all").addEventListener("change", function () { toggleAll("e"); });
+  document.getElementById("bulk-all").addEventListener("change", function () {
+    var vis = bulkVisible();
+    var allOn = vis.length > 0 && vis.every(function (s) { return sel[s.id]; });
+    vis.forEach(function (s) {
+      if (allOn) delete sel[s.id]; else sel[s.id] = true;
+    });
+    paintAll();
+  });
+
+  function move(side) {
+    var L = lists();
+    var vis = side === "u" ? L.uVis : L.eVis;
+    vis.forEach(function (s) {
+      if (!sel[s.id]) return;
+      if (side === "u") enrolled[s.id] = true; else delete enrolled[s.id];
+      delete sel[s.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  }
+  btnEnroll.addEventListener("click", function () { move("u"); });
+  btnRemove.addEventListener("click", function () { move("e"); });
+
+  document.getElementById("bulk-enroll").addEventListener("click", function () {
+    bulkVisible().forEach(function (s) {
+      if (!sel[s.id] || enrolled[s.id]) return;
+      enrolled[s.id] = true;
+      delete sel[s.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  });
+  document.getElementById("bulk-remove").addEventListener("click", function () {
+    bulkVisible().forEach(function (s) {
+      if (!sel[s.id] || !enrolled[s.id]) return;
+      delete enrolled[s.id];
+      delete sel[s.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  });
+
+  groupGrid.addEventListener("click", function (e) {
+    var card = e.target.closest(".group-card");
+    if (!card) return;
+    var gid = card.getAttribute("data-gid");
+    if (e.target.classList.contains("cb")) {
+      groupSel[gid] = e.target.checked;
+      if (!groupSel[gid]) delete groupSel[gid];
+    } else {
+      if (groupSel[gid]) delete groupSel[gid]; else groupSel[gid] = true;
+    }
+    paintAll();
+  });
+  document.getElementById("group-clear").addEventListener("click", function () {
+    groupSel = {};
+    indivSel = {};
+    paintAll();
+  });
+  document.getElementById("group-assign").addEventListener("click", function () {
+    selectedGroupMembers().forEach(function (s) { enrolled[s.id] = true; });
+    Object.keys(indivSel).forEach(function (id) {
+      if (indivSel[id]) enrolled[id] = true;
+    });
+    groupSel = {};
+    indivSel = {};
+    toastEl.hidden = true;
+    paintAll();
+  });
+  document.getElementById("indiv-toggle").addEventListener("click", function () {
+    var open = indivBlock.classList.toggle("is-open");
+    this.textContent = open ? "Hide" : "Show";
+    icons();
+  });
+
+  btnDiscard.addEventListener("click", function () {
+    enrolled = Object.assign({}, saved);
+    sel = {};
+    groupSel = {};
+    indivSel = {};
+    toastEl.hidden = true;
+    paintAll();
+  });
+  btnSave.addEventListener("click", function () {
+    var D = diff();
+    var parts = [];
+    if (D.toEnroll) parts.push(D.toEnroll + (D.toEnroll === 1 ? " student enrolled" : " students enrolled"));
+    if (D.toRemove) parts.push(D.toRemove + (D.toRemove === 1 ? " student removed" : " students removed"));
+    saved = Object.assign({}, enrolled);
+    sel = {};
+    groupSel = {};
+    indivSel = {};
+    toastText.textContent = "Changes saved: " + (parts.length ? parts.join(", ") : "no changes") + ".";
+    toastEl.hidden = false;
+    paintAll();
+  });
+  document.getElementById("toast-dismiss").addEventListener("click", function () {
+    toastEl.hidden = true;
+  });
+
+  document.querySelectorAll(".mode-toggle [data-opt]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setAssignOpt(btn.getAttribute("data-opt"));
+    });
+  });
+
+  [outSearch, inSearch, bulkSearch, indivSearch].forEach(function (el) {
+    el.addEventListener("input", paintAll);
+  });
+  [outSort, inSort, bulkFilter, bulkSort].forEach(function (el) {
+    el.addEventListener("change", paintAll);
+  });
+
+  applyOptCopy();
+  paintAll();
+})();
+</script>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("menu-btn");
+  var userBtn = document.getElementById("user-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!menuBtn || !backdrop) return;
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+})();
+</script>
+</body>
+</html>

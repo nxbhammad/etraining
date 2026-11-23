@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign-in — one message per action</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #122033;
+    --muted: #5c6b7a;
+    --link: #0f6b45;
+    --err: #b42318;
+    --line: #e3e8ee;
+    --teal: #12805a;
+    --btn: #6fef7e;
+    --btn-ink: #0c2030;
+    --btn-hover: #56e066;
+    --ground: #f5f7f8;
+    --card: #fff;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--ui); color: #1b2430; background: var(--ground); }
+  button, input { font-family: inherit; }
+  button { cursor: pointer; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+
+
+  .device {
+    position: relative; height: 100vh; min-height: 100%; overflow: hidden;
+    background: var(--ground);
+  }
+
+  /* Product */
+  .auth-screen { height: 100%; background: var(--ground); position: relative; font-family: var(--font); color: var(--ink); display: flex; flex-direction: column; }
+  .site-nav {
+    flex: none; z-index: 5; height: 68px; padding: 0 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: #0d3c66; color: #fff; font-family: Outfit, sans-serif;
+  }
+  .site-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .site-mark {
+    width: 42px; height: 42px; border-radius: 8px; background: #fff; flex: none;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .site-mark img { width: 34px; height: 34px; object-fit: contain; display: block; }
+  .site-mark-rcs { color: #0b3a5b; font-weight: 700; font-size: 13px; letter-spacing: -.03em; }
+  .site-name { font-size: 18px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
+  .site-rule { width: 1px; height: 28px; background: rgba(255,255,255,.4); flex: none; }
+  .site-powered { font-size: 14px; font-weight: 500; white-space: nowrap; }
+  .et-word { display: inline-flex; align-items: center; }
+  .et-logo { height: 28px; width: auto; display: block; }
+  .auth-inner { display: flex; flex: 1; min-height: 0; position: relative; }
+  .auth-form { width: 50%; min-height: 100%; display: flex; align-items: safe center; justify-content: center; overflow: auto; }
+  .form-container { width: min(440px, 88%); display: flex; flex-direction: column; gap: 26px; padding: 40px 0 108px; }
+  .auth-topbar { display: flex; flex-direction: column; gap: 8px; }
+  .sh1 { margin: 0; font-family: Outfit, sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--ink); }
+  .lead { margin: 0; font-size: 16px; line-height: 1.5; color: var(--muted); font-weight: 400; }
+  .auth-form-section { display: flex; flex-direction: column; gap: 18px; }
+  #view-login { display: flex; flex-direction: column; gap: 32px; }
+  #view-login .auth-topbar { gap: 14px; }
+  #view-login .auth-form-section { gap: 22px; }
+  #view-login .btn-login { margin-top: 12px; }
+  #view-login .bottom-text { margin-top: -14px; }
+  .form-label { display: block; margin: 0 0 8px; color: #243140; font-size: 13px; font-weight: 600; letter-spacing: .01em; line-height: 1.2; }
+  .form-input {
+    width: 100%; height: 52px; border: 1px solid var(--line); border-radius: 12px;
+    background: #fff; color: var(--ink); font-family: Outfit, sans-serif; font-size: 16px;
+    padding: 0 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .form-input:disabled { background: #f3f5f6; color: #8b97a3; }
+  .form-input:hover { border-color: #c9d2dc; }
+  .form-input:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 4px rgba(18, 128, 90, .14); }
+  .form-input.error { border-color: #e7b4ae; background: #fffafa; }
+  .form-input.error:focus { border-color: var(--err); box-shadow: 0 0 0 4px rgba(180, 35, 24, .12); }
+  .form-input.is-ok { border-color: #12805a; }
+  .form-input.is-ok:focus { border-color: #12805a; box-shadow: 0 0 0 4px rgba(18, 128, 90, .16); }
+  .id-field { position: relative; }
+  .id-field .form-input { padding-right: 84px; }
+  .id-check, .id-spin, .id-help {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; display: grid; place-items: center;
+  }
+  .id-check { right: 40px; color: #12805a; }
+  .id-spin { right: 40px; }
+  .id-spin span {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid #d7e8df; border-top-color: #12805a;
+    animation: id-spin .7s linear infinite;
+  }
+  @keyframes id-spin { to { transform: rotate(360deg); } }
+  .id-help {
+    right: 6px; border: 0; background: transparent; color: #66768a;
+    border-radius: 8px; padding: 0; cursor: help;
+  }
+  .id-help:hover, .id-help:focus-visible { color: var(--ink); background: #f2f5f7; }
+  .id-field:has(.id-help:hover),
+  .id-field:has(.id-help:focus) { z-index: 5; }
+  .id-tip {
+    display: none; position: absolute; bottom: calc(100% + 12px); right: -4px; width: 260px;
+    padding: 10px 12px; background: #122033; color: #fff; border-radius: 10px;
+    font-family: Outfit, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.45;
+    text-align: left; z-index: 6; box-shadow: 0 10px 24px rgba(16, 24, 40, .18);
+  }
+  .id-tip::after {
+    content: ""; position: absolute; top: 100%; right: 12px;
+    border: 6px solid transparent; border-top-color: #122033;
+  }
+  .id-help:hover .id-tip, .id-help:focus .id-tip { display: block; }
+  .login-field-error { color: var(--err); font-size: 13px; line-height: 1.4; margin-top: 8px; }
+  .password-field { position: relative; }
+  .password-field .form-input { padding-right: 52px; }
+  .btn-eye {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; border: 0; background: transparent; padding: 0;
+    display: grid; place-items: center; color: #66768a; border-radius: 10px;
+  }
+  .btn-eye:hover { color: var(--ink); background: #f2f5f7; }
+  .btn-eye .i-hide { display: none; }
+  .btn-eye[aria-label="Hide password"] .i-show { display: none; }
+  .btn-eye[aria-label="Hide password"] .i-hide { display: block; }
+  .caps {
+    margin-top: 8px; color: #7a4a00; background: #fff6e8; border-radius: 10px;
+    padding: 8px 12px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  }
+  .nudge { font-size: 14.5px; line-height: 1.5; border-radius: 12px; padding: 12px 14px; }
+  .nudge p { margin: 0; }
+  .nudge-bad { color: #7a271a; background: #fef3f2; border: 1px solid #f6d5d2; }
+  .nudge-guide { color: var(--ink); background: #f4f7fb; border: 1px solid #e3eaf2; }
+  .nudge-ok { color: #14532d; background: #f1faf4; border: 1px solid #cfe8d8; }
+  .nudge-action {
+    display: inline-flex; align-items: center; min-height: 36px; margin-top: 8px;
+    padding: 0; border: 0; background: none; color: var(--link);
+    font-family: Outfit, sans-serif; font-size: 14.5px; font-weight: 600;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .rule { margin: 8px 0 0; font-size: 13.5px; line-height: 1.4; color: #3d4f46; font-weight: 600; }
+  .rule.is-bad { color: var(--err); }
+  .btn-login, .btn-reset {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 52px; padding: 12px 22px; border-radius: 12px; border: 0;
+    background: var(--btn); color: var(--btn-ink);
+    font-family: Outfit, sans-serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 0; text-transform: none;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .12);
+    transition: background .15s ease, transform .15s ease;
+  }
+  .btn-login { width: 100%; margin-top: 4px; }
+  .btn-login:hover, .btn-reset:hover { background: var(--btn-hover); }
+  .btn-login:active, .btn-reset:active { transform: translateY(1px); }
+  .bottom-text { padding-top: 2px; }
+  .bottom-text a, .back-to-login {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+    color: var(--link); font-size: 15px; font-weight: 600; text-decoration: none;
+  }
+  .bottom-text a:hover, .back-to-login:hover { color: #0c5536; }
+  .bottom-text a.is-next { background: #e7f6ee; border-radius: 10px; padding: 0 10px; }
+  .forgot-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .back-to-login svg { flex: none; }
+  #view-find { display: flex; flex-direction: column; gap: 18px; }
+  .find-dots { display: flex; gap: 8px; }
+  .find-dots span { width: 36px; height: 4px; border-radius: 99px; background: #d7e0e8; }
+  .find-dots span.is-done { background: #9dceba; }
+  .find-dots span.is-on { background: #146c43; }
+  .find-step { display: flex; flex-direction: column; gap: 16px; }
+  .slip {
+    background: #fff; border: 1px solid #e7edf2; border-radius: 16px; padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .slip-from { font-family: Outfit, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #7d8b9a; }
+  .slip-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    background: #f1faf4; border-radius: 10px; padding: 12px 14px;
+  }
+  .slip-row span { color: #5c6b7a; font-size: 13px; font-weight: 600; }
+  .slip-row strong { color: #12805a; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; text-align: right; }
+  .find-line { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
+  .proto-note { margin: -6px 0 0; font-size: 12px; line-height: 1.4; color: #7d8b9a; text-align: center; }
+  .find-next, .find-back, .find-support-toggle {
+    align-self: center; border: 0; background: none; color: var(--link);
+    font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; min-height: 44px;
+  }
+  .find-next:hover, .find-back:hover, .find-support-toggle:hover { color: #0c5536; }
+  #view-find .find-next, #view-find .find-back {
+    align-self: stretch; width: 100%;
+    border: 1px solid #b7d7c8; background: #fff; border-radius: 12px;
+    min-height: 52px; color: #146c43;
+  }
+  #view-find .find-next:hover, #view-find .find-back:hover {
+    border-color: #146c43; background: #f4fbf7; color: #0f5a38;
+  }
+  .find-picks { display: flex; flex-direction: column; gap: 12px; }
+  .pick {
+    text-align: left; border: 1px dashed #9dceba; background: #f7fbf8;
+    border-radius: 14px; padding: 12px 14px 14px; font-family: Outfit, sans-serif;
+  }
+  .pick-tag {
+    display: block; margin-bottom: 8px;
+    color: #0f6b45; background: none;
+    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .pick span { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: #66768a; }
+  .pick strong { display: block; font-size: 16px; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+  .pick p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.45; font-weight: 500; color: #3d4f46; }
+  .find-note { margin: 0; font-size: 14px; line-height: 1.45; color: #14532d; font-weight: 600; }
+  .find-support {
+    background: #f4f7fb; border: 1px solid #e3eaf2; border-radius: 14px; padding: 14px 16px;
+    font-size: 14.5px; line-height: 1.5; color: var(--ink);
+  }
+  .find-support p { margin: 0 0 8px; }
+  .find-support p:last-child { margin: 0; }
+  .find-support a { color: var(--link); font-weight: 700; }
+  .find-report {
+    margin-top: 12px; border: 0; background: #fff; color: #146c43; border-radius: 10px;
+    min-height: 40px; padding: 0 14px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600;
+    box-shadow: inset 0 0 0 1px #d7e8df;
+  }
+  #forgot-ask { display: flex; flex-direction: column; gap: 28px; }
+  #forgot-sent { display: flex; flex-direction: column; gap: 16px; }
+  #forgot-sent .find-line { text-align: center; }
+  #forgot-sent .back-to-login { align-self: center; }
+  .mail-card {
+    background: #fff; border: 1px solid #d7e8df; border-radius: 18px; padding: 18px 18px 16px;
+    box-shadow: 0 12px 30px rgba(16, 24, 40, .06);
+  }
+  .sent-email {
+    display: block; margin-top: 6px; font-family: Outfit, sans-serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -.02em; line-height: 1.3;
+    color: var(--ink); overflow-wrap: anywhere;
+  }
+  .resend-row {
+    display: flex; align-items: center; gap: 14px;
+    background: #f4f7fb; border-radius: 16px; padding: 12px 14px;
+  }
+  .timer-ring {
+    width: 56px; height: 56px; border-radius: 50%; flex: none;
+    background: conic-gradient(#146c43 calc(var(--p) * 1%), #d7e0e8 0);
+    display: grid; place-items: center;
+  }
+  .timer-ring span {
+    width: 44px; height: 44px; border-radius: 50%; background: #f4f7fb;
+    display: grid; place-items: center;
+    font-family: Outfit, sans-serif; font-size: 13px; font-weight: 700; color: #146c43;
+  }
+  .resend-copy { margin: 0; font-size: 14.5px; line-height: 1.4; font-weight: 600; color: var(--ink); }
+  #view-setpass { display: flex; flex-direction: column; gap: 28px; }
+  .rules { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .rules li {
+    display: flex; align-items: center; gap: 10px;
+    font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #12805a;
+  }
+  .rules i {
+    width: 18px; height: 18px; border-radius: 50%; flex: none;
+    border: 2px solid #12805a; display: grid; place-items: center;
+  }
+  .rules li.is-met i { background: #12805a; }
+  .rules li.is-met i::after {
+    content: ""; width: 8px; height: 4px;
+    border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+    transform: translateY(-1px) rotate(-45deg);
+  }
+  .rules li.is-bad { color: var(--err); }
+  .rules li.is-bad i { border-color: var(--err); background: transparent; }
+  .rules li.is-bad i::after { content: none; }
+  #set-user { color: var(--ink); font-weight: 700; }
+  .set-cancel { align-self: center; margin-top: -6px; }
+  .btn-login:disabled, .btn-login:disabled:hover {
+    background: #d5ddd8; color: #6b7c76; box-shadow: none; transform: none; cursor: default;
+  }
+
+  .help-panel {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 50%;
+    background: #fff; border-left: 1px solid #e7edf2;
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .help-viewport { flex: 1; min-height: 0; overflow: hidden; }
+  .help-track { display: flex; height: 100%; transition: transform .45s ease; }
+  .help-slide {
+    flex: 0 0 100%; min-width: 100%; height: 100%; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 14px; padding: 36px 48px 12px;
+  }
+  .help-slide h2 {
+    margin: 0; font-family: Outfit, sans-serif; font-size: 32px; font-weight: 600;
+    letter-spacing: -.03em; color: #122033; line-height: 1.15;
+  }
+  .help-lead { margin: 0; max-width: 420px; color: #5c6b7a; font-size: 16px; line-height: 1.5; }
+  .help-art { width: min(100%, 420px); margin: 8px 0; }
+  .help-art img { width: 100%; height: auto; max-height: 280px; object-fit: contain; display: block; margin: 0 auto; }
+  .help-cap { margin: 0; max-width: 440px; color: #243140; font-size: 15px; line-height: 1.5; }
+  .help-examples { width: min(100%, 380px); display: flex; flex-direction: column; gap: 12px; text-align: left; }
+  .help-controls {
+    flex: none; display: flex; align-items: center; justify-content: center; gap: 16px;
+    padding: 8px 24px 22px;
+  }
+  .help-arrow {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d7e0e8; background: #fff;
+    color: #122033; display: grid; place-items: center; padding: 0;
+  }
+  .help-arrow:hover { border-color: #146c43; color: #146c43; }
+  .help-dots { display: flex; gap: 8px; align-items: center; }
+  .help-dot { width: 8px; height: 8px; border: 0; border-radius: 99px; background: #d7e0e8; padding: 0; }
+  .help-dot.is-on { width: 22px; background: #146c43; }
+  .help-report {
+    min-height: 44px; padding: 0 22px; border: 0; border-radius: 12px;
+    background: var(--btn); color: var(--btn-ink);
+    font-family: Outfit, sans-serif; font-size: 15px; font-weight: 700;
+  }
+  .help-report:hover { background: var(--btn-hover); }
+  .report-issue {
+    position: absolute; left: 28px; bottom: 24px; z-index: 3;
+    display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px;
+    border: 1px solid #e4ebe7; border-radius: 999px; background: #fff; color: #146c43;
+    font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .1);
+  }
+  .report-issue:hover { background: #f4fbf7; }
+  .report-pop {
+    position: absolute; left: 28px; bottom: 74px; z-index: 4; width: min(280px, 42%);
+    background: #fff; border: 1px solid #e7edf2; border-radius: 16px;
+    padding: 14px 16px; box-shadow: 0 16px 40px rgba(16, 24, 40, .14);
+    font-family: Outfit, sans-serif; font-size: 14px; line-height: 1.5; color: var(--ink);
+  }
+  .report-pop a { color: var(--link); font-weight: 700; }
+
+  @media (max-width: 960px) {
+    .help-panel { display: none; }
+    .auth-form { width: 100%; }
+    .report-issue, .report-pop { left: 24px; }
+  }
+  @media (max-width: 720px) {
+    .site-nav { height: 60px; padding: 0 12px; gap: 8px; }
+    .site-name { font-size: 13px; }
+    .site-rule, .site-powered { display: none; }
+    .et-logo { height: 18px; }
+    .site-mark { width: 34px; height: 34px; }
+    .site-mark img { width: 28px; height: 28px; }
+    .form-container { width: 88%; gap: 20px; padding: 32px 0 88px; }
+    .auth-form-section { gap: 16px; }
+    #view-login { gap: 24px; }
+    #view-login .auth-form-section { gap: 18px; }
+    #view-login .btn-login { margin-top: 8px; }
+    .report-issue, .report-pop { left: 16px; }
+    .forgot-actions { flex-wrap: wrap; }
+    .btn-reset { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+    <div class="device" id="device">
+      <div class="auth-screen" id="product">
+        <header class="site-nav">
+          <div class="site-brand">
+            <span class="site-mark" id="nav-mark-blh">
+              <img src="https://blharbert.etraininglms.com/pluginfile.php/1/core_admin/logocompact11/300x300/1792598259/BLHI%20Logo%20Color%20Transparent%20-%201000%20x%201000.png" alt="">
+            </span>
+            <span class="site-mark site-mark-rcs" id="nav-mark-rcs" hidden>RCS</span>
+            <span class="site-name" id="nav-name">BL Harbert Training</span>
+            <span class="site-rule" aria-hidden="true"></span>
+            <span class="site-powered">Training powered by</span>
+            <span class="et-word">
+              <img class="et-logo" src="etraining-logo.png" alt="eTraining">
+            </span>
+          </div>
+        </header>
+        <div class="auth-inner">
+          <div class="auth-form">
+            <div class="form-container">
+
+              <section id="view-login">
+                <div class="auth-topbar">
+                  <h1 class="sh1">Login</h1>
+                  <p class="lead" id="login-lead">Enter your username to continue.</p>
+                </div>
+                <form class="auth-form-section" id="login-form" novalidate>
+                  <div>
+                    <label class="form-label" for="username">Username</label>
+                    <div class="id-field">
+                      <input class="form-input" id="username" name="username" type="text" placeholder="Add your username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                      <span class="id-spin" id="user-spin" hidden role="status" aria-label="Checking username">
+                        <span></span>
+                      </span>
+                      <span class="id-check" id="user-check" hidden role="img" aria-label="Username recognized">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+                      </span>
+                      <button class="id-help" type="button" aria-label="Username example">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.7.3-1.2.9-1.2 1.6V14"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>
+                        <span class="id-tip" role="tooltip">Example: jsmith. Type it exactly as it is on your welcome sheet or message.</span>
+                      </button>
+                    </div>
+                    <div class="login-field-error" id="username-error" hidden></div>
+                  </div>
+                  <div id="password-block" hidden>
+                    <label class="form-label" for="password">Password</label>
+                    <div class="password-field">
+                      <input class="form-input" id="password" name="password" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                      <button class="btn-eye" type="button" id="eye-password" aria-label="Show password" aria-controls="password">
+                        <svg class="i-show" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="i-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4"/><path d="M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg>
+                      </button>
+                    </div>
+                    <div class="caps" id="caps" hidden>Caps Lock is on.</div>
+                    <div class="login-field-error" id="password-error" hidden></div>
+                  </div>
+                  <div class="nudge nudge-bad" id="login-nudge" hidden role="alert" tabindex="-1">
+                    <p id="login-nudge-text"></p>
+                    <button class="nudge-action" type="button" id="still-cant" hidden>I still can’t get in</button>
+                  </div>
+                  <div class="resend-row" id="lock-row" hidden>
+                    <div class="timer-ring" id="lock-ring" style="--p:100"><span id="lock-count">1:00</span></div>
+                    <p class="resend-copy" id="lock-label">Too many tries. Sign-in is paused for 1 minute.</p>
+                  </div>
+                  <button class="btn-login" type="submit" id="loginbtn">Continue</button>
+                </form>
+                <div class="bottom-text" id="forgot-user-row">
+                  <a href="#forgot-username" id="forgot-user-link">Forgot username?</a>
+                </div>
+                <div class="bottom-text" id="forgot-row" hidden>
+                  <a href="#forgot" id="forgot-link">Forgot your password</a>
+                </div>
+              </section>
+
+              <section id="view-find" hidden>
+                <div class="find-dots" id="find-dots" aria-hidden="true"><span class="is-on"></span><span></span></div>
+                <div class="find-step" data-step="1">
+                  <div class="auth-topbar">
+                    <h1 class="sh1">Forgot username?</h1>
+                    <p class="lead">Here are the examples to find your username.</p>
+                  </div>
+                  <div class="find-picks">
+                    <div class="pick">
+                      <span class="pick-tag">Example</span>
+                      <span>Username</span>
+                      <strong>jsmith</strong>
+                      <p>Type the username only if your welcome email shows a name written like this.</p>
+                    </div>
+                    <div class="pick">
+                      <span class="pick-tag">Example</span>
+                      <span>Email address</span>
+                      <strong>jsmith@company.com</strong>
+                      <p>Type your own email only if your welcome email shows that email as your username.</p>
+                    </div>
+                  </div>
+                  <button class="btn-login" type="button" id="find-try">I’ll type mine</button>
+                  <button class="find-next" type="button" data-find="2">Still can’t find it</button>
+                </div>
+                <div class="find-step" data-step="2" hidden>
+                  <div class="auth-topbar">
+                    <h1 class="sh1">Still having trouble?</h1>
+                    <p class="lead">Ask your company admin or training manager. They can look up your username.</p>
+                  </div>
+                  <button class="btn-login" type="button" id="find-done">Back to sign in</button>
+                  <button class="find-back" type="button" data-find="1">Back</button>
+                </div>
+                <button class="find-support-toggle" type="button" id="find-support-toggle" aria-expanded="false" aria-controls="find-support">Need eTraining instead?</button>
+                <div class="find-support" id="find-support" hidden>
+                  <p>Press <strong>Report Issue</strong> at the bottom of the page to chat.</p>
+                  <p><a href="mailto:lms-support@etraintoday.com">lms-support@etraintoday.com</a></p>
+                  <p>Tell us your full name and company. Never send your password.</p>
+                  <button class="find-report" type="button" id="find-open-report">Open Report Issue</button>
+                </div>
+              </section>
+
+              <section id="view-forgot" hidden>
+                <div id="forgot-ask">
+                  <div class="auth-topbar">
+                    <h1 class="sh1">Forgot Password</h1>
+                    <p class="lead">Enter your username or the email on your account.</p>
+                  </div>
+                  <form class="auth-form-section" id="forgot-form" novalidate>
+                    <div>
+                      <label class="form-label" for="email">Username or email</label>
+                      <input class="form-input" id="email" name="email" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                      <div class="login-field-error" id="email-error" hidden></div>
+                    </div>
+                    <div class="forgot-actions">
+                      <button class="btn-reset" type="submit">Reset Password</button>
+                      <a class="back-to-login" href="#login" id="back-login">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                        <span>Back to login</span>
+                      </a>
+                    </div>
+                  </form>
+                </div>
+                <div id="forgot-sent" hidden>
+                  <div class="auth-topbar">
+                    <h1 class="sh1">Request received</h1>
+                    <p class="lead">A reset link is on its way. It works for 30 minutes.</p>
+                  </div>
+                  <div class="mail-card">
+                    <span class="slip-from">Sent to</span>
+                    <strong class="sent-email" id="sent-email"></strong>
+                  </div>
+                  <div class="resend-row">
+                    <div class="timer-ring" id="timer-ring" style="--p:100"><span id="timer-count">1:00</span></div>
+                    <p class="resend-copy" id="resend-label">You can send another link when this minute ends.</p>
+                  </div>
+                  <button class="btn-login" type="button" id="resend-btn" disabled>Send again</button>
+                  <div class="slip">
+                    <span class="slip-from">Look for this email</span>
+                    <span class="slip-row"><span>Subject</span><strong>eTraining: Password reset request</strong></span>
+                  </div>
+                  <p class="find-line">Be sure to check your Spam or Junk folder. Click the link containing your username within 30 minutes. Please note that only the newest email link is valid.</p>
+                  <button class="btn-login" type="button" id="open-reset-link">Next</button>
+                  <p class="proto-note">This button is just for the prototype.</p>
+                  <button class="btn-login" type="button" id="have-temp">I have a temporary password</button>
+                  <a class="back-to-login" href="#login" id="sent-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                    <span>Back to login</span>
+                  </a>
+                </div>
+              </section>
+
+              <section id="view-setpass" hidden>
+                <div class="auth-topbar">
+                  <h1 class="sh1" id="set-title">Choose a new password</h1>
+                  <p class="lead">For username <strong id="set-user"></strong>. After this you’ll sign in with your username and the new password.</p>
+                </div>
+                <form class="auth-form-section" id="set-form" novalidate>
+                  <div>
+                    <label class="form-label" for="newpass">New password</label>
+                    <div class="password-field">
+                      <input class="form-input" id="newpass" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+                      <button class="btn-eye" type="button" id="eye-new" aria-label="Show password" aria-controls="newpass">
+                        <svg class="i-show" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="i-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4"/><path d="M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg>
+                      </button>
+                    </div>
+                    <ul class="rules" id="rule-list">
+                      <li data-rule="0"><i></i>At least 8 characters</li>
+                      <li data-rule="1"><i></i>1 capital letter (A-Z)</li>
+                      <li data-rule="2"><i></i>1 lowercase letter (a-z)</li>
+                      <li data-rule="3"><i></i>1 number (0-9)</li>
+                      <li data-rule="4"><i></i>1 symbol, like ! ? # or *</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <label class="form-label" for="confirmpass">Type it again</label>
+                    <div class="password-field">
+                      <input class="form-input" id="confirmpass" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+                      <button class="btn-eye" type="button" id="eye-confirm" aria-label="Show password" aria-controls="confirmpass">
+                        <svg class="i-show" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="i-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4"/><path d="M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg>
+                      </button>
+                    </div>
+                    <div class="login-field-error" id="confirm-error" hidden></div>
+                  </div>
+                  <button class="btn-login" type="submit">Save new password</button>
+                  <a class="back-to-login set-cancel" href="#login" id="set-cancel">Cancel</a>
+                </form>
+              </section>
+
+              <section id="view-in" hidden>
+                <div class="auth-topbar">
+                  <h1 class="sh1">You’re signed in</h1>
+                  <p class="lead" id="in-lead"></p>
+                </div>
+                <button class="btn-login" type="button" id="signout">Sign out</button>
+              </section>
+
+            </div>
+          </div>
+
+          <aside class="help-panel" aria-roledescription="carousel" aria-label="Sign-in help">
+            <div class="help-viewport">
+              <div class="help-track" id="help-track">
+                <article class="help-slide">
+                  <h2>Check your Welcome Email</h2>
+                  <p class="help-lead">Your company admin or training manager will provide you with a username when your account is set up.</p>
+                  <div class="help-art">
+                    <img src="help-username.png" alt="A phone message showing Name, Username, and Email. A hand points at the username.">
+                  </div>
+                  <p class="help-cap">Check your welcome email for your username or email address.</p>
+                </article>
+                <article class="help-slide">
+                  <h2>These are examples</h2>
+                  <p class="help-lead">Check your welcome email for your username or email address.</p>
+                  <div class="help-examples">
+                    <div class="pick">
+                      <span class="pick-tag">Example</span>
+                      <span>Email address</span>
+                      <strong>jsmith@company.com</strong>
+                    </div>
+                    <div class="pick">
+                      <span class="pick-tag">Example</span>
+                      <span>Username</span>
+                      <strong>jsmith</strong>
+                    </div>
+                  </div>
+                </article>
+                <article class="help-slide">
+                  <h2>Forgot your password?</h2>
+                  <p class="help-lead">Enter your username or email address.</p>
+                  <div class="help-art">
+                    <img src="help-password.png" alt="A person beside a locked screen with a key, a fingerprint, and a reset link.">
+                  </div>
+                  <p class="help-cap">A password reset link will be sent to your email address. The link will expire within 30 minutes.</p>
+                </article>
+                <article class="help-slide">
+                  <h2>Still having issue?</h2>
+                  <p class="help-lead">Contact your company admin or training manager to get your username or email address and reset your password.</p>
+                  <div class="help-art">
+                    <img src="help-contact.png" alt="A person points at a phone. A profile bubble and a message bubble sit above them.">
+                  </div>
+                </article>
+                <article class="help-slide">
+                  <h2>Admin not available?</h2>
+                  <p class="help-lead">If you’re unable to contact your company admin / training manager. The eTraining Team can assist you.</p>
+                  <div class="help-art">
+                    <img src="help-etraining.png" alt="A chat with the eTraining team: a message bubble, a person, and a support robot beside a laptop.">
+                  </div>
+                  <p class="help-cap">Please provide your full name and company name. Never send your password.</p>
+                  <button class="help-report" type="button" id="help-report">Report us</button>
+                </article>
+              </div>
+            </div>
+            <div class="help-controls">
+              <button class="help-arrow" type="button" id="help-prev" aria-label="Previous tip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <div class="help-dots" id="help-dots"></div>
+              <button class="help-arrow" type="button" id="help-next" aria-label="Next tip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </aside>
+        </div>
+
+        <button class="report-issue" type="button" id="report" aria-expanded="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 1 1 18 0z"/></svg>
+          Report Issue
+        </button>
+        <div class="report-pop" id="report-pop" hidden role="status">
+          Etraining LMS Support.
+          Email <a href="mailto:lms-support@etraintoday.com">lms-support@etraintoday.com</a>.
+          We never ask for your password.
+        </div>
+      </div>
+    </div>
+
+<script>
+(function () {
+  var ACCOUNTS = {
+    "admin": { id: "admin", pass: "admin123", name: "Super Admin", email: "admin@etraintoday.com", role: "Super Admin" },
+    "company.admin": { id: "company.admin", pass: "company123", name: "Company Admin", email: "company.admin@blharbert.com", role: "Company Admin" },
+    "training.manager": { id: "training.manager", pass: "training123", name: "Training Manager", email: "training.manager@blharbert.com", role: "Training Manager" },
+    "student": { id: "student", pass: "student123", name: "Student", email: "student@blharbert.com", role: "Student" },
+    "jsmith": { id: "jsmith", pass: "Safety2026!", name: "James Smith", email: "jsmith@blharbert.com", role: "Student" },
+    "maria.santos@blharbert.com": { id: "maria.santos@blharbert.com", pass: "Safety2026!", name: "Maria Santos", email: "maria.santos@blharbert.com", role: "Student" },
+    "newhire": { id: "newhire", pass: "Temp1234!", name: "Alex Rivera", email: "alex.rivera@blharbert.com", role: "Student", temp: true }
+  };
+  var RULES = [
+    { ok: function (v) { return v.length >= 8; }, text: "At least 8 characters." },
+    { ok: function (v) { return /[A-Z]/.test(v); }, text: "Add a capital letter." },
+    { ok: function (v) { return /[a-z]/.test(v); }, text: "Add a lowercase letter." },
+    { ok: function (v) { return /[0-9]/.test(v); }, text: "Add a number." },
+    { ok: function (v) { return /[^A-Za-z0-9]/.test(v); }, text: "Add a symbol, like ! ? # or *." }
+  ];
+
+  var userTimer = null;
+  var resendTimer = null;
+  var resendLeft = 0;
+  var userStage = "";
+  var userKey = "";
+  var tries = 0;
+  var failCounts = {};
+  var locks = {};
+  var lockTimer = null;
+  var pointReset = false;
+  var mailSent = false;
+  var setFrom = "email";
+  var resetId = "";
+  var ruleTouched = false;
+  var signedName = "";
+  var signedHow = "";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var viewLogin = $("view-login");
+  var viewFind = $("view-find");
+  var viewForgot = $("view-forgot");
+  var viewSet = $("view-setpass");
+  var viewIn = $("view-in");
+  var loginNudge = $("login-nudge");
+  var loginNudgeText = $("login-nudge-text");
+  var stillCant = $("still-cant");
+  var forgotLink = $("forgot-link");
+
+  function fieldError(input, errorEl, message) {
+    errorEl.hidden = !message;
+    errorEl.textContent = message || "";
+    input.classList.toggle("error", !!message);
+    if (message) input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
+  }
+
+  function showView(name) {
+    viewLogin.hidden = name !== "login";
+    viewFind.hidden = name !== "find";
+    viewForgot.hidden = name !== "forgot";
+    viewSet.hidden = name !== "set";
+    viewIn.hidden = name !== "in";
+    var heading = document.querySelector("#view-" + (name === "set" ? "setpass" : name === "in" ? "in" : name) + " .sh1");
+    if (heading) heading.focus && heading.setAttribute("tabindex", "-1");
+  }
+
+  function setNow() {}
+
+  function showLoginNudge(text, tone, extra) {
+    loginNudge.hidden = false;
+    loginNudge.className = "nudge " + (tone === "guide" ? "nudge-guide" : "nudge-bad");
+    loginNudgeText.textContent = text;
+    stillCant.hidden = extra !== "still";
+    forgotLink.classList.toggle("is-next", pointReset);
+    loginNudge.focus();
+  }
+
+  function hideLoginNudge() {
+    loginNudge.hidden = true;
+    stillCant.hidden = true;
+    pointReset = false;
+    forgotLink.classList.remove("is-next");
+  }
+
+  function onFail(user) {
+    if (tries === 1) {
+      pointReset = false;
+      showLoginNudge("That password is incorrect. The password is case-sensitive. Use the eye icon to reveal what you typed.", "bad");
+      setNow("Wrong password", "The username already matched. This line names the password, then the eye.");
+      return;
+    }
+    if (tries === 2) {
+      pointReset = true;
+      showLoginNudge("Still not working? Reset your password.", "bad");
+      setNow("Second miss", "The old message is gone. Forgot your password is marked, because that is the next action.");
+      return;
+    }
+    pointReset = true;
+    showLoginNudge("You’ve tried " + tries + " times. Resetting your password is the fastest fix.", "bad", "still");
+    setNow("Third miss", "Still one line. “I still can’t get in” is there only if they say so. Five misses pause sign-in for 1 minute.");
+  }
+
+  function lockRemaining(key) {
+    var until = locks[key] || 0;
+    return Math.max(0, Math.ceil((until - Date.now()) / 1000));
+  }
+
+  function paintLock() {
+    var key = String($("username").value || "").trim().toLowerCase();
+    Object.keys(locks).forEach(function (name) {
+      if (lockRemaining(name) > 0) return;
+      delete locks[name];
+      failCounts[name] = 0;
+      if (name === key && userStage === "ready") {
+        tries = 0;
+        showLoginNudge("You can try again.", "guide");
+        setNow("Pause ended", "Five new attempts.");
+      }
+    });
+    var left = lockRemaining(key);
+    var locked = left > 0 && userStage === "ready";
+    $("lock-row").hidden = !locked;
+    $("password").disabled = locked;
+    $("eye-password").disabled = locked;
+    $("loginbtn").disabled = locked && $("loginbtn").textContent === "Log in";
+    if (!locked) return;
+    var mins = Math.floor(left / 60);
+    var secs = left % 60;
+    $("lock-count").textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+    $("lock-ring").style.setProperty("--p", String((left / 60) * 100));
+    hideLoginNudge();
+    pointReset = true;
+    forgotLink.classList.add("is-next");
+  }
+
+  function startLockWatch() {
+    if (lockTimer) return;
+    lockTimer = setInterval(function () {
+      paintLock();
+      if (!Object.keys(locks).length) {
+        clearInterval(lockTimer);
+        lockTimer = null;
+      }
+    }, 1000);
+  }
+
+  function lockUser(key) {
+    locks[key] = Date.now() + 60000;
+    paintLock();
+    startLockWatch();
+    setNow("Paused", "Five wrong passwords. Sign-in waits 1 minute, then the count starts over.");
+  }
+
+  function noteFail(user) {
+    var key = String(user || "").trim().toLowerCase();
+    failCounts[key] = (failCounts[key] || 0) + 1;
+    tries = failCounts[key];
+    if (tries >= 5) {
+      lockUser(key);
+      return;
+    }
+    onFail(user);
+  }
+
+  function nextRule(value) {
+    for (var i = 0; i < RULES.length; i++) {
+      if (!RULES[i].ok(value)) return RULES[i];
+    }
+    return null;
+  }
+
+  function knownUser(value) {
+    return ACCOUNTS[String(value || "").trim().toLowerCase()] || null;
+  }
+
+  function resolveAccount(value) {
+    var key = String(value || "").trim().toLowerCase();
+    if (ACCOUNTS[key]) return ACCOUNTS[key];
+    var match = null;
+    Object.keys(ACCOUNTS).forEach(function (name) {
+      if (ACCOUNTS[name].email === key) match = ACCOUNTS[name];
+    });
+    return match;
+  }
+
+  function clearResend() {
+    if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+  }
+
+  function paintResend() {
+    var m = Math.floor(resendLeft / 60);
+    var s = resendLeft % 60;
+    var clock = m + ":" + (s < 10 ? "0" : "") + s;
+    $("timer-count").textContent = clock;
+    $("timer-ring").style.setProperty("--p", String((resendLeft / 60) * 100));
+    $("resend-btn").disabled = resendLeft > 0;
+    $("resend-label").textContent = resendLeft > 0
+      ? "You can send another link when this minute ends."
+      : "No email yet? Send the link again.";
+  }
+
+  function startResend() {
+    clearResend();
+    resendLeft = 60;
+    paintResend();
+    resendTimer = setInterval(function () {
+      resendLeft -= 1;
+      if (resendLeft < 0) resendLeft = 0;
+      paintResend();
+      if (resendLeft === 0) clearResend();
+    }, 1000);
+  }
+
+  function showForgotAsk() {
+    clearResend();
+    $("forgot-ask").hidden = false;
+    $("forgot-sent").hidden = true;
+  }
+
+  function showForgotSent(account) {
+    resetId = account.id;
+    $("sent-email").textContent = account.email;
+    $("forgot-ask").hidden = true;
+    $("forgot-sent").hidden = false;
+    mailSent = true;
+    startResend();
+    setNow("Request sent", "Next opens the new-password screen. That button is only for this prototype. Back to login is last.");
+  }
+
+  function showPasswordStep(on) {
+    $("password-block").hidden = !on;
+    $("loginbtn").hidden = false;
+    $("loginbtn").textContent = on ? "Log in" : "Continue";
+    $("forgot-user-row").hidden = on;
+    $("forgot-row").hidden = !on;
+    $("login-lead").textContent = on
+      ? "Enter your password to continue."
+      : "Enter your username to continue.";
+    if (!on) $("caps").hidden = true;
+    paintLock();
+  }
+
+  function clearUserTimer() {
+    if (userTimer) { clearTimeout(userTimer); userTimer = null; }
+  }
+
+  function resetUserStatus() {
+    clearUserTimer();
+    userStage = "";
+    userKey = "";
+    $("user-spin").hidden = true;
+    $("user-check").hidden = true;
+    $("username").classList.remove("is-ok");
+    showPasswordStep(false);
+  }
+
+  function beginUserCheck(value) {
+    var key = String(value || "").trim().toLowerCase();
+    if (!knownUser(value)) {
+      resetUserStatus();
+      return;
+    }
+    if (userKey === key && userStage) return;
+    clearUserTimer();
+    userKey = key;
+    userStage = "loading";
+    $("user-check").hidden = true;
+    $("username").classList.remove("is-ok");
+    showPasswordStep(false);
+    $("user-spin").hidden = false;
+    setNow("Checking username", "Loading first, then the check mark, then the password field.");
+    userTimer = setTimeout(function () {
+      if (userKey !== key) return;
+      userStage = "check";
+      $("user-spin").hidden = true;
+      $("user-check").hidden = false;
+      $("username").classList.add("is-ok");
+      userTimer = setTimeout(function () {
+        if (userKey !== key) return;
+        userStage = "ready";
+        showPasswordStep(true);
+        $("password").focus();
+        setNow("Username recognized", "The check mark is in the field. The password field is next.");
+      }, 500);
+    }, 800);
+  }
+
+  function usernameMiss(user) {
+    if (user.indexOf("@") !== -1) {
+      return "That email isn’t a username here. Type it only if your welcome sheet shows that email as your username. If the sheet shows a short name like jsmith, type that instead.";
+    }
+    return "We don’t recognize that username. Type it exactly as it appears on your welcome sheet. If the sheet shows an email, type that email instead.";
+  }
+
+  function paintRule(asError) {
+    var value = $("newpass").value;
+    var missing = nextRule(value);
+    var items = document.querySelectorAll("#rule-list li");
+    for (var i = 0; i < items.length; i++) {
+      var met = RULES[i].ok(value);
+      items[i].classList.toggle("is-met", met);
+      items[i].classList.toggle("is-bad", !!asError && !met && missing === RULES[i]);
+    }
+    $("newpass").classList.toggle("error", !!asError && !!missing);
+    if (asError && missing) $("newpass").setAttribute("aria-invalid", "true");
+    else $("newpass").removeAttribute("aria-invalid");
+  }
+
+  function openSet(kind) {
+    setFrom = kind;
+    ruleTouched = false;
+    $("newpass").value = "";
+    $("newpass").type = "password";
+    $("confirmpass").value = "";
+    $("confirmpass").type = "password";
+    $("eye-new").setAttribute("aria-label", "Show password");
+    $("eye-confirm").setAttribute("aria-label", "Show password");
+    fieldError($("confirmpass"), $("confirm-error"), "");
+    $("set-user").textContent = resetId;
+    paintRule(false);
+    showView("set");
+    $("newpass").focus();
+  }
+
+  $("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var userInput = $("username");
+    var passInput = $("password");
+    var user = userInput.value.trim();
+    var pass = passInput.value;
+    if (!user) {
+      fieldError(userInput, $("username-error"), "Username is required.");
+      hideLoginNudge();
+      userInput.focus();
+      setNow("Empty field", "Only the empty box is named. No other advice.");
+      return;
+    }
+    if (!knownUser(user)) {
+      fieldError(userInput, $("username-error"), usernameMiss(user));
+      resetUserStatus();
+      hideLoginNudge();
+      userInput.focus();
+      setNow(user.indexOf("@") !== -1 ? "Email is not the username" : "Username not recognized", "One message for what they typed. The password field stays hidden.");
+      return;
+    }
+    fieldError(userInput, $("username-error"), "");
+    if (userStage !== "ready" || userKey !== user.toLowerCase()) {
+      beginUserCheck(user);
+      return;
+    }
+    if (lockRemaining(user.toLowerCase()) > 0) {
+      paintLock();
+      return;
+    }
+    if (!pass) {
+      fieldError(passInput, $("password-error"), "Password is required.");
+      hideLoginNudge();
+      passInput.focus();
+      setNow("Empty field", "Only the empty box is named. No other advice.");
+      return;
+    }
+    fieldError(passInput, $("password-error"), "");
+    var account = knownUser(user);
+    if (account && account.pass === pass) {
+      tries = 0;
+      failCounts[user.toLowerCase()] = 0;
+      hideLoginNudge();
+      signedName = account.name;
+      if (account.temp) {
+        resetId = account.id;
+        openSet("temp");
+        setNow("Temporary password", "Choose a new password. Each rule fills in as they type.");
+        return;
+      }
+      signedHow = "in";
+      var dashboards = {
+        "Company Admin": "dashboard-company-admin.html",
+        "Training Manager": "dashboard-training-manager.html",
+        "Student": "dashboard-student.html"
+      };
+      if (dashboards[account.role]) {
+        window.location.href = dashboards[account.role];
+        return;
+      }
+      $("in-lead").textContent = "Welcome, " + signedName + ". You’re signed in as " + (account.role || "Student") + ".";
+      showView("in");
+      setNow("Signed in", "Role confirmed.");
+      return;
+    }
+    noteFail(user);
+  });
+
+  $("username").addEventListener("input", function () {
+    var err = $("username-error");
+    if (!err.hidden) fieldError($("username"), err, "");
+    if (!loginNudge.hidden) hideLoginNudge();
+    beginUserCheck($("username").value);
+  });
+  $("username").addEventListener("blur", function (e) {
+    var next = e.relatedTarget;
+    if (next && next.closest && next.closest(".id-help")) return;
+    var user = $("username").value.trim();
+    if (!user || knownUser(user)) return;
+    fieldError($("username"), $("username-error"), usernameMiss(user));
+  });
+  $("password").addEventListener("input", function () {
+    var err = $("password-error");
+    if (!err.hidden) fieldError($("password"), err, "");
+    if (!loginNudge.hidden) hideLoginNudge();
+  });
+
+  $("password").addEventListener("keydown", function (e) {
+    if (!e.getModifierState) return;
+    $("caps").hidden = !e.getModifierState("CapsLock");
+  });
+  $("password").addEventListener("keyup", function (e) {
+    if (!e.getModifierState) return;
+    $("caps").hidden = !e.getModifierState("CapsLock");
+  });
+  $("password").addEventListener("blur", function () { $("caps").hidden = true; });
+
+  document.querySelectorAll(".btn-eye").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var input = $(btn.getAttribute("aria-controls"));
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      input.focus();
+    });
+  });
+
+  stillCant.addEventListener("click", function () {
+    pointReset = false;
+    forgotLink.classList.remove("is-next");
+    showLoginNudge("Right details but still can’t get in? Your account may be turned off — ask your training manager.", "guide");
+    setNow("Asked for more help", "The try-count line is replaced. The manager is the next person, not another list.");
+  });
+
+  var FIND_NOTES = {
+    1: "Examples are on the page. Nothing is hidden behind a click.",
+    2: "The manager line appears only after they still can’t find it."
+  };
+
+  function showFind(step) {
+    document.querySelectorAll(".find-step").forEach(function (el) {
+      el.hidden = Number(el.getAttribute("data-step")) !== step;
+    });
+    var dots = $("find-dots").children;
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle("is-on", i === step - 1);
+      dots[i].classList.toggle("is-done", i < step - 1);
+    }
+    showView("find");
+    var heading = document.querySelector(".find-step:not([hidden]) .sh1");
+    if (heading) {
+      heading.setAttribute("tabindex", "-1");
+      heading.focus();
+    }
+    setNow("Find your username", FIND_NOTES[step]);
+  }
+
+  function closeFindSupport() {
+    $("find-support").hidden = true;
+    $("find-support-toggle").setAttribute("aria-expanded", "false");
+  }
+
+  function returnFromFind() {
+    closeFindSupport();
+    showView("login");
+    $("username").focus();
+    setNow("Back to sign in", "They type the username they just found. The password field stays hidden until it matches.");
+  }
+
+  $("forgot-user-link").addEventListener("click", function (e) {
+    e.preventDefault();
+    hideLoginNudge();
+    fieldError($("username"), $("username-error"), "");
+    closeFindSupport();
+    showFind(1);
+  });
+
+  document.querySelectorAll("[data-find]").forEach(function (btn) {
+    btn.addEventListener("click", function () { showFind(Number(btn.getAttribute("data-find"))); });
+  });
+
+  $("find-try").addEventListener("click", returnFromFind);
+  $("find-done").addEventListener("click", returnFromFind);
+
+  $("find-support-toggle").addEventListener("click", function () {
+    var box = $("find-support");
+    box.hidden = !box.hidden;
+    $("find-support-toggle").setAttribute("aria-expanded", box.hidden ? "false" : "true");
+    if (!box.hidden) setNow("Need eTraining", "Support stays folded until they ask. Report Issue is the same button already on the page.");
+  });
+
+  $("find-open-report").addEventListener("click", function () {
+    $("report-pop").hidden = false;
+    $("report").setAttribute("aria-expanded", "true");
+    setNow("Report Issue", "Opened from the username guide. Same support card as the button at the bottom.");
+  });
+
+  $("help-report").addEventListener("click", function () {
+    $("report-pop").hidden = false;
+    $("report").setAttribute("aria-expanded", "true");
+    setNow("Report Issue", "Opened from the eTraining tip. Same support card as the button at the bottom.");
+  });
+
+  forgotLink.addEventListener("click", function (e) {
+    e.preventDefault();
+    openForgot();
+  });
+
+  function openForgot() {
+    showForgotAsk();
+    showView("forgot");
+    setNow("Forgot password", "Username or email. The full address appears after it matches an account.");
+    $("email").focus();
+  }
+
+  $("forgot-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = $("email");
+    var value = email.value.trim();
+    if (!value) {
+      fieldError(email, $("email-error"), "Username or email is required.");
+      email.focus();
+      setNow("Empty field", "Only that the box is empty.");
+      return;
+    }
+    var account = resolveAccount(value);
+    if (!account) {
+      var emailed = value.indexOf("@") !== -1;
+      fieldError(email, $("email-error"), emailed
+        ? "We don’t recognize that email. Use the email on your account, or type your username."
+        : "We don’t recognize that username. Use the name on your welcome sheet, or type the email on your account.");
+      email.focus();
+      setNow(emailed ? "Email not recognized" : "Username not recognized", "The message names what they typed. No reset email is sent.");
+      return;
+    }
+    fieldError(email, $("email-error"), "");
+    showForgotSent(account);
+  });
+
+  $("email").addEventListener("input", function () {
+    if (!$("email-error").hidden) fieldError($("email"), $("email-error"), "");
+  });
+
+  $("resend-btn").addEventListener("click", function () {
+    if ($("resend-btn").disabled) return;
+    startResend();
+    setNow("Sent again", "The timer starts over. Only the newest link works.");
+  });
+
+  $("have-temp").addEventListener("click", function () {
+    showView("login");
+    hideLoginNudge();
+    showLoginNudge("Sign in with the temporary password. You’ll choose a new one next.", "guide");
+    pointReset = false;
+    forgotLink.classList.remove("is-next");
+    setNow("Back on sign-in", "One line about the temporary password. Try newhire / Temp1234!.");
+    if (knownUser($("username").value)) beginUserCheck($("username").value);
+    else $("username").focus();
+  });
+
+  function backToLogin(e) {
+    if (e) e.preventDefault();
+    showView("login");
+    setNow("Back on sign-in", "The form is as they left it.");
+    $("username").focus();
+  }
+
+  $("back-login").addEventListener("click", backToLogin);
+  $("sent-back").addEventListener("click", backToLogin);
+  $("set-cancel").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (setFrom === "email" && !$("forgot-sent").hidden) {
+      showView("forgot");
+      setNow("Request still waiting", "Cancel returns to the email and the timer. The new password is discarded.");
+      return;
+    }
+    showView("login");
+    setNow("Back on sign-in", "Cancel left the new password behind.");
+    $("username").focus();
+  });
+
+  $("newpass").addEventListener("focus", function () {
+    ruleTouched = true;
+    paintRule(false);
+  });
+  $("newpass").addEventListener("input", function () {
+    ruleTouched = true;
+    paintRule(false);
+    if (!$("confirm-error").hidden) fieldError($("confirmpass"), $("confirm-error"), "");
+  });
+  $("confirmpass").addEventListener("input", function () {
+    if (!$("confirm-error").hidden) fieldError($("confirmpass"), $("confirm-error"), "");
+  });
+
+  $("set-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    ruleTouched = true;
+    var missing = nextRule($("newpass").value);
+    paintRule(!!missing);
+    if (missing) {
+      $("newpass").focus();
+      setNow("Password rule", "The first rule still missing turns red. The others stay on the list.");
+      return;
+    }
+    if ($("confirmpass").value !== $("newpass").value) {
+      fieldError($("confirmpass"), $("confirm-error"), "The two passwords don’t match. Type the same new password in both boxes.");
+      $("confirmpass").focus();
+      setNow("Doesn’t match", "Said when they save, not while the second box is still empty.");
+      return;
+    }
+    fieldError($("confirmpass"), $("confirm-error"), "");
+    signedHow = "changed";
+    $("in-lead").textContent = "Your password is changed and you’re signed in. Next time, use your username and this new password.";
+    showView("in");
+    setNow("Password saved", "Moodle already signs them in after a reset. This line is the confirmation.");
+  });
+
+  $("signout").addEventListener("click", resetAll);
+
+  $("report").addEventListener("click", function () {
+    var pop = $("report-pop");
+    pop.hidden = !pop.hidden;
+    $("report").setAttribute("aria-expanded", pop.hidden ? "false" : "true");
+    if (!pop.hidden) setNow("Report Issue", "Support hours appear because they pressed the button. The button is already on the live page.");
+  });
+
+  function openResetLink() {
+    openSet("email");
+    setNow("Choose a new password", "The username is on the line. Each rule fills in as they type.");
+  }
+
+  $("open-reset-link").addEventListener("click", openResetLink);
+
+  function resetAll() {
+    tries = 0;
+    failCounts = {};
+    locks = {};
+    if (lockTimer) { clearInterval(lockTimer); lockTimer = null; }
+    pointReset = false;
+    mailSent = false;
+    ruleTouched = false;
+    $("username").value = "";
+    $("password").value = "";
+    $("password").type = "password";
+    $("eye-password").setAttribute("aria-label", "Show password");
+    $("email").value = "";
+    $("newpass").value = "";
+    $("confirmpass").value = "";
+    fieldError($("username"), $("username-error"), "");
+    fieldError($("password"), $("password-error"), "");
+    fieldError($("email"), $("email-error"), "");
+    fieldError($("confirmpass"), $("confirm-error"), "");
+    hideLoginNudge();
+    showForgotAsk();
+    $("caps").hidden = true;
+    $("report-pop").hidden = true;
+    $("report").setAttribute("aria-expanded", "false");
+    closeFindSupport();
+    resetUserStatus();
+    showView("login");
+    setNow("Start", "Username field, Continue, and Forgot username? A known username shows loading, then a check, then the password field, Log in, and Forgot your password.");
+  }
+
+  var helpIndex = 0;
+  var helpTimer = null;
+  var helpSlides = document.querySelectorAll(".help-slide");
+  var helpDots = $("help-dots");
+  helpSlides.forEach(function (_, i) {
+    var dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "help-dot" + (i === 0 ? " is-on" : "");
+    dot.setAttribute("aria-label", "Tip " + (i + 1));
+    if (i === 0) dot.setAttribute("aria-current", "true");
+    dot.addEventListener("click", function () { showHelp(i); startHelp(); });
+    helpDots.appendChild(dot);
+  });
+  function showHelp(i) {
+    helpIndex = (i + helpSlides.length) % helpSlides.length;
+    var width = document.querySelector(".help-viewport").clientWidth;
+    $("help-track").style.transform = "translateX(" + (-helpIndex * width) + "px)";
+    helpDots.querySelectorAll(".help-dot").forEach(function (d, idx) {
+      d.classList.toggle("is-on", idx === helpIndex);
+      if (idx === helpIndex) d.setAttribute("aria-current", "true");
+      else d.removeAttribute("aria-current");
+    });
+  }
+  function startHelp() {
+    if (helpTimer) clearInterval(helpTimer);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    helpTimer = setInterval(function () { showHelp(helpIndex + 1); }, 8000);
+  }
+  $("help-prev").addEventListener("click", function () { showHelp(helpIndex - 1); startHelp(); });
+  $("help-next").addEventListener("click", function () { showHelp(helpIndex + 1); startHelp(); });
+  window.addEventListener("resize", function () { showHelp(helpIndex); });
+  startHelp();
+
+  showView("login");
+})();
+</script>
+</body>
+</html>

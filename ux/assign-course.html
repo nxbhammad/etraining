@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assign Course — Back Safety in Construction Environments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #0054A4;
+    --brand-dark: #003F7A;
+    --side: #0B2C4A;
+    --side-hover: #143A5C;
+    --ink: #1B2430;
+    --muted: #4A5565;
+    --line: #D5DBE3;
+    --ground: #F2F4F7;
+    --card: #fff;
+    --focus: #8DB8EC;
+    --green: #1B8A4A;
+    --green-dark: #146C3A;
+    --green-bg: #EEF8F1;
+    --err: #B42318;
+    --err-bg: #FEF3F2;
+    --warn: #7A4A00;
+    --warn-bg: #FFF4E0;
+    --info-bg: #EEF5FC;
+    --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: var(--font); color: var(--ink); background: var(--ground); font-size: 15px; line-height: 1.45; }
+  button, input, select, textarea { font-family: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+  .app { display: grid; grid-template-columns: 228px minmax(0, 1fr); height: 100vh; min-height: 640px; }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--side); color: #D7E2EE; padding: 16px 12px;
+    display: flex; flex-direction: column; gap: 14px; overflow: auto;
+  }
+  .side-brand {
+    display: flex; align-items: center; gap: 10px; padding: 4px 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .side-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; flex: none; overflow: hidden;
+  }
+  .side-mark img { width: 28px; height: 28px; object-fit: contain; }
+  .side-brand strong { display: block; color: #fff; font-size: 14px; line-height: 1.2; }
+  .side-brand span { font-size: 11px; color: #9BB0C5; }
+  .nav-block { display: grid; gap: 2px; }
+  .nav-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: #7E95AB; padding: 8px 10px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; border: 0; background: transparent;
+    color: #D7E2EE; text-align: left; padding: 9px 10px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  }
+  .nav-item:hover { background: var(--side-hover); color: #fff; }
+  .nav-item[aria-current="page"] { background: rgba(27, 138, 74, .22); color: #fff; }
+  .side-foot { margin-top: auto; padding: 8px; }
+  .report-btn {
+    width: 100%; border: 0; border-radius: 8px; background: var(--green); color: #fff;
+    font-weight: 700; font-size: 13px; padding: 10px 12px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  /* Main */
+  .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .topbar {
+    background: #fff; border-bottom: 1px solid var(--line);
+    padding: 10px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: none;
+  }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+  .crumbs a { color: var(--brand); text-decoration: none; font-weight: 600; }
+  .crumbs span[aria-current="page"] { color: var(--ink); font-weight: 700; }
+  .crumbs .sep { color: #A0AAB8; }
+  .who { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+  .content { padding: 16px 22px 24px; display: grid; gap: 12px; overflow: auto; flex: 1; }
+
+  .course-bar {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; display: flex; gap: 12px; align-items: center;
+  }
+  .course-thumb {
+    width: 48px; height: 48px; border-radius: 10px; flex: none;
+    background: linear-gradient(145deg, #F4E8C8, #E8D49A);
+    display: grid; place-items: center; font-size: 20px;
+  }
+  .course-meta { min-width: 0; flex: 1; }
+  .course-meta h1 { margin: 0; font-size: 17px; line-height: 1.25; font-weight: 700; }
+  .meta-row { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 12px; color: var(--muted); }
+  .meta-row strong { color: var(--ink); font-weight: 600; }
+  .cert {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    color: var(--green-dark); background: var(--green-bg); border-radius: 999px; padding: 6px 10px; white-space: nowrap;
+  }
+
+  .tabs {
+    display: flex; gap: 2px; overflow-x: auto; background: #fff;
+    border: 1px solid var(--line); border-radius: 10px; padding: 4px;
+  }
+  .tab {
+    border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: 13px;
+    padding: 8px 12px; border-radius: 8px; white-space: nowrap;
+  }
+  .tab:hover { color: var(--ink); background: var(--ground); }
+  .tab[aria-selected="true"] { background: var(--green); color: #fff; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+  }
+  .stat {
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  }
+  .stat .label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .stat .value { margin-top: 2px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+  .stat .hint { margin-top: 2px; font-size: 12px; color: var(--muted); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column; min-height: 420px;
+  }
+  .panel-head {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--line);
+  }
+  .panel-head h2 { margin: 0; font-size: 17px; }
+  .panel-head .sub { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+  .head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .menu-wrap { position: relative; }
+  .menu {
+    position: absolute; right: 0; top: calc(100% + 6px); min-width: 220px; z-index: 20;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(16,24,40,.14); padding: 6px; display: none;
+  }
+  .menu.is-open { display: grid; }
+  .menu button {
+    border: 0; background: transparent; text-align: left; padding: 9px 10px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; color: var(--ink);
+  }
+  .menu button:hover { background: var(--ground); }
+  .menu .sep { height: 1px; background: var(--line); margin: 4px 0; }
+
+  .btn {
+    border: 0; border-radius: 8px; font-weight: 700; font-size: 14px;
+    padding: 9px 13px; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: var(--ground); }
+  .btn-danger-ghost {
+    background: transparent; color: var(--err); border: 0; font-weight: 700; font-size: 13px; padding: 8px 10px;
+  }
+  .btn-danger-ghost:hover { background: var(--err-bg); border-radius: 8px; }
+  .btn-sm { padding: 7px 10px; font-size: 13px; }
+  .btn-link {
+    border: 0; background: none; color: var(--brand); font-weight: 700; font-size: 13px; padding: 6px 4px;
+  }
+
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid var(--line); background: #FAFBFC;
+  }
+  .search { flex: 1; min-width: 180px; position: relative; }
+  .search input, .field input, .field select, .field textarea {
+    width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0 12px; font-size: 14px; background: #fff; color: var(--ink);
+  }
+  .search input { padding-left: 34px; }
+  .search input:focus, .field input:focus, .field select:focus, .field textarea:focus {
+    outline: 3px solid var(--focus); border-color: var(--brand);
+  }
+  .search svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 15px; height: 15px; color: var(--muted); pointer-events: none;
+  }
+  .filter {
+    height: 38px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0 10px; font-size: 13px; background: #fff; color: var(--ink);
+  }
+  .bulk-bar {
+    display: none; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    padding: 8px 16px; background: var(--info-bg); border-bottom: 1px solid #B8D4F1;
+    font-size: 13px; font-weight: 600;
+  }
+  .bulk-bar.is-on { display: flex; }
+  .bulk-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .list { list-style: none; margin: 0; padding: 0; flex: 1; }
+  .row {
+    display: grid; grid-template-columns: 22px 40px minmax(0, 1.4fr) minmax(90px, .7fr) minmax(100px, .8fr) auto;
+    gap: 10px; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  .row:hover { background: #FAFBFC; }
+  .row.pending-add { background: #F3FBF6; }
+  .row.pending-remove { background: #FFF8F7; opacity: .75; }
+  .row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--green); }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }
+  .person { min-width: 0; }
+  .person strong { display: block; font-size: 14px; line-height: 1.25; }
+  .person span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill {
+    display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+    border-radius: 999px; padding: 3px 8px; white-space: nowrap;
+  }
+  .pill.role { background: var(--ground); color: var(--muted); }
+  .pill.add { background: var(--green-bg); color: var(--green-dark); }
+  .pill.rm { background: var(--err-bg); color: var(--err); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .status { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+  .status.ok { color: var(--green-dark); }
+  .empty { padding: 48px 20px; text-align: center; color: var(--muted); }
+  .empty strong { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+
+  .pager {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 10px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); flex: none;
+  }
+
+  .changebar {
+    display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; background: #122033; color: #fff; flex: none;
+  }
+  .changebar.is-visible { display: flex; }
+  .changebar p { margin: 0; font-size: 14px; }
+  .change-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .changebar .btn-ghost { border-color: rgba(255,255,255,.25); color: #fff; background: transparent; }
+  .changebar .btn-ghost:hover { background: rgba(255,255,255,.08); }
+
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 36, .5);
+    display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50;
+  }
+  .overlay.is-open { display: flex; }
+  .modal {
+    width: min(720px, 100%); max-height: min(860px, calc(100vh - 32px));
+    background: #fff; border-radius: 14px; overflow: hidden;
+    display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,.28);
+  }
+  .modal.wide { width: min(860px, 100%); }
+  .modal-head {
+    padding: 14px 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex: none;
+  }
+  .modal-head h3 { margin: 0; font-size: 18px; }
+  .modal-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .icon-btn {
+    border: 0; background: transparent; width: 36px; height: 36px; border-radius: 8px;
+    display: grid; place-items: center; color: var(--muted); flex: none;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .method-tabs {
+    display: flex; gap: 4px; padding: 10px 18px 0; border-bottom: 1px solid var(--line); flex: none;
+  }
+  .method-tab {
+    border: 0; background: transparent; padding: 10px 12px; font-size: 13px; font-weight: 700;
+    color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .method-tab[aria-selected="true"] { color: var(--green-dark); border-bottom-color: var(--green); }
+
+  .modal-body { padding: 14px 18px; overflow: auto; flex: 1; display: grid; gap: 14px; }
+  .options-card {
+    background: #FAFBFC; border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+    display: grid; gap: 10px;
+  }
+  .options-card h4 {
+    margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  }
+  .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: grid; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 700; color: var(--ink); }
+  .field .hint { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .field textarea { height: auto; min-height: 72px; padding: 10px 12px; resize: vertical; }
+  .checks { display: grid; gap: 8px; }
+  .check {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 13px; font-weight: 600;
+  }
+  .check input { margin-top: 2px; width: 15px; height: 15px; accent-color: var(--green); flex: none; }
+  .check span { color: var(--muted); font-weight: 400; display: block; font-size: 12px; }
+
+  .picker-tools {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .pick-list { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .pick-row {
+    display: grid; grid-template-columns: 22px 36px minmax(0, 1fr) auto;
+    gap: 10px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line);
+  }
+  .pick-row:last-child { border-bottom: 0; }
+  .pick-row:hover { background: #FAFBFC; }
+  .pick-row input { width: 15px; height: 15px; accent-color: var(--green); }
+
+  .modal-foot {
+    padding: 12px 18px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; flex: none;
+  }
+  .dropzone {
+    border: 1.5px dashed #B8C0CC; border-radius: 12px; padding: 28px 16px; text-align: center;
+    background: #FAFBFC; color: var(--muted);
+  }
+  .dropzone strong { display: block; color: var(--ink); margin-bottom: 4px; }
+  .group-list { display: grid; gap: 8px; }
+  .group-card {
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff;
+  }
+  .group-card:hover { border-color: #B8D4F1; background: #FAFCFF; }
+  .group-card strong { display: block; font-size: 14px; }
+  .group-card span { font-size: 12px; color: var(--muted); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(16px);
+    background: #122033; color: #fff; padding: 10px 16px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: .2s ease; z-index: 60;
+  }
+  .toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 980px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { grid-template-columns: 22px 36px minmax(0, 1fr) auto; }
+    .row .col-role, .row .col-progress { display: none; }
+    .opt-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main menu">
+      <div class="side-brand">
+        <div class="side-mark"><img src="assets/etraining-logo.png" alt=""></div>
+        <div>
+          <strong>eTraining</strong>
+          <span>Company admin</span>
+        </div>
+      </div>
+      <div class="nav-block">
+        <div class="nav-label">Menu</div>
+        <button class="nav-item" type="button">Home</button>
+        <button class="nav-item" type="button" aria-current="page">Courses</button>
+        <button class="nav-item" type="button">Users</button>
+        <button class="nav-item" type="button">Calendar</button>
+        <button class="nav-item" type="button">Reports</button>
+      </div>
+      <div class="nav-block">
+        <div class="nav-label">Company setup</div>
+        <button class="nav-item" type="button">Student attributes</button>
+        <button class="nav-item" type="button">Company settings</button>
+      </div>
+      <div class="nav-block">
+        <div class="nav-label">Account</div>
+        <button class="nav-item" type="button">My profile</button>
+        <button class="nav-item" type="button">Contact support</button>
+      </div>
+      <div class="side-foot">
+        <button class="report-btn" type="button">Report issue</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="#">Courses</a><span class="sep">/</span>
+          <a href="#">Back Safety…</a><span class="sep">/</span>
+          <span aria-current="page">Assign</span>
+        </nav>
+        <div class="who">Jordan Lee · Admin</div>
+      </div>
+
+      <div class="content">
+        <section class="course-bar" aria-label="Course">
+          <div class="course-thumb" aria-hidden="true">⚠</div>
+          <div class="course-meta">
+            <h1>Back Safety in Construction Environments</h1>
+            <div class="meta-row">
+              <span><strong>EN</strong> English</span>
+              <span>Excavation</span>
+              <span>test company netsole</span>
+            </div>
+          </div>
+          <div class="cert">Certificate available</div>
+        </section>
+
+        <div class="tabs" role="tablist" aria-label="Course sections">
+          <button class="tab" type="button">Course</button>
+          <button class="tab" type="button">Participants</button>
+          <button class="tab" type="button" aria-selected="true">Assign</button>
+          <button class="tab" type="button">Course group</button>
+          <button class="tab" type="button">Prerequisite</button>
+          <button class="tab" type="button">Requests</button>
+          <button class="tab" type="button">Ratings</button>
+        </div>
+
+        <div class="stats" aria-label="Enrollment summary">
+          <div class="stat">
+            <div class="label">Enrolled</div>
+            <div class="value" id="stat-enrolled">0</div>
+            <div class="hint" id="stat-pending">No pending changes</div>
+          </div>
+          <div class="stat">
+            <div class="label">Not started</div>
+            <div class="value" id="stat-notstarted">0</div>
+            <div class="hint">0% progress</div>
+          </div>
+          <div class="stat">
+            <div class="label">In progress</div>
+            <div class="value" id="stat-progress">0</div>
+            <div class="hint">Started the course</div>
+          </div>
+          <div class="stat">
+            <div class="label">Completed</div>
+            <div class="value" id="stat-done">0</div>
+            <div class="hint">Ready for certificate</div>
+          </div>
+        </div>
+
+        <section class="panel" aria-label="Enrolled students">
+          <div class="panel-head">
+            <div>
+              <h2>Enrolled students</h2>
+              <p class="sub" id="enrolled-sub">0 people on this course</p>
+            </div>
+            <div class="head-actions">
+              <div class="menu-wrap">
+                <button class="btn btn-ghost btn-sm" type="button" id="btn-more" aria-expanded="false" aria-haspopup="true">More actions</button>
+                <div class="menu" id="more-menu" role="menu">
+                  <button type="button" data-action="notify-all">Email all enrolled</button>
+                  <button type="button" data-action="extend">Extend enrollment dates</button>
+                  <button type="button" data-action="export">Export roster (CSV)</button>
+                  <div class="sep"></div>
+                  <button type="button" data-action="unenroll-inactive">Remove not-started (30+ days)</button>
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button" id="btn-add">+ Add students</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <label class="search">
+              <span class="sr-only">Search enrolled</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="search" id="enrolled-search" placeholder="Search name, email, or username" autocomplete="off">
+            </label>
+            <select class="filter" id="filter-progress" aria-label="Filter by progress">
+              <option value="all">All progress</option>
+              <option value="not">Not started</option>
+              <option value="in">In progress</option>
+              <option value="done">Completed</option>
+            </select>
+            <select class="filter" id="filter-role" aria-label="Filter by role">
+              <option value="all">All roles</option>
+              <option value="Student">Student</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Observer">Observer</option>
+            </select>
+            <select class="filter" id="enrolled-sort" aria-label="Sort enrolled">
+              <option value="name">Sort by name</option>
+              <option value="progress">Sort by progress</option>
+              <option value="role">Sort by role</option>
+            </select>
+          </div>
+
+          <div class="bulk-bar" id="bulk-bar">
+            <span id="bulk-count">0 selected</span>
+            <div class="bulk-actions">
+              <button class="btn btn-ghost btn-sm" type="button" id="bulk-notify">Email selected</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="bulk-extend">Change dates</button>
+              <button class="btn btn-danger-ghost btn-sm" type="button" id="bulk-remove">Remove selected</button>
+            </div>
+          </div>
+
+          <ul class="list" id="enrolled-list"></ul>
+
+          <div class="pager">
+            <span id="enrolled-count">Showing 0</span>
+            <button class="btn-link" type="button" id="select-page">Select all on page</button>
+          </div>
+
+          <div class="changebar" id="changebar" aria-live="polite">
+            <p id="change-summary"></p>
+            <div class="change-actions">
+              <button class="btn btn-ghost" type="button" id="btn-discard">Discard</button>
+              <button class="btn btn-primary" type="button" id="btn-save">Save changes</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add students modal -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <div>
+          <h3 id="modal-title">Add students</h3>
+          <p>Choose people, set enrollment options, then add them to this course.</p>
+        </div>
+        <button class="icon-btn" type="button" id="modal-close" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="method-tabs" role="tablist" aria-label="Enrollment method">
+        <button class="method-tab" type="button" role="tab" data-method="people" aria-selected="true">People</button>
+        <button class="method-tab" type="button" role="tab" data-method="group" aria-selected="false">Course group</button>
+        <button class="method-tab" type="button" role="tab" data-method="csv" aria-selected="false">CSV upload</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="options-card">
+          <h4>Enrollment options</h4>
+          <div class="opt-grid">
+            <div class="field">
+              <label for="opt-role">Role</label>
+              <select id="opt-role">
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Observer">Observer</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="opt-duration">Access duration</label>
+              <select id="opt-duration">
+                <option value="unlimited">Unlimited</option>
+                <option value="30">30 days</option>
+                <option value="60">60 days</option>
+                <option value="90" selected>90 days</option>
+                <option value="180">180 days</option>
+                <option value="custom">Custom end date…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="opt-start">Start date</label>
+              <input type="date" id="opt-start">
+            </div>
+            <div class="field" id="end-wrap" hidden>
+              <label for="opt-end">End date</label>
+              <input type="date" id="opt-end">
+            </div>
+            <div class="field">
+              <label for="opt-group">Also add to group <span class="hint">(optional)</span></label>
+              <select id="opt-group">
+                <option value="">No group</option>
+                <option value="site-a">Site A — Day shift</option>
+                <option value="site-b">Site B — Night shift</option>
+                <option value="new-hire">New hire cohort</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="opt-due">Completion due <span class="hint">(optional)</span></label>
+              <input type="date" id="opt-due">
+            </div>
+          </div>
+          <div class="checks">
+            <label class="check">
+              <input type="checkbox" id="opt-notify" checked>
+              <div>Email students when enrolled<span>Includes course name, start date, and a direct link.</span></div>
+            </label>
+            <label class="check">
+              <input type="checkbox" id="opt-recover">
+              <div>Recover previous grades if they were enrolled before<span>Useful when someone was removed by mistake.</span></div>
+            </label>
+            <label class="check">
+              <input type="checkbox" id="opt-suspend">
+              <div>Enroll as suspended (hidden until activated)<span>Good for staging rosters before a start date.</span></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- People method -->
+        <div data-pane="people">
+          <div class="picker-tools">
+            <label class="search" style="flex:1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="search" id="picker-search" placeholder="Search by name, email, username, or crew" autocomplete="off">
+            </label>
+            <select class="filter" id="picker-crew" aria-label="Filter by crew">
+              <option value="all">All crews</option>
+              <option value="Site crew">Site crew</option>
+              <option value="Office">Office</option>
+              <option value="Foreman">Foreman</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" type="button" id="picker-all">Select all</button>
+            <button class="btn btn-ghost btn-sm" type="button" id="picker-none">Clear</button>
+          </div>
+          <div class="pick-list" id="picker-list"></div>
+        </div>
+
+        <!-- Group method -->
+        <div data-pane="group" hidden>
+          <p style="margin:0;color:var(--muted);font-size:13px">Enroll everyone from an existing company or course group. Enrollment options above still apply.</p>
+          <div class="group-list" id="group-list"></div>
+        </div>
+
+        <!-- CSV method -->
+        <div data-pane="csv" hidden>
+          <div class="dropzone" id="dropzone">
+            <strong>Drop a CSV here, or choose a file</strong>
+            Columns: email or username (required), optional role<br>
+            <button class="btn btn-ghost btn-sm" type="button" id="btn-file" style="margin-top:12px">Choose CSV</button>
+            <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+          </div>
+          <div id="csv-preview" hidden></div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <span id="picker-selected" style="font-size:13px;color:var(--muted)">0 selected</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" type="button" id="modal-cancel">Cancel</button>
+          <button class="btn btn-primary" type="button" id="modal-confirm" disabled>Add to course</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extend dates modal -->
+  <div class="overlay" id="extend-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="extend-title">
+      <div class="modal-head">
+        <div>
+          <h3 id="extend-title">Change enrollment dates</h3>
+          <p id="extend-sub">Update access for selected students.</p>
+        </div>
+        <button class="icon-btn" type="button" id="extend-close" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="opt-grid">
+          <div class="field">
+            <label for="ext-start">New start date</label>
+            <input type="date" id="ext-start">
+          </div>
+          <div class="field">
+            <label for="ext-end">New end date</label>
+            <input type="date" id="ext-end">
+          </div>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="ext-notify" checked>
+          <div>Notify students of the new dates</div>
+        </label>
+      </div>
+      <div class="modal-foot">
+        <span></span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" type="button" id="extend-cancel">Cancel</button>
+          <button class="btn btn-primary" type="button" id="extend-save">Apply dates</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+<script>
+const AVATAR_COLORS = ["#1B6CA8", "#0F766E", "#7C3AED", "#B45309", "#BE123C", "#0369A1"];
+const GROUPS = [
+  { id: "site-a", name: "Site A — Day shift", count: 12, crew: "Site crew" },
+  { id: "site-b", name: "Site B — Night shift", count: 9, crew: "Site crew" },
+  { id: "new-hire", name: "New hire cohort", count: 6, crew: "Office" },
+  { id: "foremen", name: "Foremen leadership", count: 4, crew: "Foreman" }
+];
+
+const ALL_STUDENTS = [
+  { id: "u1", name: "Alex Morgan", email: "alex.morgan@example.com", username: "alex.morgan", role: "Student", crew: "Site crew", progress: 0, enrolled: false },
+  { id: "u2", name: "Jordan Blake", email: "jordan.blake@example.com", username: "jordan.blake", role: "Student", crew: "Site crew", progress: 0, enrolled: false },
+  { id: "u3", name: "Sam Rivera", email: "sam.rivera@example.com", username: "sam.rivera", role: "Student", crew: "Office", progress: 0, enrolled: false },
+  { id: "u4", name: "Taylor Brooks", email: "taylor.brooks@example.com", username: "taylor.brooks", role: "Student", crew: "Site crew", progress: 0, enrolled: false },
+  { id: "u5", name: "Casey Quinn", email: "casey.quinn@example.com", username: "casey.quinn", role: "Student", crew: "Foreman", progress: 0, enrolled: false },
+  { id: "u6", name: "Riley Chen", email: "riley.chen@example.com", username: "riley.chen", role: "Student", crew: "Office", progress: 0, enrolled: false },
+  { id: "u7", name: "Jamie Patel", email: "jamie.patel@example.com", username: "jamie.patel", role: "Student", crew: "Site crew", progress: 0, enrolled: false },
+  { id: "u8", name: "Harper Nunez", email: "harper.nunez@example.com", username: "harper.nunez", role: "Student", crew: "Site crew", progress: 0, enrolled: false },
+  { id: "e1", name: "Morgan Blake", email: "morgan.blake@example.com", username: "morgan.blake", role: "Student", crew: "Site crew", progress: 0, enrolled: true, end: "2026-04-05" },
+  { id: "e2", name: "Avery Scott", email: "avery.scott@example.com", username: "avery.scott", role: "Student", crew: "Office", progress: 12, enrolled: true, end: "2026-04-05" },
+  { id: "e3", name: "Cameron Diaz", email: "cameron.diaz@example.com", username: "cameron.diaz", role: "Teacher", crew: "Foreman", progress: 0, enrolled: true, end: "Unlimited" },
+  { id: "e4", name: "Drew Foster", email: "drew.foster@example.com", username: "drew.foster", role: "Student", crew: "Site crew", progress: 100, enrolled: true, end: "2026-04-05" },
+  { id: "e5", name: "Lee Nguyen", email: "lee.nguyen@example.com", username: "lee.nguyen", role: "Observer", crew: "Office", progress: 40, enrolled: true, end: "2026-05-01" }
+];
+
+const state = {
+  students: ALL_STUDENTS.map((s) => ({ ...s })),
+  pendingAdd: new Map(), // id -> options snapshot
+  pendingRemove: new Set(),
+  selectedRows: new Set(),
+  pickerSelected: new Set(),
+  selectedGroup: null,
+  csvIds: [],
+  method: "people",
+  enrolledQuery: "",
+  pickerQuery: "",
+  pickerCrew: "all",
+  filterProgress: "all",
+  filterRole: "all",
+  sort: "name",
+  extendTarget: "selected"
+};
+
+function todayISO() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+function initials(name) {
+  return name.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+}
+function colorFor(id) {
+  let n = 0;
+  for (let i = 0; i < id.length; i++) n += id.charCodeAt(i);
+  return AVATAR_COLORS[n % AVATAR_COLORS.length];
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+}
+function matches(s, q) {
+  if (!q) return true;
+  const hay = `${s.name} ${s.email} ${s.username} ${s.crew || ""}`.toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+function progressBucket(p) {
+  if (p >= 100) return "done";
+  if (p > 0) return "in";
+  return "not";
+}
+function effectiveEnrolled() {
+  return state.students.filter((s) => {
+    const willBe = (s.enrolled || state.pendingAdd.has(s.id)) && !state.pendingRemove.has(s.id);
+    return willBe;
+  });
+}
+function getOptions() {
+  const duration = document.getElementById("opt-duration").value;
+  return {
+    role: document.getElementById("opt-role").value,
+    duration,
+    start: document.getElementById("opt-start").value || todayISO(),
+    end: duration === "custom" ? document.getElementById("opt-end").value : duration,
+    group: document.getElementById("opt-group").value,
+    due: document.getElementById("opt-due").value,
+    notify: document.getElementById("opt-notify").checked,
+    recover: document.getElementById("opt-recover").checked,
+    suspend: document.getElementById("opt-suspend").checked
+  };
+}
+function endLabel(opt) {
+  if (!opt) return "—";
+  if (opt.duration === "unlimited" || opt.end === "unlimited") return "Unlimited";
+  if (["30","60","90","180"].includes(String(opt.end))) return `${opt.end} days`;
+  return opt.end || "—";
+}
+
+function renderStats() {
+  const rows = effectiveEnrolled();
+  const not = rows.filter((s) => progressBucket(s.progress) === "not").length;
+  const inn = rows.filter((s) => progressBucket(s.progress) === "in").length;
+  const done = rows.filter((s) => progressBucket(s.progress) === "done").length;
+  document.getElementById("stat-enrolled").textContent = String(rows.length);
+  document.getElementById("stat-notstarted").textContent = String(not);
+  document.getElementById("stat-progress").textContent = String(inn);
+  document.getElementById("stat-done").textContent = String(done);
+  const a = state.pendingAdd.size, r = state.pendingRemove.size;
+  document.getElementById("stat-pending").textContent =
+    a || r ? `${a} to enroll · ${r} to remove` : "No pending changes";
+}
+
+function renderEnrolled() {
+  let rows = effectiveEnrolled().filter((s) => matches(s, state.enrolledQuery));
+  if (state.filterProgress !== "all") rows = rows.filter((s) => progressBucket(s.progress) === state.filterProgress);
+  if (state.filterRole !== "all") {
+    rows = rows.filter((s) => {
+      const role = state.pendingAdd.get(s.id)?.role || s.role;
+      return role === state.filterRole;
+    });
+  }
+  if (state.sort === "progress") rows = rows.slice().sort((a, b) => b.progress - a.progress || a.name.localeCompare(b.name));
+  else if (state.sort === "role") rows = rows.slice().sort((a, b) => (state.pendingAdd.get(a.id)?.role || a.role).localeCompare(state.pendingAdd.get(b.id)?.role || b.role) || a.name.localeCompare(b.name));
+  else rows = rows.slice().sort((a, b) => a.name.localeCompare(b.name));
+
+  const list = document.getElementById("enrolled-list");
+  if (!rows.length) {
+    list.innerHTML = `<li class="empty"><strong>No students match</strong>Adjust filters, or add students to this course.</li>`;
+  } else {
+    list.innerHTML = rows.map((s) => {
+      const adding = state.pendingAdd.has(s.id);
+      const removing = state.pendingRemove.has(s.id);
+      const role = state.pendingAdd.get(s.id)?.role || s.role;
+      const cls = ["row", adding ? "pending-add" : "", removing ? "pending-remove" : ""].filter(Boolean).join(" ");
+      const badge = adding ? `<span class="pill add">Will enroll</span>` : removing ? `<span class="pill rm">Will remove</span>` : "";
+      const progressLabel = s.progress >= 100
+        ? `<span class="status ok col-progress">Completed</span>`
+        : s.progress > 0
+          ? `<span class="status ok col-progress">${s.progress}%</span>`
+          : `<span class="status col-progress">Not started</span>`;
+      const action = removing
+        ? `<button class="btn btn-ghost btn-sm" type="button" data-undo-remove="${s.id}">Undo</button>`
+        : `<button class="btn btn-danger-ghost btn-sm" type="button" data-remove="${s.id}">Remove</button>`;
+      const checked = state.selectedRows.has(s.id) ? "checked" : "";
+      return `<li class="${cls}">
+        <input type="checkbox" data-row="${s.id}" ${checked} aria-label="Select ${esc(s.name)}">
+        <div class="avatar" style="background:${colorFor(s.id)}">${esc(initials(s.name))}</div>
+        <div class="person">
+          <strong>${esc(s.name)} ${badge}</strong>
+          <span>${esc(s.email)} · ${esc(s.crew || "")}</span>
+        </div>
+        <span class="pill role col-role">${esc(role)}</span>
+        ${progressLabel}
+        ${action}
+      </li>`;
+    }).join("");
+  }
+
+  const total = effectiveEnrolled().length;
+  document.getElementById("enrolled-sub").textContent = `${total} ${total === 1 ? "person" : "people"} on this course`;
+  document.getElementById("enrolled-count").textContent = `Showing ${rows.length} of ${total}`;
+  renderBulk();
+  renderChangeBar();
+  renderStats();
+}
+
+function renderBulk() {
+  const n = state.selectedRows.size;
+  const bar = document.getElementById("bulk-bar");
+  bar.classList.toggle("is-on", n > 0);
+  document.getElementById("bulk-count").textContent = `${n} selected`;
+}
+
+function renderChangeBar() {
+  const adds = state.pendingAdd.size;
+  const rms = state.pendingRemove.size;
+  const bar = document.getElementById("changebar");
+  const dirty = adds + rms > 0;
+  bar.classList.toggle("is-visible", dirty);
+  if (!dirty) return;
+  const parts = [];
+  if (adds) parts.push(`<strong>${adds}</strong> to enroll`);
+  if (rms) parts.push(`<strong>${rms}</strong> to remove`);
+  document.getElementById("change-summary").innerHTML = parts.join(" · ") + " — review before saving";
+}
+
+function availablePeople() {
+  return state.students.filter((s) => {
+    const enrolledNow = (s.enrolled || state.pendingAdd.has(s.id)) && !state.pendingRemove.has(s.id);
+    if (enrolledNow) return false;
+    if (!matches(s, state.pickerQuery)) return false;
+    if (state.pickerCrew !== "all" && s.crew !== state.pickerCrew) return false;
+    return true;
+  });
+}
+
+function renderPicker() {
+  const available = availablePeople();
+  const box = document.getElementById("picker-list");
+  if (!available.length) {
+    box.innerHTML = `<div class="empty"><strong>No students found</strong>Everyone matching this search is already enrolled.</div>`;
+  } else {
+    box.innerHTML = available.map((s) => {
+      const checked = state.pickerSelected.has(s.id) ? "checked" : "";
+      return `<label class="pick-row">
+        <input type="checkbox" data-pick="${s.id}" ${checked}>
+        <div class="avatar" style="background:${colorFor(s.id)}">${esc(initials(s.name))}</div>
+        <div class="person">
+          <strong>${esc(s.name)}</strong>
+          <span>${esc(s.email)} · ${esc(s.crew)}</span>
+        </div>
+        <span class="pill role">${esc(s.role)}</span>
+      </label>`;
+    }).join("");
+  }
+  updateConfirmLabel();
+}
+
+function renderGroups() {
+  document.getElementById("group-list").innerHTML = GROUPS.map((g) => {
+    const on = state.selectedGroup === g.id;
+    return `<label class="group-card">
+      <div>
+        <strong>${esc(g.name)}</strong>
+        <span>${g.count} people · ${esc(g.crew)}</span>
+      </div>
+      <input type="radio" name="enroll-group" value="${g.id}" ${on ? "checked" : ""}>
+    </label>`;
+  }).join("");
+  updateConfirmLabel();
+}
+
+function selectionCount() {
+  if (state.method === "people") return state.pickerSelected.size;
+  if (state.method === "group") {
+    const g = GROUPS.find((x) => x.id === state.selectedGroup);
+    return g ? g.count : 0;
+  }
+  if (state.method === "csv") return state.csvIds.length;
+  return 0;
+}
+
+function updateConfirmLabel() {
+  const n = selectionCount();
+  const opt = getOptions();
+  let label = `${n} selected`;
+  if (n && opt.notify) label += " · will email";
+  if (n && opt.suspend) label += " · suspended";
+  document.getElementById("picker-selected").textContent = label;
+  document.getElementById("modal-confirm").disabled = n === 0;
+  document.getElementById("modal-confirm").textContent =
+    n === 0 ? "Add to course" : `Add ${n} to course`;
+}
+
+function setMethod(method) {
+  state.method = method;
+  document.querySelectorAll(".method-tab").forEach((t) => {
+    t.setAttribute("aria-selected", t.dataset.method === method ? "true" : "false");
+  });
+  document.querySelectorAll("[data-pane]").forEach((p) => {
+    p.hidden = p.getAttribute("data-pane") !== method;
+  });
+  updateConfirmLabel();
+}
+
+function openModal() {
+  state.pickerSelected = new Set();
+  state.selectedGroup = null;
+  state.csvIds = [];
+  state.pickerQuery = "";
+  state.pickerCrew = "all";
+  state.method = "people";
+  document.getElementById("picker-search").value = "";
+  document.getElementById("picker-crew").value = "all";
+  document.getElementById("opt-start").value = todayISO();
+  document.getElementById("opt-duration").value = "90";
+  document.getElementById("end-wrap").hidden = true;
+  document.getElementById("csv-preview").hidden = true;
+  document.getElementById("csv-preview").innerHTML = "";
+  const overlay = document.getElementById("overlay");
+  overlay.hidden = false;
+  overlay.classList.add("is-open");
+  setMethod("people");
+  renderPicker();
+  renderGroups();
+  setTimeout(() => document.getElementById("picker-search").focus(), 20);
+}
+function closeModal() {
+  const overlay = document.getElementById("overlay");
+  overlay.classList.remove("is-open");
+  overlay.hidden = true;
+  document.getElementById("btn-add").focus();
+}
+
+function openExtend(target) {
+  state.extendTarget = target;
+  const n = target === "all" ? effectiveEnrolled().length : state.selectedRows.size;
+  document.getElementById("extend-sub").textContent = `Update access for ${n} student${n === 1 ? "" : "s"}.`;
+  document.getElementById("ext-start").value = todayISO();
+  const overlay = document.getElementById("extend-overlay");
+  overlay.hidden = false;
+  overlay.classList.add("is-open");
+}
+function closeExtend() {
+  const overlay = document.getElementById("extend-overlay");
+  overlay.classList.remove("is-open");
+  overlay.hidden = true;
+}
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("is-on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("is-on"), 2400);
+}
+
+function idsToEnroll() {
+  if (state.method === "people") return [...state.pickerSelected];
+  if (state.method === "csv") return state.csvIds;
+  if (state.method === "group") {
+    // Demo: enroll first N available matching crew of selected group
+    const g = GROUPS.find((x) => x.id === state.selectedGroup);
+    if (!g) return [];
+    return availablePeople().filter((s) => s.crew === g.crew).slice(0, g.count).map((s) => s.id);
+  }
+  return [];
+}
+
+function confirmEnroll() {
+  const opt = getOptions();
+  const ids = idsToEnroll();
+  ids.forEach((id) => {
+    state.pendingRemove.delete(id);
+    const s = state.students.find((x) => x.id === id);
+    if (s && s.enrolled && !state.pendingRemove.has(id)) return;
+    state.pendingAdd.set(id, { ...opt });
+  });
+  closeModal();
+  renderEnrolled();
+  const bits = [`${ids.length} staged to enroll`];
+  if (opt.notify) bits.push("email on save");
+  if (opt.role !== "Student") bits.push(opt.role);
+  toast(bits.join(" · "));
+}
+
+function saveChanges() {
+  state.students = state.students.map((s) => {
+    let enrolled = s.enrolled;
+    let role = s.role;
+    let end = s.end;
+    if (state.pendingAdd.has(s.id)) {
+      const opt = state.pendingAdd.get(s.id);
+      enrolled = true;
+      role = opt.role;
+      end = endLabel(opt);
+    }
+    if (state.pendingRemove.has(s.id)) enrolled = false;
+    return { ...s, enrolled, role, end };
+  });
+  const a = state.pendingAdd.size;
+  const r = state.pendingRemove.size;
+  const notified = [...state.pendingAdd.values()].filter((o) => o.notify).length;
+  state.pendingAdd.clear();
+  state.pendingRemove.clear();
+  state.selectedRows.clear();
+  renderEnrolled();
+  toast(`Saved · ${a} enrolled, ${r} removed${notified ? `, ${notified} emailed` : ""}`);
+}
+
+function discardChanges() {
+  state.pendingAdd.clear();
+  state.pendingRemove.clear();
+  renderEnrolled();
+  toast("Changes discarded");
+}
+
+/* Events */
+document.getElementById("btn-add").addEventListener("click", openModal);
+document.getElementById("modal-close").addEventListener("click", closeModal);
+document.getElementById("modal-cancel").addEventListener("click", closeModal);
+document.getElementById("overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") closeModal(); });
+document.getElementById("extend-close").addEventListener("click", closeExtend);
+document.getElementById("extend-cancel").addEventListener("click", closeExtend);
+document.getElementById("extend-overlay").addEventListener("click", (e) => { if (e.target.id === "extend-overlay") closeExtend(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (document.getElementById("extend-overlay").classList.contains("is-open")) closeExtend();
+  else if (document.getElementById("overlay").classList.contains("is-open")) closeModal();
+});
+
+document.querySelectorAll(".method-tab").forEach((t) => {
+  t.addEventListener("click", () => setMethod(t.dataset.method));
+});
+
+document.getElementById("opt-duration").addEventListener("change", (e) => {
+  document.getElementById("end-wrap").hidden = e.target.value !== "custom";
+  updateConfirmLabel();
+});
+["opt-role","opt-notify","opt-suspend","opt-recover","opt-group","opt-due","opt-start","opt-end"].forEach((id) => {
+  const el = document.getElementById(id);
+  el.addEventListener("change", updateConfirmLabel);
+});
+
+document.getElementById("modal-confirm").addEventListener("click", confirmEnroll);
+
+document.getElementById("picker-list").addEventListener("change", (e) => {
+  const id = e.target.getAttribute("data-pick");
+  if (!id) return;
+  if (e.target.checked) state.pickerSelected.add(id);
+  else state.pickerSelected.delete(id);
+  updateConfirmLabel();
+});
+document.getElementById("picker-all").addEventListener("click", () => {
+  availablePeople().forEach((s) => state.pickerSelected.add(s.id));
+  renderPicker();
+});
+document.getElementById("picker-none").addEventListener("click", () => {
+  state.pickerSelected.clear();
+  renderPicker();
+});
+document.getElementById("picker-search").addEventListener("input", (e) => {
+  state.pickerQuery = e.target.value;
+  renderPicker();
+});
+document.getElementById("picker-crew").addEventListener("change", (e) => {
+  state.pickerCrew = e.target.value;
+  renderPicker();
+});
+
+document.getElementById("group-list").addEventListener("change", (e) => {
+  if (e.target.name === "enroll-group") {
+    state.selectedGroup = e.target.value;
+    updateConfirmLabel();
+  }
+});
+
+document.getElementById("btn-file").addEventListener("click", () => document.getElementById("csv-file").click());
+document.getElementById("csv-file").addEventListener("change", (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  // Demo parse: match any available student emails found in a fake CSV of first 3 available
+  const avail = availablePeople().slice(0, 3);
+  state.csvIds = avail.map((s) => s.id);
+  const preview = document.getElementById("csv-preview");
+  preview.hidden = false;
+  preview.innerHTML = `<div class="options-card"><h4>CSV preview · ${file.name}</h4>
+    <p style="margin:0;font-size:13px;color:var(--muted)">${avail.length} matching people will be enrolled from this file.</p>
+    <ul style="margin:8px 0 0;padding-left:18px;font-size:13px">${avail.map((s) => `<li>${esc(s.email)}</li>`).join("")}</ul>
+  </div>`;
+  updateConfirmLabel();
+  toast(`Loaded ${file.name}`);
+});
+
+document.getElementById("enrolled-list").addEventListener("click", (e) => {
+  const rm = e.target.closest("[data-remove]");
+  const undo = e.target.closest("[data-undo-remove]");
+  if (rm) {
+    const id = rm.getAttribute("data-remove");
+    if (state.pendingAdd.has(id)) state.pendingAdd.delete(id);
+    else state.pendingRemove.add(id);
+    state.selectedRows.delete(id);
+    renderEnrolled();
+  }
+  if (undo) {
+    state.pendingRemove.delete(undo.getAttribute("data-undo-remove"));
+    renderEnrolled();
+  }
+});
+document.getElementById("enrolled-list").addEventListener("change", (e) => {
+  const id = e.target.getAttribute("data-row");
+  if (!id) return;
+  if (e.target.checked) state.selectedRows.add(id);
+  else state.selectedRows.delete(id);
+  renderBulk();
+});
+
+document.getElementById("select-page").addEventListener("click", () => {
+  document.querySelectorAll("#enrolled-list [data-row]").forEach((cb) => {
+    state.selectedRows.add(cb.getAttribute("data-row"));
+  });
+  renderEnrolled();
+});
+
+document.getElementById("enrolled-search").addEventListener("input", (e) => {
+  state.enrolledQuery = e.target.value;
+  renderEnrolled();
+});
+document.getElementById("filter-progress").addEventListener("change", (e) => {
+  state.filterProgress = e.target.value;
+  renderEnrolled();
+});
+document.getElementById("filter-role").addEventListener("change", (e) => {
+  state.filterRole = e.target.value;
+  renderEnrolled();
+});
+document.getElementById("enrolled-sort").addEventListener("change", (e) => {
+  state.sort = e.target.value;
+  renderEnrolled();
+});
+
+document.getElementById("btn-save").addEventListener("click", saveChanges);
+document.getElementById("btn-discard").addEventListener("click", discardChanges);
+
+document.getElementById("bulk-remove").addEventListener("click", () => {
+  state.selectedRows.forEach((id) => {
+    if (state.pendingAdd.has(id)) state.pendingAdd.delete(id);
+    else state.pendingRemove.add(id);
+  });
+  state.selectedRows.clear();
+  renderEnrolled();
+});
+document.getElementById("bulk-notify").addEventListener("click", () => {
+  toast(`Email queued for ${state.selectedRows.size} students`);
+});
+document.getElementById("bulk-extend").addEventListener("click", () => openExtend("selected"));
+
+document.getElementById("extend-save").addEventListener("click", () => {
+  const n = state.extendTarget === "all" ? effectiveEnrolled().length : state.selectedRows.size;
+  closeExtend();
+  toast(`Dates updated for ${n} students`);
+});
+
+const moreBtn = document.getElementById("btn-more");
+const moreMenu = document.getElementById("more-menu");
+moreBtn.addEventListener("click", () => {
+  const open = !moreMenu.classList.contains("is-open");
+  moreMenu.classList.toggle("is-open", open);
+  moreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".menu-wrap")) {
+    moreMenu.classList.remove("is-open");
+    moreBtn.setAttribute("aria-expanded", "false");
+  }
+});
+moreMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-action]");
+  if (!btn) return;
+  moreMenu.classList.remove("is-open");
+  const action = btn.dataset.action;
+  if (action === "notify-all") toast(`Email queued for ${effectiveEnrolled().length} enrolled students`);
+  if (action === "extend") openExtend("all");
+  if (action === "export") toast("Roster export started");
+  if (action === "unenroll-inactive") {
+    effectiveEnrolled().filter((s) => s.progress === 0).forEach((s) => state.pendingRemove.add(s.id));
+    renderEnrolled();
+    toast("Staged removal of not-started students");
+  }
+});
+
+renderEnrolled();
+</script>
+</body>
+</html>

@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulk Upload Students — Company Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --warn: #b45309;
+    --warn-soft: #fff7ed;
+    --warn-line: #fde68a;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .side-close { display: none; margin-left: auto; color: #fff; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left; text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .main { min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .content { padding: 16px 28px 32px; display: flex; flex-direction: column; gap: 12px; }
+
+  .crumb { margin: 0; font-size: 13px; color: var(--muted); }
+  .crumb a { color: var(--green); font-weight: 700; }
+  .page-head h1 {
+    margin: 4px 0 0; font-family: var(--font); font-size: 26px; font-weight: 650; letter-spacing: -.02em;
+  }
+  .page-head p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+  .note {
+    margin: 0; padding: 10px 14px; border-radius: 10px;
+    background: #fff; border: 1px solid var(--line); font-size: 13px; font-weight: 600;
+  }
+  .mode {
+    display: flex; gap: 4px; padding: 4px; width: fit-content;
+    background: #eef2f0; border-radius: 12px;
+  }
+  .mode-btn {
+    border: 0; background: transparent; min-height: 36px; padding: 0 14px; border-radius: 9px;
+    font-size: 13px; font-weight: 650; color: var(--muted);
+  }
+  .mode-btn:hover { color: var(--ink); background: rgba(255,255,255,.55); }
+  .mode-btn.is-on { background: var(--green); color: #fff; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+
+  .btn {
+    height: 40px; padding: 0 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-ghost { border: 1px solid var(--line); background: #fff; color: var(--ink); }
+  .btn-ghost:hover { background: var(--ground); }
+  .btn-primary { border: 0; background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+  .file-input {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+
+  .work, .rail {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+  }
+  .work { display: flex; flex-direction: column; gap: 16px; padding: 20px; min-width: 0; }
+  @media (min-width: 981px) {
+    .work { position: sticky; top: 16px; align-self: start; }
+  }
+  .work h2, .rail h2 { margin: 0; font-family: var(--font); font-size: 18px; font-weight: 650; }
+  .why { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .step-block { display: flex; flex-direction: column; gap: 10px; }
+  .step-block + .step-block { padding-top: 16px; border-top: 1px solid var(--line); }
+  .limit { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+  .drop {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    min-height: 180px; padding: 20px; border-radius: 12px;
+    border: 1.5px dashed #c5ced6; background: #fafbfb; text-align: center;
+  }
+  .drop.has-file { border-color: var(--green); background: var(--green-soft); }
+  .drop strong { font-size: 16px; }
+  .drop span { font-size: 13px; color: var(--muted); }
+  .drop .is-on { color: var(--green-dark); font-weight: 700; }
+  .emails { display: flex; flex-direction: column; gap: 8px; }
+  .emails > p { margin: 0; font-size: 13px; font-weight: 700; }
+  .email-opt {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff;
+    font-size: 13px; line-height: 1.35;
+  }
+  .email-opt:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+  .email-opt input { margin-top: 2px; accent-color: var(--green); }
+  .work .btn-primary { align-self: flex-start; }
+
+  .rail { display: flex; flex-direction: column; gap: 18px; padding: 16px; min-width: 0; }
+  .rail-block { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .rail-copy { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+  .video {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px;
+    background: #0f172a; color: #fff; font-size: 12px; font-weight: 650;
+  }
+  .video .play {
+    width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #0f172a;
+    display: grid; place-items: center;
+  }
+  .video svg { width: 16px; height: 16px; }
+  .rail .btn { width: 100%; height: auto; min-height: 40px; white-space: normal; text-align: center; }
+  .guide-btn { width: 100%; }
+  .guide-btn svg { transition: transform .15s ease; }
+  .guide-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .warn-line { margin: 0; color: var(--warn); font-size: 12px; font-weight: 650; line-height: 1.4; }
+  .field-guide { overflow: auto; max-height: 420px; }
+  .field-guide table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  .field-guide th, .field-guide td {
+    padding: 10px 14px; text-align: left; vertical-align: top;
+    border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.4;
+  }
+  .field-guide th { font-size: 12px; color: var(--muted); font-weight: 700; background: #fafbfb; }
+  .field-guide td:first-child { color: #db2777; font-weight: 650; white-space: nowrap; }
+  .field-guide .req { font-weight: 700; }
+  .field-guide tr:last-child td { border-bottom: 0; }
+
+  .sheet-card {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    min-width: 0; overflow: hidden;
+  }
+  .sheet-bar {
+    display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+    padding: 16px 18px; border-bottom: 1px solid var(--line);
+  }
+  .sheet-bar h2 { margin: 0; font-family: var(--font); font-size: 18px; font-weight: 650; }
+  .sheet-bar p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+  .sheet-actions { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .sheet-mail { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .sheet-mail select {
+    height: 40px; min-width: 220px; border: 1px solid var(--line); border-radius: 10px;
+    padding: 0 10px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
+  }
+  .sheet-count {
+    height: 40px; display: inline-flex; align-items: center; padding: 0 4px;
+    color: var(--muted); font-size: 13px; font-weight: 650;
+  }
+  .sheet-scroll { overflow: auto; max-height: calc(100vh - 230px); }
+  .sheet { border-collapse: separate; border-spacing: 0; }
+  .sheet th, .sheet td {
+    border-right: 1px solid #e7eeea; border-bottom: 1px solid #e7eeea;
+    background: #fff; padding: 0; height: 38px;
+  }
+  .sheet thead th {
+    position: sticky; top: 0; z-index: 3; height: 52px; padding: 8px 12px;
+    background: #f3f7f4; text-align: left; vertical-align: middle;
+    font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap;
+    box-shadow: inset 0 -1px 0 #e7eeea;
+  }
+  .sheet .col-key {
+    display: block; margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+  }
+  .sheet .req-mark { color: var(--green-dark); }
+  .sheet .corner, .sheet .row-n, .sheet .row-end {
+    position: sticky; z-index: 2; background: #f7faf8; text-align: center;
+  }
+  .sheet .corner { left: 0; z-index: 4; width: 52px; min-width: 52px; }
+  .sheet .row-n { left: 0; width: 52px; min-width: 52px; color: var(--muted); font-size: 12px; font-weight: 700; }
+  .sheet .row-end { right: 0; width: 40px; min-width: 40px; z-index: 2; }
+  .sheet thead .row-end { z-index: 4; }
+  .sheet tr:hover td { background: #fbfefc; }
+  .sheet tr:focus-within td { background: #f4fbf6; }
+  .sheet tr:focus-within .row-n { color: var(--green-dark); background: var(--green-soft); }
+  .sheet input, .sheet select {
+    width: 100%; height: 38px; border: 0; background: transparent;
+    padding: 0 12px; font-size: 13px; color: var(--ink);
+  }
+  .sheet input:focus, .sheet select:focus {
+    outline: 2px solid var(--green); outline-offset: -2px; background: #fff;
+  }
+  .sheet td.is-bad input { outline: 2px solid #e11d48; outline-offset: -2px; }
+  .csv-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    min-height: 280px; background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    color: var(--muted); font-size: 14px; font-weight: 650;
+  }
+  .csv-spin {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid #e5ebe8; border-top-color: var(--green);
+    animation: csv-spin .7s linear infinite;
+  }
+  @keyframes csv-spin { to { transform: rotate(360deg); } }
+  .review-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+  #csv-review .sheet-bar {
+    flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  #csv-review .sheet-bar > div:first-child { min-width: 0; }
+  .review-error { margin: 4px 0 0; color: #be123c; font-size: 13px; font-weight: 650; line-height: 1.4; }
+  .error-count {
+    height: 40px; padding: 0 14px; border-radius: 999px;
+    border: 1px solid #fecdd3; background: #fff1f2; color: #be123c;
+    font-size: 13px; font-weight: 700;
+  }
+  .error-count.is-on { background: #be123c; border-color: #be123c; color: #fff; }
+  #review-sheet td.cell {
+    padding: 0 12px; font-size: 13px; white-space: nowrap; color: var(--ink);
+  }
+  #review-sheet td.is-bad,
+  #review-sheet tr:hover td.is-bad {
+    background: #fff1f2; color: #be123c; box-shadow: inset 0 0 0 1px #fecdd3;
+  }
+  #review-sheet tr.is-error .row-n { color: #be123c; background: #ffe4e6; }
+
+  .results { display: flex; flex-direction: column; gap: 16px; padding: 18px; }
+  .results-ok {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: 12px;
+    background: var(--green-soft); color: var(--green-dark);
+    font-size: 15px; font-weight: 700;
+  }
+  .results-ok svg { width: 20px; height: 20px; flex: none; }
+  .results-pass {
+    border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden;
+  }
+  .results-pass-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    padding: 16px 16px 12px;
+  }
+  .results-pass h2 { margin: 0; font-family: var(--font); font-size: 18px; font-weight: 650; color: var(--ink); }
+  .results-pass p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; max-width: 520px; }
+  .results-table-wrap { overflow: auto; }
+  .results-table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  .results-table th, .results-table td {
+    padding: 12px 16px; text-align: left; border-top: 1px solid var(--line);
+    font-size: 14px; vertical-align: middle;
+  }
+  .results-table th { font-size: 12px; font-weight: 700; color: var(--muted); background: #f3f7f4; }
+  .results-table td:nth-child(3) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; letter-spacing: .02em;
+  }
+  .copy-btn {
+    width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 8px;
+    background: #fff; color: var(--ink); display: grid; place-items: center;
+  }
+  .copy-btn:hover { background: var(--ground); }
+  .copy-btn.is-on { border-color: var(--green); color: var(--green-dark); background: var(--green-soft); }
+  .results-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .results-created { border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+  .results-created h2 {
+    margin: 0; padding: 14px 16px; font-family: var(--font); font-size: 15px; font-weight: 650;
+    border-bottom: 1px solid var(--line); background: #fff;
+  }
+  .results-created .results-table-wrap { overflow: auto; }
+  .results-created table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  .results-created th, .results-created td {
+    padding: 12px 16px; text-align: left; border-top: 1px solid var(--line);
+    font-size: 14px; vertical-align: middle;
+  }
+  .results-created th { font-size: 12px; font-weight: 700; color: var(--muted); background: #f3f7f4; border-top: 0; }
+  .results-created td.check, .results-created th.check { width: 52px; text-align: center; padding-left: 8px; padding-right: 16px; }
+  .results-created .tick {
+    width: 22px; height: 22px; margin: 0 auto; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-dark);
+    display: grid; place-items: center;
+  }
+  .results-created .tick svg { width: 14px; height: 14px; }
+  .row-x {
+    width: 28px; height: 28px; margin: 0 auto; border: 0; border-radius: 7px;
+    background: transparent; color: var(--muted); font-size: 16px; line-height: 1;
+  }
+  .row-x:hover { background: #fff; color: #be123c; }
+
+  @media (max-width: 980px) {
+    .split { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; }
+    .menu-btn { display: grid; width: 40px; height: 40px; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650; text-decoration: none;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .content { padding-bottom: 88px; }
+    .btn, .email-opt, .video, .mode-btn, .sheet-mail select { min-height: 44px; }
+    .mode { width: 100%; }
+    .mode-btn { flex: 1; }
+    .sheet-actions { width: 100%; justify-content: stretch; }
+    .sheet-mail, .sheet-mail select { width: 100%; min-width: 0; }
+    .results-pass-head { flex-direction: column; }
+    .results-actions .btn { flex: 1; }
+    #csv-review .sheet-bar { flex-direction: column; align-items: stretch; }
+    #csv-review .review-actions { justify-content: flex-start; }
+    .sheet-scroll { max-height: calc(100vh - 320px); }
+    .page-head h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item is-on" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <h1 class="top-title">Bulk Upload Students</h1>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content" id="bulk-page">
+      <p class="note" id="preview-note" hidden></p>
+      <div class="mode" role="tablist" aria-label="How to add students">
+        <button class="mode-btn is-on" type="button" role="tab" id="mode-csv" aria-selected="true" aria-controls="csv-view" data-mode="csv">Upload a CSV</button>
+        <button class="mode-btn" type="button" role="tab" id="mode-sheet" aria-selected="false" aria-controls="sheet-view" data-mode="sheet">Fill a sheet</button>
+      </div>
+      <div class="split" id="csv-view" role="tabpanel" aria-labelledby="mode-csv">
+        <section class="work">
+          <div class="step-block">
+            <h2>1. Download the template</h2>
+            <a class="btn btn-primary" href="bulk-upload-template-2026-11-20.csv" download="bulk-upload-template-2026-11-20.csv"><i data-lucide="download"></i> Download template</a>
+            <p class="why">The template already uses the column names this upload accepts, plus one example row. Add one row for each student, then delete the #SAMPLE row so that example is not created as a real student.</p>
+          </div>
+          <div class="step-block">
+            <h2>2. Upload the students CSV</h2>
+            <div class="drop" data-drop>
+              <strong>Choose a CSV</strong>
+              <span data-file-name>No file chosen</span>
+              <button class="btn btn-ghost" type="button" data-choose>Choose file</button>
+              <input class="file-input" type="file" accept=".csv,text/csv" aria-label="Students CSV">
+            </div>
+            <div class="emails">
+              <p>Send welcome emails</p>
+              <label class="email-opt"><input type="radio" name="welcome" value="yes" checked> <span><strong>Yes,</strong> recommended. Limit is 100 students.</span></label>
+              <label class="email-opt"><input type="radio" name="welcome" value="no"> <span><strong>No.</strong> Passwords appear on the next page. Copy them before you leave.</span></label>
+            </div>
+            <p class="limit">Up to 500 students, or 100 when welcome emails are on.</p>
+            <button class="btn btn-primary" type="button" data-upload disabled><i data-lucide="upload"></i> Upload Students</button>
+          </div>
+        </section>
+        <aside class="rail" aria-label="Video and examples">
+          <div class="rail-block">
+            <h2>Watch the walkthrough</h2>
+            <p class="rail-copy">A short video shows how to fill each column and delete the sample row before you upload.</p>
+            <button class="video" type="button" data-video>
+              <span class="play"><i data-lucide="play"></i></span>
+              Play the guide
+            </button>
+          </div>
+          <div class="rail-block">
+            <h2>Field Guide</h2>
+            <p class="rail-copy">Open the list to see which fields are required and a sample value for each one.</p>
+            <button class="btn btn-ghost guide-btn" type="button" id="guide-toggle" aria-expanded="false" aria-controls="field-guide">
+              <i data-lucide="chevron-down"></i> Show examples
+            </button>
+            <div class="field-guide" id="field-guide" hidden>
+            <table>
+              <thead>
+                <tr><th>Column</th><th>Required?</th><th>Format / allowed values</th><th>Example</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>firstname</td><td class="req">Required</td><td>Text</td><td>Jane</td></tr>
+                <tr><td>lastname</td><td class="req">Required</td><td>Text</td><td>Doe</td></tr>
+                <tr><td>email</td><td class="req">Required</td><td>Valid email address, must be unique</td><td>jane.doe@example.com</td></tr>
+                <tr><td>username</td><td>Optional</td><td>Lowercase letters, numbers, underscores only. Leave blank to use the email address.</td><td>jane_doe</td></tr>
+                <tr><td>country</td><td>Optional</td><td>Two-letter country code. Defaults to US.</td><td>US</td></tr>
+                <tr><td>address</td><td>Optional</td><td>Text</td><td>123 Main St</td></tr>
+                <tr><td>city</td><td>Optional</td><td>Text</td><td>Springfield</td></tr>
+                <tr><td>postcode</td><td>Optional</td><td>Text</td><td>62704</td></tr>
+                <tr><td>joblocation</td><td>Optional</td><td>Text</td><td>Midwest</td></tr>
+                <tr><td>timezone</td><td>Optional</td><td>An exact IANA timezone name. Defaults to the site timezone.</td><td>America/Chicago</td></tr>
+                <tr><td>status</td><td>Optional</td><td>Active or Inactive. Defaults to Active.</td><td>Active</td></tr>
+                <tr><td>custom_rule_department</td><td>Optional</td><td>One of: Finance, HR, Recruitment, Welding, Electrical</td><td>—</td></tr>
+                <tr><td>custom_rule_location</td><td>Optional</td><td>One of: Texas, Lahore, U.S</td><td>—</td></tr>
+                <tr><td>custom_rule_gender</td><td>Optional</td><td>One of: Male, Female</td><td>—</td></tr>
+                <tr><td>custom_rule_test_attribute</td><td>Optional</td><td>One of: test1, test2</td><td>—</td></tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <section class="sheet-card" id="sheet-view" role="tabpanel" aria-labelledby="mode-sheet" hidden>
+        <div class="sheet-bar">
+          <div>
+            <h2>Students</h2>
+            <p>Type one student per row. First name, last name, and email are required. Leave a cell blank to use its default.</p>
+          </div>
+          <div class="sheet-actions">
+            <span class="sheet-count" id="sheet-count">0 ready</span>
+            <label class="sheet-mail">Welcome email
+              <select id="sheet-welcome">
+                <option value="yes">Yes, up to 100 students</option>
+                <option value="no">No, passwords on the next page</option>
+              </select>
+            </label>
+            <button class="btn btn-ghost" type="button" id="add-row"><i data-lucide="plus"></i> Add row</button>
+            <button class="btn btn-primary" type="button" id="add-students" disabled><i data-lucide="user-plus"></i> Add students</button>
+          </div>
+        </div>
+        <div class="sheet-scroll">
+          <table class="sheet" id="sheet"></table>
+        </div>
+      </section>
+      <div class="csv-loading" id="csv-loading" hidden>
+        <span class="csv-spin" aria-hidden="true"></span>
+        <p>Reading the students file…</p>
+      </div>
+      <section class="sheet-card" id="csv-review" hidden aria-label="Review uploaded students">
+        <div class="sheet-bar">
+          <div>
+            <h2>Review students</h2>
+            <p id="review-ready">0 students ready</p>
+            <p class="review-error" id="review-issue" hidden></p>
+          </div>
+          <div class="review-actions">
+            <button class="error-count" type="button" id="review-errors" hidden aria-pressed="false">0 errors</button>
+            <button class="btn btn-ghost" type="button" id="review-cancel">Cancel</button>
+            <button class="btn btn-ghost" type="button" id="review-reupload" hidden>Reupload</button>
+            <button class="btn btn-primary" type="button" id="review-continue">Continue</button>
+          </div>
+        </div>
+        <div class="sheet-scroll">
+          <table class="sheet" id="review-sheet"></table>
+        </div>
+      </section>
+      <section class="sheet-card" id="csv-results" hidden aria-label="Bulk upload results">
+        <div class="results">
+          <div class="results-ok" role="status">
+            <i data-lucide="circle-check"></i>
+            <span id="results-ok-text"></span>
+          </div>
+          <div class="results-pass" id="results-pass">
+            <div class="results-pass-head">
+              <div>
+                <h2>Save these passwords now</h2>
+                <p id="results-pass-copy">Copy these temporary passwords before you leave.</p>
+              </div>
+              <button class="btn btn-ghost" type="button" id="copy-all"><i data-lucide="copy"></i> <span>Copy all</span></button>
+            </div>
+            <div class="results-table-wrap">
+              <table class="results-table">
+                <thead>
+                  <tr><th>Name</th><th>Username</th><th>Temporary password</th><th></th></tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="results-created" id="results-created-block" hidden>
+            <h2 id="results-created-label">Created students</h2>
+            <div class="results-table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Row</th><th>Name</th><th>Email</th><th class="check"></th></tr>
+                </thead>
+                <tbody id="results-created"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="results-actions">
+            <a class="btn btn-primary" href="dashboard-company-users.html">Back to Students</a>
+            <button class="btn btn-ghost" type="button" id="upload-another">Upload another CSV</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a class="is-on" href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+  </div>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  if (window.lucide) lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  var guideBtn = document.getElementById("guide-toggle");
+  var guide = document.getElementById("field-guide");
+  guideBtn.addEventListener("click", function () {
+    var open = guide.hidden;
+    guide.hidden = !open;
+    guideBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    guideBtn.innerHTML = (open ? '<i data-lucide="chevron-down"></i> Hide examples' : '<i data-lucide="chevron-down"></i> Show examples');
+    if (window.lucide) lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  });
+
+  var note = document.getElementById("preview-note");
+  var noteTimer;
+  function showNote(text) {
+    note.textContent = text;
+    note.hidden = false;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () { note.hidden = true; }, 3200);
+  }
+
+  var input = document.querySelector(".file-input");
+  var upload = document.querySelector("[data-upload]");
+  var nameEl = document.querySelector("[data-file-name]");
+  var drop = document.querySelector("[data-drop]");
+  input.addEventListener("change", function () {
+    var file = input.files && input.files[0];
+    nameEl.textContent = file ? file.name : "No file chosen";
+    nameEl.classList.toggle("is-on", !!file);
+    upload.disabled = !file;
+    drop.classList.toggle("has-file", !!file);
+  });
+  document.querySelector("[data-choose]").addEventListener("click", function () { input.click(); });
+  drop.addEventListener("click", function (e) {
+    if (e.target.closest("button, input")) return;
+    input.click();
+  });
+  document.querySelector("[data-video]").addEventListener("click", function () {
+    showNote("The how-to video is not in this preview.");
+  });
+  upload.addEventListener("click", function () {
+    if (upload.disabled || !input.files || !input.files[0]) return;
+    startCsvReview(input.files[0]);
+  });
+
+  var COLS = [
+    { key: "firstname", label: "First name", required: true, width: 150 },
+    { key: "lastname", label: "Last name", required: true, width: 150 },
+    { key: "email", label: "Email", required: true, width: 230 },
+    { key: "username", label: "Username", width: 160, placeholder: "Uses email" },
+    { key: "country", label: "Country", width: 110, placeholder: "US" },
+    { key: "address", label: "Address", width: 180 },
+    { key: "city", label: "City", width: 140 },
+    { key: "postcode", label: "Postcode", width: 110 },
+    { key: "joblocation", label: "Job location", width: 150 },
+    { key: "timezone", label: "Timezone", width: 190, placeholder: "Site timezone" },
+    { key: "status", label: "Status", width: 130, options: ["Active", "Inactive"] },
+    { key: "custom_rule_department", label: "Department", width: 170, options: ["", "Finance", "HR", "Recruitment", "Welding", "Electrical"] },
+    { key: "custom_rule_location", label: "Location", width: 140, options: ["", "Texas", "Lahore", "U.S"] },
+    { key: "custom_rule_gender", label: "Gender", width: 120, options: ["", "Male", "Female"] },
+    { key: "custom_rule_test_attribute", label: "Test attribute", width: 150, options: ["", "test1", "test2"] }
+  ];
+  var sheet = document.getElementById("sheet");
+  var addStudents = document.getElementById("add-students");
+  var sheetCount = document.getElementById("sheet-count");
+  var rows = [];
+
+  function blankRow() {
+    var row = {};
+    COLS.forEach(function (col) { row[col.key] = col.key === "status" ? "Active" : ""; });
+    return row;
+  }
+  for (var n = 0; n < 6; n++) rows.push(blankRow());
+
+  function esc(value) {
+    return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+  function isEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
+  }
+  function rowLimit() {
+    return document.getElementById("sheet-welcome").value === "yes" ? 100 : 500;
+  }
+  function readyCount() {
+    return rows.filter(function (row) {
+      return row.firstname.trim() && row.lastname.trim() && isEmail(row.email);
+    }).length;
+  }
+  function refreshReady() {
+    var count = readyCount();
+    sheetCount.textContent = count === 1 ? "1 student ready" : count + " students ready";
+    addStudents.disabled = count === 0;
+  }
+  function renderSheet(focus) {
+    var html = "<thead><tr><th class=\"corner\"></th>";
+    COLS.forEach(function (col) {
+      html += "<th style=\"min-width:" + col.width + "px\">" + col.label +
+        (col.required ? " <span class=\"req-mark\">*</span>" : "") +
+        "<span class=\"col-key\">" + col.key + "</span></th>";
+    });
+    html += "<th class=\"row-end\"></th></tr></thead><tbody>";
+    rows.forEach(function (row, index) {
+      html += "<tr><td class=\"row-n\">" + (index + 1) + "</td>";
+      COLS.forEach(function (col) {
+        var value = row[col.key] || "";
+        var bad = col.key === "email" && value && !isEmail(value) ? "is-bad" : "";
+        html += "<td class=\"" + bad + "\" style=\"min-width:" + col.width + "px\">";
+        if (col.options) {
+          html += "<select data-row=\"" + index + "\" data-key=\"" + col.key + "\" aria-label=\"Row " + (index + 1) + " " + col.label + "\">";
+          col.options.forEach(function (opt) {
+            html += "<option value=\"" + esc(opt) + "\"" + (value === opt ? " selected" : "") + ">" + esc(opt || "—") + "</option>";
+          });
+          html += "</select>";
+        } else {
+          html += "<input data-row=\"" + index + "\" data-key=\"" + col.key + "\" value=\"" + esc(value) + "\" placeholder=\"" + esc(col.placeholder || "") + "\" aria-label=\"Row " + (index + 1) + " " + col.label + "\">";
+        }
+        html += "</td>";
+      });
+      html += "<td class=\"row-end\"><button class=\"row-x\" type=\"button\" data-remove=\"" + index + "\" aria-label=\"Remove row " + (index + 1) + "\">&times;</button></td></tr>";
+    });
+    html += "</tbody>";
+    sheet.innerHTML = html;
+    refreshReady();
+    if (focus) {
+      var next = sheet.querySelector("[data-row=\"" + focus.row + "\"][data-key=\"" + focus.key + "\"]");
+      if (next) next.focus();
+    }
+  }
+  function addRow() {
+    if (rows.length >= rowLimit()) {
+      showNote("This sheet holds up to " + rowLimit() + " students with the welcome email choice you picked.");
+      return false;
+    }
+    rows.push(blankRow());
+    renderSheet({ row: rows.length - 1, key: "firstname" });
+    return true;
+  }
+
+  document.querySelectorAll(".mode-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var mode = btn.getAttribute("data-mode");
+      document.querySelectorAll(".mode-btn").forEach(function (item) {
+        var on = item === btn;
+        item.classList.toggle("is-on", on);
+        item.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.getElementById("csv-loading").hidden = true;
+      document.getElementById("csv-review").hidden = true;
+      document.getElementById("csv-results").hidden = true;
+      document.querySelector(".mode").hidden = false;
+      document.getElementById("csv-view").hidden = mode !== "csv";
+      document.getElementById("sheet-view").hidden = mode !== "sheet";
+    });
+  });
+  sheet.addEventListener("input", function (e) {
+    var el = e.target;
+    if (el.dataset.row == null || !el.dataset.key) return;
+    rows[+el.dataset.row][el.dataset.key] = el.value;
+    if (el.dataset.key === "email") el.parentNode.classList.toggle("is-bad", !!el.value && !isEmail(el.value));
+    refreshReady();
+  });
+  sheet.addEventListener("change", function (e) {
+    var el = e.target;
+    if (el.dataset.row == null || !el.dataset.key) return;
+    rows[+el.dataset.row][el.dataset.key] = el.value;
+    refreshReady();
+  });
+  sheet.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || !e.target.dataset || !e.target.dataset.key) return;
+    e.preventDefault();
+    var row = +e.target.dataset.row;
+    var key = e.target.dataset.key;
+    if (row === rows.length - 1) {
+      if (rows.length >= rowLimit()) {
+        showNote("This sheet holds up to " + rowLimit() + " students with the welcome email choice you picked.");
+        return;
+      }
+      rows.push(blankRow());
+      renderSheet({ row: row + 1, key: key });
+      return;
+    }
+    var next = sheet.querySelector("[data-row=\"" + (row + 1) + "\"][data-key=\"" + key + "\"]");
+    if (next) next.focus();
+  });
+  sheet.addEventListener("paste", function (e) {
+    var text = (e.clipboardData || window.clipboardData).getData("text");
+    var el = e.target;
+    if (!text || !el.dataset || !el.dataset.key) return;
+    if (text.indexOf("\t") < 0 && text.indexOf("\n") < 0) return;
+    e.preventDefault();
+    var startRow = +el.dataset.row;
+    var startCol = -1;
+    COLS.forEach(function (col, index) { if (col.key === el.dataset.key) startCol = index; });
+    text.replace(/\r/g, "").replace(/\n$/, "").split("\n").forEach(function (line, r) {
+      var rowIndex = startRow + r;
+      if (rowIndex >= rowLimit()) return;
+      while (rows.length <= rowIndex) rows.push(blankRow());
+      line.split("\t").forEach(function (part, c) {
+        var col = COLS[startCol + c];
+        if (!col) return;
+        var value = part.trim();
+        if (col.options) {
+          var match = col.options.filter(function (opt) { return opt.toLowerCase() === value.toLowerCase(); })[0];
+          if (match == null) return;
+          value = match;
+        }
+        rows[rowIndex][col.key] = value;
+      });
+    });
+    renderSheet({ row: startRow, key: el.dataset.key });
+  });
+  sheet.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-remove]");
+    if (!btn) return;
+    if (rows.length === 1) rows[0] = blankRow();
+    else rows.splice(+btn.getAttribute("data-remove"), 1);
+    renderSheet();
+  });
+  document.getElementById("add-row").addEventListener("click", addRow);
+  document.getElementById("sheet-welcome").addEventListener("change", function () {
+    if (rows.length > rowLimit()) {
+      showNote("Welcome emails are on, so this add stays within 100 students. Remove extra rows before you continue.");
+    }
+  });
+  addStudents.addEventListener("click", function () {
+    var count = readyCount();
+    if (!count) return;
+    if (document.getElementById("sheet-welcome").value === "yes" && count > 100) {
+      showNote("Welcome emails are on, so keep this sheet to 100 ready students.");
+      return;
+    }
+    showNote("Adding " + count + (count === 1 ? " student" : " students") + " from the sheet is not in this preview.");
+  });
+  renderSheet();
+
+  var reviewRows = [];
+  var reviewIssue = "";
+  var reviewErrorsOnly = false;
+  var reviewSheet = document.getElementById("review-sheet");
+  var reviewReady = document.getElementById("review-ready");
+  var reviewIssueEl = document.getElementById("review-issue");
+  var reviewErrors = document.getElementById("review-errors");
+  var reviewContinue = document.getElementById("review-continue");
+  var reviewReupload = document.getElementById("review-reupload");
+
+  function parseCsv(text) {
+    var table = [];
+    var row = [];
+    var cell = "";
+    var quoted = false;
+    text = String(text).replace(/^\uFEFF/, "");
+    for (var i = 0; i < text.length; i++) {
+      var ch = text.charAt(i);
+      if (quoted) {
+        if (ch === "\"") {
+          if (text.charAt(i + 1) === "\"") { cell += "\""; i++; }
+          else quoted = false;
+        } else cell += ch;
+      } else if (ch === "\"") quoted = true;
+      else if (ch === ",") { row.push(cell); cell = ""; }
+      else if (ch === "\n") { row.push(cell); table.push(row); row = []; cell = ""; }
+      else if (ch !== "\r") cell += ch;
+    }
+    if (cell.length || row.length) { row.push(cell); table.push(row); }
+    return table.filter(function (line) {
+      return line.some(function (part) { return String(part).trim(); });
+    });
+  }
+  function emailNeedsFix(value) {
+    var email = String(value || "").trim();
+    return !email || email.indexOf("@") < 0 || email.indexOf(".") < 0;
+  }
+  function usernameNeedsFix(value) {
+    var name = String(value || "").trim();
+    return !!name && !/^[a-z0-9_]+$/.test(name);
+  }
+  function reviewCellError(row, key) {
+    if (key === "firstname") return !String(row.firstname || "").trim();
+    if (key === "lastname") return !String(row.lastname || "").trim();
+    if (key === "email") return emailNeedsFix(row.email);
+    if (key === "username") return usernameNeedsFix(row.username);
+    return false;
+  }
+  function reviewRowError(row) {
+    return reviewCellError(row, "firstname") || reviewCellError(row, "lastname") || reviewCellError(row, "email") || reviewCellError(row, "username");
+  }
+  function reviewErrorLabel(count) {
+    var label = count === 1 ? "1 error" : count + " errors";
+    return reviewErrorsOnly ? "Showing " + label : label;
+  }
+  function csvToRows(text) {
+    reviewIssue = "";
+    var table = parseCsv(text);
+    if (!table.length) {
+      reviewIssue = "This file has no student rows.";
+      return [];
+    }
+    var header = table[0].map(function (name) { return String(name).trim().toLowerCase(); });
+    var known = COLS.some(function (col) { return header.indexOf(col.key) >= 0; });
+    if (!known) {
+      reviewIssue = "The first row needs the column names, including firstname, lastname, and email.";
+      return [];
+    }
+    var out = [];
+    table.slice(1).forEach(function (cells) {
+      var row = blankRow();
+      var any = false;
+      COLS.forEach(function (col) {
+        var idx = header.indexOf(col.key);
+        if (idx < 0) return;
+        var value = cells[idx] != null ? String(cells[idx]).trim() : "";
+        if (value) any = true;
+        if (col.options) {
+          if (!value && col.key === "status") row[col.key] = "Active";
+          else {
+            var match = col.options.filter(function (opt) { return opt.toLowerCase() === value.toLowerCase(); })[0];
+            row[col.key] = match != null ? match : value;
+          }
+        } else row[col.key] = value;
+      });
+      if (any) out.push(row);
+    });
+    if (!out.length) reviewIssue = "This file has no student rows.";
+    return out;
+  }
+  function refreshReview() {
+    var problems = reviewRows.filter(reviewRowError).length;
+    var ready = reviewRows.length - problems;
+    reviewReady.textContent = ready === 1 ? "1 student ready" : ready + " students ready";
+    reviewIssueEl.textContent = reviewIssue;
+    reviewIssueEl.hidden = !reviewIssue;
+    reviewErrors.textContent = reviewErrorLabel(problems);
+    reviewErrors.hidden = !problems;
+    reviewErrors.classList.toggle("is-on", reviewErrorsOnly && !!problems);
+    reviewErrors.setAttribute("aria-pressed", reviewErrorsOnly && problems ? "true" : "false");
+    reviewReupload.hidden = !problems && !reviewIssue;
+    reviewContinue.disabled = !reviewRows.length;
+  }
+  function renderReview() {
+    var html = "<thead><tr><th class=\"corner\"></th>";
+    COLS.forEach(function (col) {
+      html += "<th style=\"min-width:" + col.width + "px\">" + col.label +
+        (col.required ? " <span class=\"req-mark\">*</span>" : "") +
+        "<span class=\"col-key\">" + col.key + "</span></th>";
+    });
+    html += "</tr></thead><tbody>";
+    reviewRows.forEach(function (row, index) {
+      var rowBad = reviewRowError(row);
+      if (reviewErrorsOnly && !rowBad) return;
+      html += "<tr class=\"" + (rowBad ? "is-error" : "") + "\"><td class=\"row-n\">" + (index + 1) + "</td>";
+      COLS.forEach(function (col) {
+        var value = row[col.key] || "";
+        var bad = reviewCellError(row, col.key);
+        var reason = "";
+        if (bad && col.key === "firstname") reason = "First name is required";
+        if (bad && col.key === "lastname") reason = "Last name is required";
+        if (bad && col.key === "email") reason = String(value).trim() ? "Email needs @ and a period" : "Email is required";
+        if (bad && col.key === "username") reason = "Username can only use lowercase letters, numbers, and underscores";
+        var shown = String(value).trim() ? value : (reason || "—");
+        html += "<td class=\"cell" + (bad ? " is-bad" : "") + "\" style=\"min-width:" + col.width + "px\"" + (reason ? " title=\"" + esc(reason) + "\"" : "") + ">" + esc(shown) + "</td>";
+      });
+      html += "</tr>";
+    });
+    html += "</tbody>";
+    reviewSheet.innerHTML = html;
+    refreshReview();
+  }
+  function showCsvScreen() {
+    document.getElementById("csv-loading").hidden = true;
+    document.getElementById("csv-review").hidden = true;
+    document.getElementById("csv-results").hidden = true;
+    document.querySelector(".top-title").textContent = "Bulk Upload Students";
+    document.querySelector(".mode").hidden = false;
+    document.getElementById("csv-view").hidden = false;
+    document.getElementById("sheet-view").hidden = true;
+    document.querySelectorAll(".mode-btn").forEach(function (item) {
+      var on = item.getAttribute("data-mode") === "csv";
+      item.classList.toggle("is-on", on);
+      item.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+  function clearChosenFile() {
+    input.value = "";
+    nameEl.textContent = "No file chosen";
+    nameEl.classList.remove("is-on");
+    upload.disabled = true;
+    drop.classList.remove("has-file");
+  }
+  function startCsvReview(file) {
+    document.querySelector(".mode").hidden = true;
+    document.getElementById("csv-view").hidden = true;
+    document.getElementById("sheet-view").hidden = true;
+    document.getElementById("csv-review").hidden = true;
+    document.getElementById("csv-results").hidden = true;
+    document.getElementById("csv-loading").hidden = false;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var text = String(reader.result || "");
+      setTimeout(function () {
+        reviewErrorsOnly = false;
+        reviewRows = csvToRows(text);
+        renderReview();
+        document.getElementById("csv-loading").hidden = true;
+        document.getElementById("csv-review").hidden = false;
+      }, 700);
+    };
+    reader.onerror = function () {
+      showCsvScreen();
+      showNote("That file could not be read. Choose the CSV again.");
+    };
+    reader.readAsText(file);
+  }
+  reviewErrors.addEventListener("click", function () {
+    if (reviewErrors.hidden) return;
+    reviewErrorsOnly = !reviewErrorsOnly;
+    renderReview();
+  });
+  document.getElementById("review-cancel").addEventListener("click", showCsvScreen);
+  reviewReupload.addEventListener("click", function () {
+    clearChosenFile();
+    showCsvScreen();
+    input.click();
+  });
+  function tempPassword(seed) {
+    var chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    var n = 0;
+    var i;
+    for (i = 0; i < seed.length; i++) n = (n * 33 + seed.charCodeAt(i)) >>> 0;
+    var out = "";
+    for (i = 0; i < 10; i++) {
+      n = (n * 1664525 + 1013904223) >>> 0;
+      out += chars.charAt(n % chars.length);
+    }
+    return out;
+  }
+  function showResults() {
+    var people = reviewRows.map(function (row, index) {
+      var name = (String(row.firstname || "").trim() + " " + String(row.lastname || "").trim()).trim() || "Student";
+      var username = String(row.username || "").trim() || String(row.email || "").trim();
+      return {
+        line: index + 2,
+        name: name,
+        email: String(row.email || "").trim(),
+        username: username,
+        password: tempPassword(name + "|" + username)
+      };
+    });
+    var count = people.length;
+    var welcome = document.querySelector("input[name=\"welcome\"]:checked");
+    var emailsOn = !welcome || welcome.value !== "no";
+    document.getElementById("results-ok-text").textContent = count === 1
+      ? "1 student created successfully."
+      : count + " students created successfully.";
+    document.getElementById("results-pass").hidden = emailsOn;
+    document.getElementById("results-created-block").hidden = !emailsOn;
+    if (emailsOn) {
+      document.getElementById("results-created-label").textContent = "Created students (" + count + ")";
+      document.getElementById("results-created").innerHTML = people.map(function (person) {
+        var who = person.email || person.username || "—";
+        return "<tr><td>" + person.line + "</td><td>" + esc(person.name) + "</td><td>" + esc(who) + "</td><td class=\"check\"><span class=\"tick\" aria-label=\"Created\"><i data-lucide=\"check\"></i></span></td></tr>";
+      }).join("");
+    } else {
+      document.getElementById("results-pass-copy").textContent = "Welcome emails are off, so this page is the only place these passwords appear. Copy them before you leave.";
+      document.getElementById("results-body").innerHTML = people.map(function (person, index) {
+        return "<tr><td>" + esc(person.name) + "</td><td>" + esc(person.username) + "</td><td>" + esc(person.password) + "</td><td><button class=\"copy-btn\" type=\"button\" data-copy=\"" + index + "\" aria-label=\"Copy password for " + esc(person.name) + "\"><i data-lucide=\"copy\"></i></button></td></tr>";
+      }).join("");
+      document.getElementById("csv-results").dataset.passwords = people.map(function (person) {
+        return person.name + "\t" + person.username + "\t" + person.password;
+      }).join("\n");
+      document.getElementById("csv-results").dataset.people = JSON.stringify(people);
+    }
+    document.querySelector(".mode").hidden = true;
+    document.getElementById("csv-view").hidden = true;
+    document.getElementById("csv-review").hidden = true;
+    document.getElementById("csv-results").hidden = false;
+    document.querySelector(".top-title").textContent = "Bulk Upload Results";
+    if (window.lucide) lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  }
+  document.getElementById("copy-all").addEventListener("click", function () {
+    var button = document.getElementById("copy-all");
+    var text = "Name\tUsername\tTemporary password\n" + (document.getElementById("csv-results").dataset.passwords || "");
+    var label = button.querySelector("span");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        if (label) label.textContent = "Copied";
+        setTimeout(function () { if (label) label.textContent = "Copy all"; }, 1600);
+      }, function () { showNote("Copy the passwords from the list before you leave."); });
+    } else showNote("Copy the passwords from the list before you leave.");
+  });
+  document.getElementById("results-body").addEventListener("click", function (e) {
+    var button = e.target.closest("[data-copy]");
+    if (!button) return;
+    var people = [];
+    try { people = JSON.parse(document.getElementById("csv-results").dataset.people || "[]"); } catch (err) { people = []; }
+    var person = people[+button.getAttribute("data-copy")];
+    if (!person) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(person.password).then(function () {
+        button.classList.add("is-on");
+        setTimeout(function () { button.classList.remove("is-on"); }, 1600);
+      });
+    }
+  });
+  document.getElementById("upload-another").addEventListener("click", function () {
+    clearChosenFile();
+    showCsvScreen();
+  });
+  reviewContinue.addEventListener("click", function () {
+    if (reviewContinue.disabled) return;
+    showResults();
+  });
+
+  var menuBtn = document.getElementById("menu-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () { setNav(!document.body.classList.contains("nav-open")); });
+  document.getElementById("user-btn").addEventListener("click", function () { setNav(true); });
+  document.getElementById("side-close").addEventListener("click", function () { setNav(false); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+})();
+</script>
+</body>
+</html>

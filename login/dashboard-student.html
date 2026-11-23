@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --btn: #6fef7e;
+    --btn-ink: #0c2030;
+    --btn-hover: #56e066;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  /* Sidebar — matches original eTraining admin */
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-copy { line-height: 1.15; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on {
+    background: var(--green); color: #fff;
+  }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff;
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  /* Main */
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 16px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .logged-in { font-size: 13px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center; position: relative;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .side-close { margin-left: auto; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 12px; font-weight: 700;
+  }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .signout:hover { text-decoration: underline; }
+
+  .content { padding: 24px 28px 36px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* Stats row — original 4 cards */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
+  }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 20px 18px; position: relative; min-height: 110px;
+  }
+  .stat-label { margin: 0; font-size: 13px; color: var(--muted); font-weight: 500; }
+  .stat-value {
+    margin: 10px 0 0; font-family: var(--font); font-size: 36px; font-weight: 700;
+    letter-spacing: -.03em; line-height: 1; color: var(--ink);
+  }
+  .stat-sub { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+  .stat-icon {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 10px; background: var(--green-soft); color: var(--green);
+    display: grid; place-items: center;
+  }
+
+  /* Content row — welcome left, events + quick actions right */
+  .row {
+    display: grid; grid-template-columns: 1.35fr .9fr; gap: 16px; align-items: start;
+  }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .welcome { min-height: 280px; }
+  .welcome h2 {
+    margin: 0; font-family: var(--font); font-size: 20px; font-weight: 600;
+    letter-spacing: -.02em; line-height: 1.35; color: var(--ink);
+  }
+  .welcome p {
+    margin: 12px 0 0; max-width: 52ch; font-size: 14px; line-height: 1.55; color: var(--muted);
+  }
+
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card-title { margin: 0; font-family: var(--font); font-size: 16px; font-weight: 600; }
+  .view-all { font-size: 13px; font-weight: 600; color: var(--green); }
+  .view-all:hover { text-decoration: underline; }
+
+  .empty-events {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 28px 12px 16px; gap: 10px;
+  }
+  .empty-events .art {
+    width: 56px; height: 56px; border-radius: 14px; background: var(--ground); color: #9aabba;
+    display: grid; place-items: center;
+  }
+  .empty-events .art svg { width: 26px; height: 26px; }
+  .empty-events p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  .actions { display: flex; flex-direction: column; gap: 10px; }
+  .action {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px;
+    padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff;
+    color: var(--ink); font-size: 14px; font-weight: 500; text-align: left;
+  }
+  .action svg { color: var(--green); flex: none; }
+  .action:hover { border-color: #b7dbc4; background: #fbfefc; }
+
+  @media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding-bottom: 76px; }
+    .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease; box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .crumb-current { max-width: 46vw; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650;
+      font-family: inherit; text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .logged-in { display: none; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Student navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div class="brand-copy">
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <button class="nav-item is-on" type="button"><i data-lucide="home"></i> Home</button>
+        <button class="nav-item" type="button"><i data-lucide="book-open"></i> My Courses</button>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="award"></i> Certificates</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <h1 class="top-title">Dashboard</h1>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <span class="logged-in">You are logged in as student</span>
+        <span class="avatar" aria-hidden="true">ST</span>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="stats" aria-label="Key metrics">
+        <article class="stat">
+          <span class="stat-icon" aria-hidden="true"><i data-lucide="users"></i></span>
+          <p class="stat-label">Courses Assigned</p>
+          <p class="stat-value">3</p>
+          <p class="stat-sub">Assigned to you</p>
+        </article>
+        <article class="stat">
+          <span class="stat-icon" aria-hidden="true"><i data-lucide="book-open"></i></span>
+          <p class="stat-label">In Progress</p>
+          <p class="stat-value">1</p>
+          <p class="stat-sub">Fall Protection · 45%</p>
+        </article>
+        <article class="stat">
+          <span class="stat-icon" aria-hidden="true"><i data-lucide="calendar-days"></i></span>
+          <p class="stat-label">Completed</p>
+          <p class="stat-value">1</p>
+          <p class="stat-sub">Back Safety certificate</p>
+        </article>
+        <article class="stat">
+          <span class="stat-icon" aria-hidden="true"><i data-lucide="calendar-clock"></i></span>
+          <p class="stat-label">Due Soon</p>
+          <p class="stat-value">1</p>
+          <p class="stat-sub">OSHA 10 · due Fri</p>
+        </article>
+      </section>
+
+      <div class="row">
+        <section class="card welcome">
+          <h2>Welcome to your eTraining LMS Dashboard.</h2>
+          <p>Pick up where you left off. Finish due courses first, then explore what’s next.</p>
+        </section>
+
+        <div class="stack">
+          <section class="card">
+            <div class="card-head">
+              <h2 class="card-title">Upcoming</h2>
+              <a class="view-all" href="#">View all</a>
+            </div>
+            <div class="empty-events">
+              <span class="art" aria-hidden="true"><i data-lucide="calendar"></i></span>
+              <p>No live events yet</p>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h2 class="card-title">Shortcuts</h2>
+            </div>
+            <div class="actions">
+              <button class="action" type="button"><i data-lucide="play-circle"></i> Resume current course</button>
+              <button class="action" type="button"><i data-lucide="book-open"></i> Browse my courses</button>
+              <button class="action" type="button"><i data-lucide="award"></i> View certificates</button>
+              <button class="action" type="button"><i data-lucide="calendar"></i> Open calendar</button>
+              <button class="action" type="button"><i data-lucide="life-buoy"></i> Contact support</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <button type="button" class="is-on"><i data-lucide="home"></i><span>Home</span></button>
+      <button type="button"><i data-lucide="book-open"></i><span>My Courses</span></button>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="award"></i><span>Certificates</span></button>
+    </nav>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+  lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+</script>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("menu-btn");
+  var userBtn = document.getElementById("user-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!menuBtn || !backdrop) return;
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+})();
+</script>
+</body>
+</html>

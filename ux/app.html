@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eTraining LMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #122033;
+    --muted: #5c6b7a;
+    --link: #0f6b45;
+    --err: #b42318;
+    --line: #e3e8ee;
+    --teal: #12805a;
+    --btn: #6fef7e;
+    --btn-ink: #0c2030;
+    --btn-hover: #56e066;
+    --ground: #f5f7f8;
+    --side: #0B2C4A;
+    --side-hover: #143A5C;
+    --green: #1B8A4A;
+    --green-dark: #146C3A;
+    --green-bg: #EEF8F1;
+    --err-bg: #FEF3F2;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: var(--ui); color: var(--ink); background: var(--ground); }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+
+  /* ——— Auth (matches sign-in-on-action) ——— */
+  #auth {
+    min-height: 100%; display: flex; flex-direction: column; background: var(--ground);
+    font-family: var(--font);
+  }
+  .site-nav {
+    flex: none; height: 68px; padding: 0 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: #0d3c66; color: #fff;
+  }
+  .site-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .site-mark {
+    width: 42px; height: 42px; border-radius: 8px; background: #fff; flex: none;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .site-mark img { width: 34px; height: 34px; object-fit: contain; }
+  .site-name { font-size: 18px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
+  .site-rule { width: 1px; height: 28px; background: rgba(255,255,255,.4); flex: none; }
+  .site-powered { font-size: 14px; font-weight: 500; color: #c9d6e6; white-space: nowrap; }
+  .et-logo { height: 28px; width: auto; display: block; }
+  .auth-inner { flex: 1; display: flex; min-height: 0; }
+  .auth-form {
+    width: 50%; min-height: 100%; display: flex; align-items: safe center; justify-content: center;
+    overflow: auto; background: #fff;
+  }
+  .form-container { width: min(440px, 88%); display: flex; flex-direction: column; gap: 26px; padding: 40px 0 80px; }
+  .sh1 { margin: 0; font-size: 34px; font-weight: 600; letter-spacing: -.03em; line-height: 1.15; }
+  .lead { margin: 8px 0 0; font-size: 16px; line-height: 1.5; color: var(--muted); font-weight: 400; }
+  .form-label { display: block; margin: 0 0 8px; color: #243140; font-size: 13px; font-weight: 600; }
+  .form-input {
+    width: 100%; height: 52px; border: 1px solid var(--line); border-radius: 12px;
+    background: #fff; color: var(--ink); font-size: 16px; padding: 0 16px;
+  }
+  .form-input:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 4px rgba(18,128,90,.14); }
+  .form-input.error { border-color: #e7b4ae; background: #fffafa; }
+  .form-input.is-ok { border-color: #12805a; }
+  .id-field, .password-field { position: relative; }
+  .id-field .form-input { padding-right: 84px; }
+  .password-field .form-input { padding-right: 48px; }
+  .id-check {
+    position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; display: grid; place-items: center; color: #12805a;
+  }
+  .id-help, .btn-eye {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border: 0; background: transparent; color: #66768a;
+    border-radius: 8px; display: grid; place-items: center; padding: 0;
+  }
+  .btn-eye .i-hide { display: none; }
+  .btn-eye[aria-label="Hide password"] .i-show { display: none; }
+  .btn-eye[aria-label="Hide password"] .i-hide { display: block; }
+  .field-error { margin-top: 8px; color: var(--err); font-size: 13px; font-weight: 600; }
+  .nudge {
+    border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.45; font-weight: 600;
+  }
+  .nudge-bad { background: #fef3f2; color: #7a271a; border: 1px solid #f1b8b2; }
+  .btn-login {
+    width: 100%; min-height: 52px; border: 0; border-radius: 999px; padding: 12px 16px;
+    background: var(--btn); color: var(--btn-ink); font-family: var(--font);
+    font-size: 17px; font-weight: 700;
+  }
+  .btn-login:hover { background: var(--btn-hover); }
+  .bottom-text { margin-top: -8px; }
+  .bottom-text a { color: var(--link); font-weight: 700; text-decoration: none; font-size: 15px; }
+  .help-panel {
+    width: 50%; background: #fff; border-left: 1px solid #e7edf2;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px; gap: 14px;
+  }
+  .help-panel h2 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -.03em; }
+  .help-panel p { margin: 0; max-width: 420px; color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .help-panel img { width: min(100%, 360px); height: auto; margin: 8px 0; }
+  .demo-hint {
+    margin: 0; padding: 10px 12px; background: #f4f7fb; border-radius: 10px;
+    font-size: 13px; color: var(--muted); text-align: left; width: min(100%, 360px);
+  }
+  .demo-hint code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+  /* ——— App shell ——— */
+  #app { height: 100%; display: grid; grid-template-columns: 228px minmax(0, 1fr); }
+  .sidebar {
+    background: var(--side); color: #D7E2EE; padding: 16px 12px;
+    display: flex; flex-direction: column; gap: 14px; overflow: auto;
+  }
+  .side-brand {
+    display: flex; align-items: center; gap: 10px; padding: 4px 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .side-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .side-mark img { width: 28px; height: 28px; object-fit: contain; }
+  .side-brand strong { display: block; color: #fff; font-size: 14px; }
+  .side-brand span { font-size: 11px; color: #9BB0C5; }
+  .nav-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: #7E95AB; padding: 8px 10px 4px;
+  }
+  .nav-item {
+    display: flex; width: 100%; align-items: center; gap: 10px; border: 0; background: transparent;
+    color: #D7E2EE; text-align: left; padding: 9px 10px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; font-family: var(--font);
+  }
+  .nav-item:hover { background: var(--side-hover); color: #fff; }
+  .nav-item[aria-current="page"] { background: rgba(27,138,74,.22); color: #fff; }
+  .side-foot { margin-top: auto; padding: 8px; display: grid; gap: 8px; }
+  .report-btn, .signout-btn {
+    width: 100%; border: 0; border-radius: 8px; font-weight: 700; font-size: 13px; padding: 10px 12px;
+    font-family: var(--font);
+  }
+  .report-btn { background: var(--green); color: #fff; }
+  .signout-btn { background: transparent; color: #D7E2EE; border: 1px solid rgba(255,255,255,.18); }
+
+  .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--ground); }
+  .topbar {
+    background: #fff; border-bottom: 1px solid var(--line);
+    padding: 10px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: none;
+  }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+  .crumbs button {
+    border: 0; background: none; color: var(--teal); font-weight: 700; font-size: 13px; padding: 0;
+  }
+  .crumbs span[aria-current="page"] { color: var(--ink); font-weight: 700; }
+  .who { font-size: 13px; font-weight: 600; color: var(--muted); font-family: var(--font); }
+  .content { padding: 16px 22px 24px; overflow: auto; flex: 1; display: grid; gap: 14px; align-content: start; }
+
+  .page-title { margin: 0; font-family: var(--font); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+  .page-lead { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .course-card {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    display: flex; flex-direction: column; text-align: left;
+  }
+  .course-card .thumb {
+    height: 120px; background: linear-gradient(145deg, #F4E8C8, #E8D49A);
+    display: grid; place-items: center; font-size: 32px;
+  }
+  .course-card .body { padding: 14px 16px 16px; display: grid; gap: 8px; flex: 1; }
+  .course-card h3 { margin: 0; font-family: var(--font); font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .course-card p { margin: 0; font-size: 13px; color: var(--muted); }
+  .course-card .meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--muted); }
+  .pill {
+    display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+    border-radius: 999px; padding: 3px 8px; background: var(--green-bg); color: var(--green-dark);
+  }
+  .btn {
+    border: 0; border-radius: 10px; font-weight: 700; font-size: 14px;
+    padding: 10px 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--font);
+  }
+  .btn-primary { background: var(--btn); color: var(--btn-ink); }
+  .btn-primary:hover { background: var(--btn-hover); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-solid { background: var(--green); color: #fff; }
+  .btn-solid:hover { background: var(--green-dark); }
+  .btn-solid:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: #fafbfc; }
+  .btn-ghost:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-danger {
+    background: #fff; color: var(--err); border: 1.5px solid #f1b8b2;
+  }
+  .btn-danger:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-sm { padding: 8px 12px; font-size: 13px; }
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .stat {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  }
+  .stat .label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .stat .value { margin-top: 4px; font-family: var(--font); font-size: 28px; font-weight: 700; }
+
+  /* Assign / dual list */
+  .course-bar {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; display: flex; gap: 12px; align-items: center;
+  }
+  .course-thumb {
+    width: 48px; height: 48px; border-radius: 10px; flex: none;
+    background: linear-gradient(145deg, #F4E8C8, #E8D49A);
+    display: grid; place-items: center; font-size: 20px;
+  }
+  .course-meta h1 { margin: 0; font-family: var(--font); font-size: 17px; font-weight: 600; }
+  .meta-row { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 12px; color: var(--muted); }
+  .tabs {
+    display: flex; gap: 2px; overflow-x: auto; background: #fff;
+    border: 1px solid var(--line); border-radius: 10px; padding: 4px;
+  }
+  .tab {
+    border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: 13px;
+    padding: 8px 12px; border-radius: 8px; white-space: nowrap; font-family: var(--font);
+  }
+  .tab[aria-selected="true"] { background: var(--green); color: #fff; }
+
+  .enroll-panel {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  }
+  .enroll-head {
+    padding: 14px 16px; border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+  }
+  .enroll-head h2 { margin: 0; font-family: var(--font); font-size: 17px; font-weight: 600; }
+  .enroll-head p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+
+  .transfer {
+    display: grid; grid-template-columns: minmax(0, 1fr) 132px minmax(0, 1fr);
+    gap: 0; min-height: 480px;
+  }
+  .col { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line); }
+  .col:last-child { border-right: 0; }
+  .col-head {
+    padding: 12px 14px; border-bottom: 1px solid var(--line); background: #fafbfc;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  }
+  .col-head strong { font-family: var(--font); font-size: 14px; }
+  .col-head span { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .col-tools {
+    padding: 10px 12px; display: flex; gap: 8px; border-bottom: 1px solid var(--line);
+  }
+  .search { flex: 1; position: relative; }
+  .search input, .filter {
+    width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0 10px 0 32px; font-size: 13px; background: #fff;
+  }
+  .filter { padding-left: 10px; width: auto; min-width: 110px; }
+  .search svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: var(--muted); pointer-events: none;
+  }
+  .student-list { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; max-height: 420px; }
+  .student {
+    display: grid; grid-template-columns: 18px 34px minmax(0, 1fr); gap: 10px;
+    align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line);
+  }
+  .student:hover { background: #fafbfc; }
+  .student.is-staged { background: #F3FBF6; }
+  .student.is-staged-out { background: #FFF8F7; opacity: .75; }
+  .student input { width: 15px; height: 15px; accent-color: var(--green); }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 11px; font-weight: 700; color: #fff; font-family: var(--font);
+  }
+  .person strong { display: block; font-size: 13px; font-family: var(--font); font-weight: 600; }
+  .person span { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge {
+    display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; border-radius: 999px; padding: 2px 6px; vertical-align: middle;
+  }
+  .badge.add { background: var(--green-bg); color: var(--green-dark); }
+  .badge.rm { background: var(--err-bg); color: var(--err); }
+  .empty-list { padding: 36px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+  .col-foot {
+    padding: 8px 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted);
+    display: flex; justify-content: space-between; gap: 8px;
+  }
+  .mid {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 16px 10px; background: #fafbfc; border-right: 1px solid var(--line);
+  }
+  .mid p { margin: 0; font-size: 11px; color: var(--muted); text-align: center; line-height: 1.35; max-width: 110px; }
+  .mid .btn { width: 100%; }
+
+  .changebar {
+    display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; background: #122033; color: #fff;
+  }
+  .changebar.is-on { display: flex; }
+  .changebar p { margin: 0; font-size: 14px; }
+  .changebar .btn-ghost { border-color: rgba(255,255,255,.25); color: #fff; background: transparent; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(12px);
+    background: #122033; color: #fff; padding: 10px 16px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: .2s; z-index: 40;
+    font-family: var(--font);
+  }
+  .toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 980px) {
+    .auth-inner { flex-direction: column; }
+    .auth-form, .help-panel { width: 100%; }
+    .help-panel { display: none; }
+    #app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .transfer { grid-template-columns: 1fr; }
+    .mid { flex-direction: row; border-right: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .col { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+  <!-- AUTH -->
+  <div id="auth">
+    <header class="site-nav">
+      <div class="site-brand">
+        <span class="site-mark"><img src="assets/bl-harbert-logo-on-white.png" alt=""></span>
+        <span class="site-name">BL Harbert Training</span>
+        <span class="site-rule" aria-hidden="true"></span>
+        <span class="site-powered">Training powered by</span>
+        <img class="et-logo" src="etraining-logo.png" alt="eTraining">
+      </div>
+    </header>
+    <div class="auth-inner">
+      <div class="auth-form">
+        <div class="form-container">
+          <div>
+            <h1 class="sh1">Login</h1>
+            <p class="lead" id="login-lead">Enter your username to continue.</p>
+          </div>
+          <form id="login-form" novalidate style="display:grid;gap:18px">
+            <div>
+              <label class="form-label" for="username">Username</label>
+              <div class="id-field">
+                <input class="form-input" id="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Add your username">
+                <span class="id-check" id="user-check" hidden>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+                </span>
+                <button class="id-help" type="button" title="Example: jsmith" aria-label="Username help">?</button>
+              </div>
+              <div class="field-error" id="username-error" hidden></div>
+            </div>
+            <div id="password-block" hidden>
+              <label class="form-label" for="password">Password</label>
+              <div class="password-field">
+                <input class="form-input" id="password" type="password" autocomplete="current-password">
+                <button class="btn-eye" type="button" id="eye" aria-label="Show password" aria-controls="password">
+                  <svg class="i-show" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="i-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4"/><path d="M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg>
+                </button>
+              </div>
+              <div class="field-error" id="password-error" hidden></div>
+            </div>
+            <div class="nudge nudge-bad" id="login-nudge" hidden></div>
+            <button class="btn-login" type="submit" id="loginbtn">Continue</button>
+          </form>
+          <div class="bottom-text" id="forgot-row" hidden>
+            <a href="sign-in-on-action.html">Forgot your password</a>
+          </div>
+        </div>
+      </div>
+      <aside class="help-panel">
+        <h2>Check your Welcome Email</h2>
+        <p>Your company admin or training manager provides a username when your account is set up.</p>
+        <img src="help-username.png" alt="">
+        <p class="demo-hint">Prototype login: <code>jsmith</code> / <code>Safety2026!</code></p>
+      </aside>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" hidden>
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="side-mark"><img src="etraining-logo.png" alt=""></div>
+        <div>
+          <strong>eTraining</strong>
+          <span>Company admin</span>
+        </div>
+      </div>
+      <div>
+        <div class="nav-label">Menu</div>
+        <button class="nav-item" type="button" data-nav="home">Home</button>
+        <button class="nav-item" type="button" data-nav="courses" aria-current="page">Courses</button>
+        <button class="nav-item" type="button" data-nav="users">Users</button>
+        <button class="nav-item" type="button">Calendar</button>
+        <button class="nav-item" type="button">Reports</button>
+      </div>
+      <div>
+        <div class="nav-label">Company setup</div>
+        <button class="nav-item" type="button">Student attributes</button>
+        <button class="nav-item" type="button">Company settings</button>
+      </div>
+      <div class="side-foot">
+        <button class="report-btn" type="button">Report issue</button>
+        <button class="signout-btn" type="button" id="signout">Sign out</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+        <div class="who" id="who">Admin</div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var ACCOUNTS = {
+    jsmith: { name: "James Smith", pass: "Safety2026!" },
+    "maria.santos@blharbert.com": { name: "Maria Santos", pass: "Safety2026!" }
+  };
+  var COLORS = ["#1B6CA8", "#0F766E", "#7C3AED", "#B45309", "#BE123C", "#0369A1"];
+  var COURSES = [
+    { id: "back-safety", title: "Back Safety in Construction Environments", cat: "Excavation", lang: "English", enrolled: 4, thumb: "⚠" },
+    { id: "fall-protect", title: "Fall Protection Awareness", cat: "Safety", lang: "English", enrolled: 18, thumb: "⛑" },
+    { id: "osha-10", title: "OSHA 10 Construction", cat: "Compliance", lang: "English", enrolled: 32, thumb: "📋" }
+  ];
+  var STUDENTS = [
+    { id: "u1", name: "Alex Morgan", email: "alex.morgan@example.com", username: "alex.morgan", role: "Student", enrolled: false, progress: 0 },
+    { id: "u2", name: "Jordan Blake", email: "jordan.blake@example.com", username: "jordan.blake", role: "Student", enrolled: false, progress: 0 },
+    { id: "u3", name: "Sam Rivera", email: "sam.rivera@example.com", username: "sam.rivera", role: "Student", enrolled: false, progress: 0 },
+    { id: "u4", name: "Taylor Brooks", email: "taylor.brooks@example.com", username: "taylor.brooks", role: "Student", enrolled: false, progress: 0 },
+    { id: "u5", name: "Casey Quinn", email: "casey.quinn@example.com", username: "casey.quinn", role: "Student", enrolled: false, progress: 0 },
+    { id: "u6", name: "Riley Chen", email: "riley.chen@example.com", username: "riley.chen", role: "Student", enrolled: false, progress: 0 },
+    { id: "u7", name: "Jamie Patel", email: "jamie.patel@example.com", username: "jamie.patel", role: "Student", enrolled: false, progress: 0 },
+    { id: "e1", name: "Morgan Blake", email: "morgan.blake@example.com", username: "morgan.blake", role: "Student", enrolled: true, progress: 0 },
+    { id: "e2", name: "Avery Scott", email: "avery.scott@example.com", username: "avery.scott", role: "Student", enrolled: true, progress: 12 },
+    { id: "e3", name: "Cameron Diaz", email: "cameron.diaz@example.com", username: "cameron.diaz", role: "Student", enrolled: true, progress: 0 },
+    { id: "e4", name: "Drew Foster", email: "drew.foster@example.com", username: "drew.foster", role: "Student", enrolled: true, progress: 45 }
+  ];
+
+  var state = {
+    user: null,
+    page: "courses",
+    courseId: "back-safety",
+    students: STUDENTS.map(function (s) { return Object.assign({}, s); }),
+    pendingAdd: {},
+    pendingRemove: {},
+    leftSelected: {},
+    rightSelected: {},
+    leftQuery: "",
+    rightQuery: "",
+    leftSort: "name",
+    rightSort: "name"
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c];
+    });
+  }
+  function initials(name) {
+    return name.split(/\s+/).slice(0, 2).map(function (p) { return p[0]; }).join("").toUpperCase();
+  }
+  function colorFor(id) {
+    var n = 0;
+    for (var i = 0; i < id.length; i++) n += id.charCodeAt(i);
+    return COLORS[n % COLORS.length];
+  }
+  function toast(msg) {
+    var el = $("toast");
+    el.textContent = msg;
+    el.classList.add("is-on");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.classList.remove("is-on"); }, 2200);
+  }
+  function saveSession(user) {
+    sessionStorage.setItem("etrain_session", JSON.stringify(user));
+  }
+  function loadSession() {
+    try { return JSON.parse(sessionStorage.getItem("etrain_session") || "null"); }
+    catch (e) { return null; }
+  }
+  function clearSession() { sessionStorage.removeItem("etrain_session"); }
+
+  /* Auth */
+  var userReady = false;
+  function showPassword(on) {
+    $("password-block").hidden = !on;
+    $("forgot-row").hidden = !on;
+    $("loginbtn").textContent = on ? "Log in" : "Continue";
+    $("login-lead").textContent = on ? "Enter your password to continue." : "Enter your username to continue.";
+  }
+  function setErr(input, el, msg) {
+    el.hidden = !msg;
+    el.textContent = msg || "";
+    input.classList.toggle("error", !!msg);
+  }
+  $("username").addEventListener("input", function () {
+    var v = $("username").value.trim().toLowerCase();
+    userReady = !!ACCOUNTS[v];
+    $("user-check").hidden = !userReady;
+    $("username").classList.toggle("is-ok", userReady);
+    setErr($("username"), $("username-error"), "");
+    $("login-nudge").hidden = true;
+    if (!userReady) showPassword(false);
+  });
+  $("eye").addEventListener("click", function () {
+    var show = $("password").type === "password";
+    $("password").type = show ? "text" : "password";
+    $("eye").setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
+  $("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var user = $("username").value.trim();
+    var key = user.toLowerCase();
+    var account = ACCOUNTS[key];
+    if (!account) {
+      setErr($("username"), $("username-error"), "We don’t recognize that username. Type it exactly as on your welcome sheet.");
+      return;
+    }
+    if (!userReady || $("password-block").hidden) {
+      userReady = true;
+      $("user-check").hidden = false;
+      $("username").classList.add("is-ok");
+      showPassword(true);
+      $("password").focus();
+      return;
+    }
+    var pass = $("password").value;
+    if (!pass) {
+      setErr($("password"), $("password-error"), "Password is required.");
+      return;
+    }
+    if (pass !== account.pass) {
+      $("login-nudge").hidden = false;
+      $("login-nudge").textContent = "Username or password doesn’t match. Passwords are case-sensitive. Use the eye to check what you typed.";
+      return;
+    }
+    enterApp({ name: account.name, id: key });
+  });
+
+  function enterApp(user) {
+    state.user = user;
+    saveSession(user);
+    $("auth").hidden = true;
+    $("app").hidden = false;
+    $("who").textContent = user.name + " · Admin";
+    var hash = (location.hash || "").replace("#", "");
+    if (hash === "assign" || hash.indexOf("assign") === 0) {
+      state.page = "assign";
+      state.courseId = "back-safety";
+    } else if (hash === "home") state.page = "home";
+    else state.page = "courses";
+    render();
+  }
+
+  function signOut() {
+    clearSession();
+    state.user = null;
+    $("app").hidden = true;
+    $("auth").hidden = false;
+    $("password").value = "";
+    showPassword(false);
+    location.hash = "";
+  }
+  $("signout").addEventListener("click", signOut);
+
+  /* Navigation */
+  document.querySelectorAll("[data-nav]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var page = btn.getAttribute("data-nav");
+      if (page === "users") { toast("Users screen — coming next"); return; }
+      state.page = page;
+      location.hash = page;
+      render();
+    });
+  });
+
+  function setNav(page) {
+    document.querySelectorAll("[data-nav]").forEach(function (btn) {
+      var on = btn.getAttribute("data-nav") === (page === "assign" ? "courses" : page);
+      if (on) btn.setAttribute("aria-current", "page");
+      else btn.removeAttribute("aria-current");
+    });
+  }
+
+  function crumbs() {
+    if (state.page === "home") {
+      return '<span aria-current="page">Home</span>';
+    }
+    if (state.page === "courses") {
+      return '<button type="button" data-go="home">Home</button><span>/</span><span aria-current="page">Courses</span>';
+    }
+    var c = COURSES.find(function (x) { return x.id === state.courseId; });
+    return '<button type="button" data-go="home">Home</button><span>/</span>' +
+      '<button type="button" data-go="courses">Courses</button><span>/</span>' +
+      '<span aria-current="page">' + esc((c && c.title) || "Assign") + '</span>';
+  }
+
+  /* Enrollment helpers */
+  function isEnrolled(s) {
+    if (state.pendingRemove[s.id]) return false;
+    return s.enrolled || !!state.pendingAdd[s.id];
+  }
+  function leftList() {
+    return state.students.filter(function (s) { return !isEnrolled(s); }).filter(match(state.leftQuery)).sort(by(state.leftSort));
+  }
+  function rightList() {
+    return state.students.filter(function (s) { return isEnrolled(s); }).filter(match(state.rightQuery)).sort(by(state.rightSort));
+  }
+  function match(q) {
+    q = (q || "").toLowerCase();
+    return function (s) {
+      if (!q) return true;
+      return (s.name + " " + s.email + " " + s.username).toLowerCase().indexOf(q) !== -1;
+    };
+  }
+  function by(sort) {
+    return function (a, b) {
+      if (sort === "progress") return (b.progress || 0) - (a.progress || 0) || a.name.localeCompare(b.name);
+      return a.name.localeCompare(b.name);
+    };
+  }
+  function pendingCounts() {
+    return {
+      add: Object.keys(state.pendingAdd).length,
+      remove: Object.keys(state.pendingRemove).length
+    };
+  }
+  function selectedCount(map, list) {
+    var n = 0;
+    list.forEach(function (s) { if (map[s.id]) n++; });
+    return n;
+  }
+
+  function studentRow(s, side) {
+    var stagedAdd = !!state.pendingAdd[s.id];
+    var stagedRm = !!state.pendingRemove[s.id];
+    var selected = side === "left" ? state.leftSelected[s.id] : state.rightSelected[s.id];
+    var cls = "student";
+    if (stagedAdd) cls += " is-staged";
+    if (stagedRm) cls += " is-staged-out";
+    var badge = stagedAdd ? '<span class="badge add">Will enroll</span>' :
+      stagedRm ? '<span class="badge rm">Will remove</span>' : "";
+    var sub = side === "right"
+      ? (s.progress > 0 ? s.progress + "% complete" : "Not started 0%")
+      : (s.email + " · " + s.username);
+    return '<li class="' + cls + '">' +
+      '<input type="checkbox" data-side="' + side + '" data-id="' + s.id + '"' + (selected ? " checked" : "") + ' aria-label="Select ' + esc(s.name) + '">' +
+      '<div class="avatar" style="background:' + colorFor(s.id) + '">' + esc(initials(s.name)) + '</div>' +
+      '<div class="person"><strong>' + esc(s.name) + badge + '</strong><span>' + esc(sub) + '</span></div>' +
+      '</li>';
+  }
+
+  function renderAssign() {
+    var course = COURSES.find(function (c) { return c.id === state.courseId; }) || COURSES[0];
+    var left = leftList();
+    var right = rightList();
+    var leftSel = selectedCount(state.leftSelected, left);
+    var rightSel = selectedCount(state.rightSelected, right);
+    var pending = pendingCounts();
+
+    return '' +
+      '<section class="course-bar">' +
+        '<div class="course-thumb" aria-hidden="true">' + course.thumb + '</div>' +
+        '<div class="course-meta"><h1>' + esc(course.title) + '</h1>' +
+          '<div class="meta-row"><span><strong>EN</strong> ' + esc(course.lang) + '</span><span>' + esc(course.cat) + '</span><span>test company netsole</span></div>' +
+        '</div>' +
+        '<span class="pill">Certificate available</span>' +
+      '</section>' +
+      '<div class="tabs" role="tablist">' +
+        '<button class="tab" type="button">Course</button>' +
+        '<button class="tab" type="button">Participants</button>' +
+        '<button class="tab" type="button" aria-selected="true">Assign Course</button>' +
+        '<button class="tab" type="button">Course Group</button>' +
+        '<button class="tab" type="button">Prerequisite</button>' +
+        '<button class="tab" type="button">Enrollment Requests</button>' +
+        '<button class="tab" type="button">Ratings</button>' +
+      '</div>' +
+      '<section class="enroll-panel">' +
+        '<div class="enroll-head">' +
+          '<div><h2>Enroll students</h2><p>Select people, then Enroll or Remove. Save when you’re ready.</p></div>' +
+          '<button class="btn btn-ghost btn-sm" type="button" id="select-left-all">Select all unenrolled</button>' +
+        '</div>' +
+        '<div class="transfer">' +
+          '<div class="col">' +
+            '<div class="col-head"><strong>Unenrolled students</strong><span>' + left.length + ' total</span></div>' +
+            '<div class="col-tools">' +
+              '<label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+                '<input type="search" id="left-search" placeholder="Search" value="' + esc(state.leftQuery) + '"></label>' +
+              '<select class="filter" id="left-sort"><option value="name">Sort by</option><option value="progress">Progress</option></select>' +
+            '</div>' +
+            '<ul class="student-list" id="left-list">' +
+              (left.length ? left.map(function (s) { return studentRow(s, "left"); }).join("") :
+                '<li class="empty-list">No unenrolled students match</li>') +
+            '</ul>' +
+            '<div class="col-foot"><span>' + leftSel + ' selected</span><span>1–' + left.length + ' of ' + left.length + '</span></div>' +
+          '</div>' +
+          '<div class="mid">' +
+            '<button class="btn btn-solid" type="button" id="btn-enroll" ' + (leftSel ? "" : "disabled") + '>Enroll →</button>' +
+            '<button class="btn btn-danger" type="button" id="btn-remove" ' + (rightSel ? "" : "disabled") + '>← Remove</button>' +
+            '<p>Select one or more students to enroll or remove.</p>' +
+          '</div>' +
+          '<div class="col">' +
+            '<div class="col-head"><strong>Enrolled students</strong><span>' + right.length + ' total</span></div>' +
+            '<div class="col-tools">' +
+              '<label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+                '<input type="search" id="right-search" placeholder="Search" value="' + esc(state.rightQuery) + '"></label>' +
+              '<select class="filter" id="right-sort"><option value="name">Sort by</option><option value="progress">Progress</option></select>' +
+            '</div>' +
+            '<ul class="student-list" id="right-list">' +
+              (right.length ? right.map(function (s) { return studentRow(s, "right"); }).join("") :
+                '<li class="empty-list">No enrolled students yet</li>') +
+            '</ul>' +
+            '<div class="col-foot"><span>' + rightSel + ' selected</span><span>1–' + right.length + ' of ' + right.length + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="changebar' + (pending.add || pending.remove ? " is-on" : "") + '" id="changebar">' +
+          '<p><strong>' + pending.add + '</strong> students will be enrolled · <strong>' + pending.remove + '</strong> students will be removed</p>' +
+          '<div style="display:flex;gap:8px">' +
+            '<button class="btn btn-ghost" type="button" id="btn-discard">Discard Changes</button>' +
+            '<button class="btn btn-primary" type="button" id="btn-save">Save Changes</button>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function renderHome() {
+    var enrolled = state.students.filter(function (s) { return s.enrolled; }).length;
+    return '' +
+      '<div><h1 class="page-title">Home</h1><p class="page-lead">Welcome back, ' + esc(state.user.name) + '. Manage courses and enrollments for your company.</p></div>' +
+      '<div class="stat-row">' +
+        '<div class="stat"><div class="label">Courses</div><div class="value">' + COURSES.length + '</div></div>' +
+        '<div class="stat"><div class="label">Students enrolled</div><div class="value">' + enrolled + '</div></div>' +
+        '<div class="stat"><div class="label">Open requests</div><div class="value">0</div></div>' +
+      '</div>' +
+      '<div><button class="btn btn-primary" type="button" data-go="courses">Go to courses</button></div>';
+  }
+
+  function renderCourses() {
+    return '' +
+      '<div><h1 class="page-title">Courses</h1><p class="page-lead">Open a course to assign students.</p></div>' +
+      '<div class="card-grid">' + COURSES.map(function (c) {
+        return '<article class="course-card">' +
+          '<div class="thumb">' + c.thumb + '</div>' +
+          '<div class="body">' +
+            '<h3>' + esc(c.title) + '</h3>' +
+            '<div class="meta"><span>' + esc(c.cat) + '</span><span>' + esc(c.lang) + '</span></div>' +
+            '<p>' + c.enrolled + ' currently enrolled</p>' +
+            '<button class="btn btn-solid btn-sm" type="button" data-assign="' + c.id + '">Assign course</button>' +
+          '</div></article>';
+      }).join("") + '</div>';
+  }
+
+  function render() {
+    setNav(state.page);
+    $("crumbs").innerHTML = crumbs();
+    var html = "";
+    if (state.page === "home") html = renderHome();
+    else if (state.page === "assign") html = renderAssign();
+    else html = renderCourses();
+    $("content").innerHTML = html;
+    bindContent();
+  }
+
+  function bindContent() {
+    $("content").querySelectorAll("[data-go]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.page = btn.getAttribute("data-go");
+        location.hash = state.page;
+        render();
+      });
+    });
+    $("crumbs").querySelectorAll("[data-go]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.page = btn.getAttribute("data-go");
+        location.hash = state.page;
+        render();
+      });
+    });
+    $("content").querySelectorAll("[data-assign]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.courseId = btn.getAttribute("data-assign");
+        state.page = "assign";
+        state.leftSelected = {};
+        state.rightSelected = {};
+        location.hash = "assign";
+        render();
+      });
+    });
+
+    if (state.page !== "assign") return;
+
+    var leftSearch = $("left-search");
+    var rightSearch = $("right-search");
+    if (leftSearch) leftSearch.addEventListener("input", function () { state.leftQuery = leftSearch.value; render(); });
+    if (rightSearch) rightSearch.addEventListener("input", function () { state.rightQuery = rightSearch.value; render(); });
+    var leftSort = $("left-sort");
+    var rightSort = $("right-sort");
+    if (leftSort) {
+      leftSort.value = state.leftSort;
+      leftSort.addEventListener("change", function () { state.leftSort = leftSort.value; render(); });
+    }
+    if (rightSort) {
+      rightSort.value = state.rightSort;
+      rightSort.addEventListener("change", function () { state.rightSort = rightSort.value; render(); });
+    }
+
+    $("content").querySelectorAll('input[type="checkbox"][data-id]').forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var side = cb.getAttribute("data-side");
+        var id = cb.getAttribute("data-id");
+        var map = side === "left" ? state.leftSelected : state.rightSelected;
+        if (cb.checked) map[id] = true;
+        else delete map[id];
+        render();
+      });
+    });
+
+    var selAll = $("select-left-all");
+    if (selAll) selAll.addEventListener("click", function () {
+      leftList().forEach(function (s) { state.leftSelected[s.id] = true; });
+      render();
+    });
+
+    $("btn-enroll").addEventListener("click", function () {
+      Object.keys(state.leftSelected).forEach(function (id) {
+        delete state.pendingRemove[id];
+        var s = state.students.find(function (x) { return x.id === id; });
+        if (s && !s.enrolled) state.pendingAdd[id] = true;
+        if (s && s.enrolled) delete state.pendingRemove[id];
+      });
+      state.leftSelected = {};
+      render();
+    });
+    $("btn-remove").addEventListener("click", function () {
+      Object.keys(state.rightSelected).forEach(function (id) {
+        if (state.pendingAdd[id]) delete state.pendingAdd[id];
+        else state.pendingRemove[id] = true;
+      });
+      state.rightSelected = {};
+      render();
+    });
+    $("btn-discard").addEventListener("click", function () {
+      state.pendingAdd = {};
+      state.pendingRemove = {};
+      state.leftSelected = {};
+      state.rightSelected = {};
+      render();
+      toast("Changes discarded");
+    });
+    $("btn-save").addEventListener("click", function () {
+      var a = Object.keys(state.pendingAdd).length;
+      var r = Object.keys(state.pendingRemove).length;
+      state.students = state.students.map(function (s) {
+        var enrolled = s.enrolled;
+        if (state.pendingAdd[s.id]) enrolled = true;
+        if (state.pendingRemove[s.id]) enrolled = false;
+        return Object.assign({}, s, { enrolled: enrolled });
+      });
+      state.pendingAdd = {};
+      state.pendingRemove = {};
+      state.leftSelected = {};
+      state.rightSelected = {};
+      render();
+      toast("Saved · " + a + " enrolled, " + r + " removed");
+    });
+  }
+
+  /* Boot */
+  var existing = loadSession();
+  if (existing && existing.name) enterApp(existing);
+  else {
+    $("auth").hidden = false;
+    $("app").hidden = true;
+  }
+})();
+</script>
+</body>
+</html>

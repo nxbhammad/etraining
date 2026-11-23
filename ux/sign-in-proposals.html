@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELMS sign-in proposals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bar: #14472a;
+    --btn: #278049;
+    --btn-hover: #1f6b3c;
+    --ink: #1b2430;
+    --muted: #4a5565;
+    --line: #d5dbe3;
+    --input: #7d8796;
+    --page: #f2f4f7;
+    --info: #edf6f0;
+    --info-ink: #14532d;
+    --warn: #fff4e0;
+    --danger: #8f2d2d;
+    --card: #fff;
+    --shadow: 0 1px 3px rgba(16, 24, 40, .08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: #e7ebf0;
+    min-height: 100vh;
+  }
+  button, input { font-family: inherit; }
+  button { cursor: pointer; }
+  .proposal {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 48px;
+  }
+  .proposal-kicker {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--btn);
+  }
+  h1.proposal-title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .proposal-lead {
+    margin: 8px 0 0;
+    max-width: 640px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.45;
+  }
+  .steps {
+    display: flex;
+    gap: 8px;
+    margin: 22px 0 18px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .step {
+    flex: 1 0 160px;
+    text-align: left;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--ink);
+  }
+  .step strong { display: block; font-size: 15px; }
+  .step span { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+  .step[aria-current="true"] {
+    background: var(--bar);
+    border-color: var(--bar);
+    color: #fff;
+  }
+  .step[aria-current="true"] span { color: #d7eadf; }
+  .stage {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  .notes {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+  }
+  .notes h2 { margin: 0 0 8px; font-size: 18px; }
+  .notes p { margin: 0 0 12px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+  .notes ol { margin: 0; padding-left: 18px; color: var(--ink); font-size: 15px; line-height: 1.45; }
+  .notes li + li { margin-top: 6px; }
+  .nav-row { display: flex; gap: 8px; margin-top: 16px; }
+  .ghost, .solid {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .ghost { background: #fff; border: 1px solid var(--input); color: var(--ink); }
+  .solid { background: var(--btn); border: 0; color: #fff; }
+  .solid:hover { background: var(--btn-hover); }
+
+  .product { min-width: 0; }
+  .etl-page {
+    background: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 640px;
+  }
+  .etl-bar {
+    background: var(--bar);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 22px;
+  }
+  .etl-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .etl-brand__chip {
+    width: 28px; height: 28px; border-radius: 6px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .etl-brand__chip img { width: 22px; height: 22px; object-fit: contain; }
+  .etl-brand__name { font-weight: 700; font-size: 17px; }
+  .etl-brand__sep { width: 1px; height: 16px; background: rgba(255,255,255,.35); }
+  .etl-brand__powered { font-size: 13px; color: #e5f2ea; white-space: nowrap; }
+  .etl-user { font-size: 14px; font-weight: 600; }
+  .etl-main { padding: 36px 20px 40px; display: flex; justify-content: center; }
+  .etl-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 32px 40px 28px;
+  }
+  .etl-card.wide { max-width: 720px; }
+  .etl-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-weight: 700; }
+  .etl-logo img { width: 28px; height: 28px; object-fit: contain; }
+  .company {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--info);
+    color: var(--info-ink);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .etl-h1 { margin: 0 0 8px; font-size: 27px; line-height: 1.2; font-weight: 700; }
+  .etl-lead { margin: 0 0 18px; color: var(--muted); font-size: 16px; line-height: 1.45; }
+  .etl-field { margin-bottom: 14px; }
+  .etl-label { display: block; margin-bottom: 6px; font-size: 16px; font-weight: 700; }
+  .etl-hint { display: block; margin: -2px 0 8px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+  .etl-input {
+    width: 100%;
+    height: 50px;
+    border: 1px solid var(--input);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 17px;
+    color: var(--ink);
+    background: #fff;
+  }
+  .etl-input:focus { outline: 2px solid var(--btn); border-color: var(--btn); }
+  .etl-error { margin: 6px 0 0; color: var(--danger); font-size: 14px; font-weight: 600; }
+  .check {
+    display: flex; gap: 10px; align-items: flex-start;
+    margin: 4px 0 16px; font-size: 15px; line-height: 1.35;
+  }
+  .check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--btn); }
+  .etl-btn {
+    width: 100%;
+    height: 48px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--btn);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .etl-btn:hover { background: var(--btn-hover); }
+  .etl-btn.secondary {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--input);
+    margin-top: 8px;
+  }
+  .etl-btn.secondary:hover { background: #f7f8fa; }
+  .text-link {
+    display: inline-block;
+    margin-top: 14px;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--btn);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .split {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0 12px; color: var(--muted); font-size: 14px;
+  }
+  .split::before, .split::after { content: ""; height: 1px; background: var(--line); flex: 1; }
+  .ms {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid var(--input);
+    background: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+  }
+  .ms svg { width: 18px; height: 18px; }
+  .fine { margin: 8px 0 0; color: var(--muted); font-size: 13px; text-align: center; }
+  .banner {
+    background: var(--info);
+    color: var(--info-ink);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 15px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+  .banner strong { display: block; margin-bottom: 2px; }
+  .mail {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .mail-top { background: #f7f8fa; padding: 10px 14px; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .mail-body { padding: 16px 16px 18px; }
+  .mail-body p { margin: 0 0 12px; font-size: 15px; line-height: 1.45; }
+  .person { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--info); color: var(--info-ink);
+    display: grid; place-items: center; font-weight: 700;
+  }
+  .person strong { display: block; }
+  .person span { color: var(--muted); font-size: 14px; }
+  .course {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .course strong { display: block; }
+  .course span { color: var(--muted); font-size: 14px; }
+  .course .etl-btn { width: auto; padding: 0 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-size: 13px; color: var(--muted); font-weight: 700; padding: 0 8px 8px; }
+  td { padding: 12px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+  td button.solid { white-space: nowrap; }
+  .sent { color: var(--info-ink); font-weight: 700; font-size: 14px; }
+  .hidden { display: none; }
+  @media (max-width: 860px) {
+    .stage { grid-template-columns: 1fr; }
+    .etl-card, .etl-card.wide { padding: 24px 20px; max-width: 480px; }
+    .proposal { padding: 20px 14px 36px; }
+    .etl-page { min-height: 0; }
+    .etl-brand__powered, .etl-brand__sep { display: none; }
+    .etl-bar { padding: 12px 16px; }
+    .etl-main { padding: 24px 12px 28px; }
+    table, thead, tbody, tr, th, td { display: block; width: 100%; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    tr { border-top: 1px solid var(--line); padding: 12px 0; }
+    td { border: 0; padding: 2px 0; }
+    td:last-child { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="proposal">
+  <p class="proposal-kicker">eTraining LMS · proposed sign-in</p>
+  <h1 class="proposal-title">Five ways employees get back in</h1>
+  <p class="proposal-lead">Same ELMS look as the live sign-in page. Northline Logistics is a sample company. Click through each step the way an employee or admin would.</p>
+
+  <div class="steps" role="tablist">
+    <button class="step" id="tab-1" role="tab" aria-controls="panel" data-step="1"><strong>1. Company page</strong><span>Their link is the sign-in</span></button>
+    <button class="step" id="tab-2" role="tab" aria-controls="panel" data-step="2"><strong>2. Login link</strong><span>No password to remember</span></button>
+    <button class="step" id="tab-3" role="tab" aria-controls="panel" data-step="3"><strong>3. Forgot email</strong><span>ID or mobile number</span></button>
+    <button class="step" id="tab-4" role="tab" aria-controls="panel" data-step="4"><strong>4. Stay signed in</strong><span>Same device, next visit</span></button>
+    <button class="step" id="tab-5" role="tab" aria-controls="panel" data-step="5"><strong>5. Welcome email</strong><span>First note, no password</span></button>
+  </div>
+
+  <div class="stage">
+    <aside class="notes" id="notes"></aside>
+    <div class="product" id="panel" role="tabpanel"></div>
+  </div>
+</div>
+
+<script>
+const LOGO = "https://etrainlms.vteamslabs.com/pluginfile.php/1/core_admin/logocompact/300x300/1792573531/etraining-logo.png";
+
+const notes = {
+  1: {
+    title: "The company link is the sign-in",
+    body: "Each company already has its own address. The page names that company, so the employee only has to identify themselves inside it.",
+    steps: ["Open the Northline training link.", "Enter the work email the admin saved.", "Ask for a sign-in link. There is no password field."]
+  },
+  2: {
+    title: "A link replaces the password",
+    body: "They open the email and tap one button. The link works once and expires in 15 minutes. The page does not say whether that email is on the list.",
+    steps: ["Check the inbox for Northline training.", "Tap Sign in.", "Land in the course. Nothing to store or reset."]
+  },
+  3: {
+    title: "When the email is forgotten",
+    body: "The admin already has an employee ID or mobile number. Either one finds the account and sends the link to the address on file, partly hidden.",
+    steps: ["Choose I don’t remember my email.", "Enter NL-20418 or a mobile ending 4419.", "If that inbox is unreachable, notify the training admin."]
+  },
+  4: {
+    title: "The next visit skips sign-in",
+    body: "Training usually happens on one phone or laptop. If they left “Keep me signed in” checked, this device stays signed in for 60 days.",
+    steps: ["Open the company link again.", "See Welcome back, with the course waiting.", "Use Sign out on a shared computer."]
+  },
+  5: {
+    title: "The first email has no password",
+    body: "Adding a student sends this note, not a username and password. The same button on the student record sends it again later.",
+    steps: ["Admin adds Maria and presses Send login link.", "Maria gets Your training is ready.", "She opens it and is signed in."]
+  }
+};
+
+const shell = (inner, user) => `
+  <div class="etl-page">
+    <header class="etl-bar">
+      <div class="etl-brand">
+        <span class="etl-brand__chip"><img src="${LOGO}" alt=""></span>
+        <span class="etl-brand__name">ELMS</span>
+        <span class="etl-brand__sep"></span>
+        <span class="etl-brand__powered">Training powered by eTraining</span>
+      </div>
+      ${user ? `<span class="etl-user">${user}</span>` : `<span class="etl-user">Need help signing in?</span>`}
+    </header>
+    <main class="etl-main">${inner}</main>
+  </div>`;
+
+const logo = `<div class="etl-logo"><img src="${LOGO}" alt=""><span>eTraining LMS</span></div>`;
+
+function screen1() {
+  return shell(`
+    <section class="etl-card" aria-label="Sign in">
+      ${logo}
+      <p class="company">Northline Logistics</p>
+      <h2 class="etl-h1">Sign in to Northline training</h2>
+      <p class="etl-lead">Enter the work email your company registered. We’ll email you a sign-in link. No password.</p>
+      <form id="email-form">
+        <div class="etl-field">
+          <label class="etl-label" for="work-email">Work email</label>
+          <span class="etl-hint">Example: maria.santos@northline.com</span>
+          <input class="etl-input" id="work-email" type="email" autocomplete="username" autocapitalize="none">
+          <p class="etl-error hidden" id="email-error">Enter the work email your company used.</p>
+        </div>
+        <label class="check"><input type="checkbox" id="keep" checked> Keep me signed in on this device for 60 days</label>
+        <button class="etl-btn" type="submit">Email me a login link</button>
+      </form>
+      <button class="text-link" type="button" id="forgot-email">I don’t remember my email</button>
+      <div class="split">or</div>
+      <button class="ms" type="button" id="microsoft" aria-label="Continue with Microsoft">
+        <svg viewBox="0 0 18 18" aria-hidden="true"><rect fill="#f25022" width="8" height="8"/><rect fill="#7fba00" x="10" width="8" height="8"/><rect fill="#00a4ef" y="10" width="8" height="8"/><rect fill="#ffb900" x="10" y="10" width="8" height="8"/></svg>
+        Continue with Microsoft
+      </button>
+      <p class="fine">Microsoft appears only when this company uses it.</p>
+    </section>`);
+}
+
+function screen2() {
+  return shell(`
+    <section class="etl-card" aria-label="Check your email">
+      ${logo}
+      <p class="company">Northline Logistics</p>
+      <h2 class="etl-h1">Check your email</h2>
+      <p class="etl-lead">If that address is on the Northline list, a sign-in link is on its way. It works once and expires in 15 minutes.</p>
+      <div class="mail">
+        <div class="mail-top">From Northline Training · just now</div>
+        <div class="mail-body">
+          <p><strong>Sign in to Northline training</strong></p>
+          <p>Maria, use the button below on this phone or laptop. If you did not ask for this, ignore the email.</p>
+          <button class="etl-btn" type="button" id="open-link">Sign in</button>
+        </div>
+      </div>
+      <button class="text-link" type="button" id="different">Use a different email</button>
+    </section>`);
+}
+
+function screen3(state) {
+  const found = state === "found" || state === "notified";
+  const body = !found ? `
+      <form id="find-form">
+        <div class="etl-field">
+          <label class="etl-label" for="lookup">Employee ID or mobile number</label>
+          <span class="etl-hint">Try NL-20418, or a mobile ending in 4419.</span>
+          <input class="etl-input" id="lookup" autocomplete="off">
+          <p class="etl-error hidden" id="find-error">We couldn’t find that in Northline Logistics. Check it, or ask your training admin.</p>
+        </div>
+        <button class="etl-btn" type="submit">Email me a login link</button>
+      </form>
+      <button class="text-link" type="button" id="back-email">I remember my email</button>
+  ` : `
+      <div class="person"><div class="avatar">MS</div><div><strong>Maria Santos</strong><span>Employee ID NL-20418</span></div></div>
+      <div class="banner"><strong>Link sent</strong>A sign-in link is going to m••••@northline.com.</div>
+      ${state === "notified"
+        ? `<div class="banner"><strong>Your admin was notified</strong>Jordan Lee can send a fresh link or correct the email on your account.</div>`
+        : `<button class="etl-btn secondary" type="button" id="notify">I can’t open that email</button>`}
+      <button class="text-link" type="button" id="lookup-again">Try a different ID</button>
+  `;
+  return shell(`
+    <section class="etl-card" aria-label="Find your account">
+      ${logo}
+      <p class="company">Northline Logistics</p>
+      <h2 class="etl-h1">Find your account</h2>
+      <p class="etl-lead">Use the employee ID or mobile number your company has on file. We’ll send the link to the email they saved.</p>
+      ${body}
+    </section>`);
+}
+
+function screen4() {
+  return shell(`
+    <section class="etl-card" aria-label="Welcome back">
+      ${logo}
+      <p class="company">Northline Logistics</p>
+      <h2 class="etl-h1">Welcome back, Maria</h2>
+      <p class="etl-lead">You’re still signed in on this device. It stays that way for 60 days, or until you sign out.</p>
+      <article class="course">
+        <div><strong>Forklift safety refresher</strong><span>Assigned · 20 minutes left</span></div>
+        <button class="etl-btn" type="button" id="continue">Continue</button>
+      </article>
+      <button class="text-link" type="button" id="sign-out">Sign out of this device</button>
+    </section>`, "Maria Santos");
+}
+
+function screen5(sent) {
+  return shell(`
+    <section class="etl-card wide" aria-label="Admin students">
+      ${logo}
+      <p class="company">Northline Logistics · Training admin</p>
+      <h2 class="etl-h1">Students</h2>
+      <p class="etl-lead">Sending a link emails “Your training is ready.” It does not include a password.</p>
+      <table>
+        <thead><tr><th>Student</th><th>Work email</th><th>Employee ID</th><th>Login link</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Maria Santos</td>
+            <td>maria.santos@northline.com</td>
+            <td>NL-20418</td>
+            <td id="sent-cell">${sent ? `<span class="sent">Sent just now</span>` : "Not sent"}</td>
+            <td><button class="solid" type="button" id="send-link">${sent ? "Send again" : "Send login link"}</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mail" id="preview" ${sent ? "" : "hidden"}>
+        <div class="mail-top">What Maria receives</div>
+        <div class="mail-body">
+          <p><strong>Your training is ready</strong></p>
+          <p>Northline Logistics added you to Forklift safety refresher. Open it on the phone or laptop you will use for training.</p>
+          <button class="etl-btn" type="button" id="open-training">Open my training</button>
+        </div>
+      </div>
+    </section>`, "Jordan Lee");
+}
+
+const panel = document.getElementById("panel");
+const notesEl = document.getElementById("notes");
+let step = 1;
+let findState = "form";
+let linkSent = false;
+
+function renderNotes() {
+  const n = notes[step];
+  document.querySelectorAll(".step").forEach((b) => {
+    if (b.dataset.step === String(step)) b.setAttribute("aria-current", "true");
+    else b.removeAttribute("aria-current");
+  });
+  notesEl.innerHTML = `
+    <h2>${n.title}</h2>
+    <p>${n.body}</p>
+    <ol>${n.steps.map((s) => `<li>${s}</li>`).join("")}</ol>
+    <div class="nav-row">
+      <button class="ghost" type="button" id="prev" ${step === 1 ? "disabled" : ""}>Back</button>
+      <button class="solid" type="button" id="next" ${step === 5 ? "disabled" : ""}>Next</button>
+    </div>`;
+  document.getElementById("prev").onclick = () => go(step - 1);
+  document.getElementById("next").onclick = () => go(step + 1);
+}
+
+function go(n) {
+  step = Math.min(5, Math.max(1, n));
+  if (step !== 3) findState = "form";
+  draw();
+}
+
+function draw() {
+  renderNotes();
+  if (step === 1) panel.innerHTML = screen1();
+  if (step === 2) panel.innerHTML = screen2();
+  if (step === 3) panel.innerHTML = screen3(findState);
+  if (step === 4) panel.innerHTML = screen4();
+  if (step === 5) panel.innerHTML = screen5(linkSent);
+  bind();
+}
+
+function bind() {
+  const emailForm = document.getElementById("email-form");
+  if (emailForm) {
+    emailForm.onsubmit = (e) => {
+      e.preventDefault();
+      const value = document.getElementById("work-email").value.trim();
+      const error = document.getElementById("email-error");
+      if (!value.includes("@")) {
+        error.classList.remove("hidden");
+        return;
+      }
+      go(2);
+    };
+  }
+  const forgot = document.getElementById("forgot-email");
+  if (forgot) forgot.onclick = () => go(3);
+  const ms = document.getElementById("microsoft");
+  if (ms) ms.onclick = () => go(4);
+  const different = document.getElementById("different");
+  if (different) different.onclick = () => go(1);
+  const openLink = document.getElementById("open-link");
+  if (openLink) openLink.onclick = () => go(4);
+  const findForm = document.getElementById("find-form");
+  if (findForm) {
+    findForm.onsubmit = (e) => {
+      e.preventDefault();
+      const value = document.getElementById("lookup").value.replace(/\s/g, "").toLowerCase();
+      const ok = value === "nl-20418" || value.endsWith("4419");
+      if (!ok) {
+        document.getElementById("find-error").classList.remove("hidden");
+        return;
+      }
+      findState = "found";
+      draw();
+    };
+  }
+  const backEmail = document.getElementById("back-email");
+  if (backEmail) backEmail.onclick = () => go(1);
+  const notify = document.getElementById("notify");
+  if (notify) notify.onclick = () => { findState = "notified"; draw(); };
+  const again = document.getElementById("lookup-again");
+  if (again) again.onclick = () => { findState = "form"; draw(); };
+  const cont = document.getElementById("continue");
+  if (cont) cont.onclick = () => { cont.textContent = "Opening course"; cont.disabled = true; };
+  const out = document.getElementById("sign-out");
+  if (out) out.onclick = () => go(1);
+  const send = document.getElementById("send-link");
+  if (send) send.onclick = () => { linkSent = true; draw(); };
+  const openTraining = document.getElementById("open-training");
+  if (openTraining) openTraining.onclick = () => go(4);
+}
+
+document.querySelectorAll(".step").forEach((b) => {
+  b.onclick = () => go(Number(b.dataset.step));
+});
+
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assign Courses — 4 student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left; text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .crumb {
+    display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap;
+  }
+  .crumb a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .crumb a:hover { color: var(--green); }
+  .crumb a svg { width: 16px; height: 16px; }
+  .crumb-sep { color: #c5ced6; font-size: 12px; }
+  .crumb-current {
+    font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--ink);
+  }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .side-close { margin-left: auto; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .signout:hover { text-decoration: underline; }
+
+  .content { padding: 18px 28px 36px; display: flex; flex-direction: column; gap: 14px; }
+
+  .student-bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+    padding: 12px 16px; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  }
+  .student-av {
+    width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(145deg, #dbeafe, #e0e7ff);
+    color: #1e40af; display: grid; place-items: center;
+    font-family: var(--font); font-size: 15px; font-weight: 700; flex: none;
+  }
+  .student-bar h1 {
+    margin: 0; font-family: var(--font); font-size: 18px; font-weight: 700; letter-spacing: -.02em;
+  }
+  .student-meta {
+    margin: 2px 0 0; display: flex; flex-wrap: wrap; gap: 8px 14px;
+    font-size: 13px; color: var(--muted);
+  }
+  .student-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Same shuttle pattern as course enrollment */
+  .assign {
+    --g: #157F3D; --g-d: #116B33; --g-s: #E3F3E8; --g-t: #14693A;
+    --ink2: #0F1B2D; --mute2: #5B6577; --line2: #E3E8F0; --line3: #DFE5EE;
+    --danger: #B42318; --danger-b: #F0B8B2; --danger-t: #A1261B; --danger-s: #FEF3F2;
+    background: #fff; border: 1px solid var(--line2); border-radius: 20px;
+    padding: 28px; display: flex; flex-direction: column; gap: 22px;
+  }
+  .assign-top {
+    display: flex; flex-wrap: wrap; gap: 18px 32px; align-items: flex-start; justify-content: space-between;
+  }
+  .assign-intro { display: flex; gap: 16px; align-items: flex-start; flex: 1 1 420px; min-width: 0; }
+  .assign-ico {
+    width: 48px; height: 48px; flex: none; border-radius: 14px; background: var(--g-s); color: var(--g);
+    display: grid; place-items: center;
+  }
+  .assign-ico svg { width: 24px; height: 24px; }
+  .assign-intro h2 { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 700; color: var(--ink2); }
+  .assign-intro p { margin: 4px 0 0; color: var(--mute2); max-width: 560px; font-size: 14px; line-height: 1.45; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+  .step { display: flex; align-items: center; gap: 10px; color: var(--mute2); font-weight: 500; font-size: 14px; }
+  .step .n {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 13px; font-weight: 600; background: #EEF1F6; color: #475569;
+  }
+  .step.on { color: var(--ink2); font-weight: 600; }
+  .step.on .n { background: var(--g); color: #fff; }
+  .step.done .n { background: var(--g-s); color: var(--g-t); }
+
+  .toast {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--g-s); color: var(--g-t); border-radius: 14px; padding: 12px 16px; font-weight: 600;
+  }
+  .toast span { display: flex; align-items: center; gap: 10px; }
+  .toast button { background: none; border: 0; color: var(--g-t); cursor: pointer; display: grid; padding: 4px; }
+
+  .lane-tabs {
+    display: flex; gap: 6px; padding: 4px; border-radius: 14px;
+    background: #F4F7FB; border: 1px solid #E3E8F0;
+  }
+  .lane-tabs button {
+    flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: transparent;
+    font-weight: 650; font-size: 14px; color: #475569; cursor: pointer;
+  }
+  .lane-tabs button.is-on { background: var(--g); color: #fff; }
+  .shuttle { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
+  #shuttle[data-lane="available"] > .card-lane[aria-labelledby="eTitle"],
+  #shuttle[data-lane="assigned"] > .card-lane[aria-labelledby="uTitle"],
+  #shuttle .xfer { display: none; }
+  #shuttle .card-lane { flex: 1 1 100%; }
+  .card-lane {
+    flex: 1 1 400px; min-width: 0; background: #fff; border: 1.5px solid var(--line3);
+    border-radius: 18px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card-lane-head {
+    padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .card-lane-head h3 {
+    margin: 0; font-family: var(--font); font-size: 17px; font-weight: 700; color: var(--ink2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .assign .tag {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; background: #EEF1F6; color: #475569; white-space: nowrap;
+  }
+  .assign .tag.green { background: var(--g-s); color: var(--g-t); }
+  .assign .tag.red { background: #FDE8E6; color: var(--danger-t); }
+  .sel-note { font-weight: 600; font-size: 14px; }
+  .sel-note.green { color: var(--g-t); }
+  .sel-note.red { color: var(--danger-t); }
+
+  .card-tools { padding: 0 20px 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .field-wrap { position: relative; flex: 1 1 200px; min-width: 0; }
+  .field-wrap > svg, .field-wrap > i {
+    position: absolute; left: 14px; top: 12px; color: #6B7587; pointer-events: none; width: 20px; height: 20px;
+  }
+  .field {
+    width: 100%; height: 44px; border: 1.5px solid #CBD3DF; border-radius: 12px; background: #fff;
+    color: var(--ink2); padding: 0 14px 0 42px; font-size: 14px; outline: none;
+  }
+  .field::placeholder { color: #6B7587; }
+  .field:focus { outline: 3px solid #BFE5CC; border-color: var(--g); }
+  .sel-wrap { position: relative; flex: 0 1 190px; min-width: 150px; }
+  .sel-box {
+    width: 100%; height: 44px; border: 1.5px solid #CBD3DF; border-radius: 12px; background: #fff;
+    color: var(--ink2); padding: 0 38px 0 14px; appearance: none; cursor: pointer; font-size: 14px;
+  }
+  .sel-box:focus { outline: 3px solid #BFE5CC; border-color: var(--g); }
+  .sel-wrap > svg, .sel-wrap > i {
+    position: absolute; right: 12px; top: 14px; color: #475569; pointer-events: none; width: 16px; height: 16px;
+  }
+
+  .select-bar {
+    padding: 10px 20px; background: #F6F8FB; border-top: 1px solid #E8ECF3; border-bottom: 1px solid #E8ECF3;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .select-bar label {
+    display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink2);
+  }
+  .select-bar .shown { color: var(--mute2); font-size: 13px; }
+  .assign .cb {
+    appearance: none; -webkit-appearance: none; width: 20px; height: 20px; margin: 0; flex: none;
+    border: 1.5px solid #7E8BA1; border-radius: 6px; background: #fff; display: grid; place-content: center; cursor: pointer;
+  }
+  .assign .cb:checked { background: var(--g); border-color: var(--g); }
+  .assign .cb:checked::after {
+    content: ""; width: 10px; height: 5px; border-left: 2.2px solid #fff; border-bottom: 2.2px solid #fff;
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+  .assign .cb:focus-visible { outline: 3px solid #9AD7B1; outline-offset: 2px; }
+
+  .row-list { height: 420px; overflow-y: auto; }
+  .assign .row {
+    display: flex; align-items: center; gap: 14px; padding: 12px 20px; cursor: pointer;
+    border-bottom: 1px solid #EEF1F6; background: #fff; transition: background .12s;
+  }
+  .assign .row:hover { background: #F6F9F7; }
+  .assign .row.sel { background: #EAF6EE; }
+  .assign .row.pe { background: #F1FAF4; }
+  .assign .row.pr { background: #FEF4F2; }
+  .assign .row.sel.pe, .assign .row.sel.pr { background: #E1F2E7; }
+  .assign .av {
+    width: 42px; height: 42px; flex: none; border-radius: 12px;
+    display: grid; place-items: center;
+  }
+  .assign .av svg { width: 18px; height: 18px; }
+  .assign .who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .assign .nm {
+    font-weight: 600; font-size: 15.5px; color: var(--ink2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .em {
+    font-size: 13px; color: var(--mute2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .meta2 {
+    font-size: 12.5px; color: var(--mute2); display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .assign .meta2 svg { width: 13px; height: 13px; flex: none; }
+  .assign .side-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
+  .assign .track { width: 96px; height: 6px; border-radius: 99px; background: #E4E9F0; overflow: hidden; }
+  .assign .fill { height: 100%; background: var(--g); border-radius: 99px; display: block; }
+  .assign .prog-row { display: flex; align-items: center; gap: 8px; }
+  .assign .prog-pct { font-size: 12.5px; font-weight: 600; color: #475569; min-width: 28px; text-align: right; }
+  .lane-empty { padding: 48px 24px; text-align: center; color: var(--mute2); }
+  .lane-empty strong { display: block; font-weight: 600; color: var(--ink2); font-size: 16px; margin-bottom: 4px; }
+  .sticky-pills .tag { font-size: 14px; padding: 4px 12px; }
+
+  .xfer {
+    flex: none; width: 178px; display: flex; flex-direction: column; justify-content: center;
+    align-self: center; gap: 12px; text-align: center;
+  }
+  .xfer .grp { display: flex; flex-direction: column; gap: 8px; }
+  .xfer .hint { margin: 0; font-size: 13px; color: var(--mute2); line-height: 1.35; }
+  .xfer hr { width: 100%; border: 0; border-top: 1px solid var(--line2); margin: 4px 0; }
+  .btn-lg {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 46px; padding: 0 20px; border-radius: 12px; font-weight: 600; font-size: 15px;
+    cursor: pointer; border: 1.5px solid transparent; width: 100%;
+  }
+  .btn-lg:disabled { background: #E3E8EF; color: #7A8699; border-color: transparent; cursor: not-allowed; }
+  .btn-lg.primary { background: var(--g); color: #fff; border: 0; }
+  .btn-lg.primary:hover:not(:disabled) { background: var(--g-d); }
+  .btn-lg.danger { background: #fff; color: var(--danger); border-color: var(--danger-b); }
+  .btn-lg.danger:hover:not(:disabled) { background: var(--danger-s); }
+  .btn-lg.danger:disabled { color: #8A94A6; border-color: #E3E8EF; background: #fff; }
+  .btn-lg.ghost { background: #fff; color: #334155; border-color: #CBD3DF; }
+  .btn-lg.ghost:hover:not(:disabled) { background: #F3F5F9; }
+  .btn-lg.ghost:disabled { color: #8A94A6; border-color: #E3E8EF; }
+  .btn-lg svg { width: 18px; height: 18px; }
+
+  .sticky-bar {
+    position: sticky; bottom: 16px; background: #fff; border: 1.5px solid var(--line3);
+    border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 27, 45, .10);
+    padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  }
+  .sticky-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .sticky-ico {
+    width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--g-s); color: var(--g);
+    display: grid; place-items: center;
+  }
+  .sticky-ico svg { width: 22px; height: 22px; }
+  .sticky-meta { display: flex; flex-direction: column; gap: 4px; }
+  .sticky-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; color: var(--ink2); }
+  .sticky-hint { color: var(--mute2); font-size: 13.5px; }
+  .sticky-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sticky-actions .btn-lg { width: auto; min-width: 140px; }
+
+  .assign-mode-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 14px; border-radius: 14px; background: #F4F7FB; border: 1px solid #E3E8F0;
+    position: sticky; top: 8px; z-index: 6;
+  }
+  .assign-mode-bar .label { font-size: 13px; font-weight: 600; color: #5B6577; }
+  .mode-toggle {
+    display: inline-flex; flex-wrap: wrap; gap: 6px; padding: 4px; border-radius: 12px;
+    background: #fff; border: 1px solid #D7DEE8;
+  }
+  .mode-toggle button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    height: 36px; padding: 0 14px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; color: #475569;
+  }
+  .mode-toggle button:hover { background: #F3F5F9; color: var(--ink2); }
+  .mode-toggle button.is-on { background: var(--g); color: #fff; }
+  .mode-toggle button:focus-visible { outline: 3px solid #BFE5CC; outline-offset: 1px; }
+  .assign-opt[hidden] { display: none !important; }
+
+  .bulk-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-bottom: 14px; }
+  .bulk-tools .field-wrap { flex: 1 1 240px; }
+  .bulk-tools .sel-wrap { flex: 0 1 180px; }
+  .bulk-lane {
+    background: #fff; border: 1.5px solid var(--line3); border-radius: 18px; overflow: hidden;
+  }
+  .bulk-list { max-height: 520px; overflow-y: auto; }
+  .status-pill {
+    display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; background: #EEF1F6; color: #475569;
+  }
+  .status-pill.on { background: var(--g-s); color: var(--g-t); }
+  .status-pill.off { background: #F1F5F9; color: #64748B; }
+  .bulk-actions-inline { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .bulk-actions-inline .btn-lg { width: auto; min-width: 0; height: 40px; font-size: 14px; padding: 0 14px; }
+
+  .group-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .group-card {
+    display: flex; gap: 12px; align-items: flex-start; text-align: left;
+    padding: 14px 16px; border: 1.5px solid var(--line3); border-radius: 16px;
+    background: #fff; cursor: pointer; transition: border-color .12s, background .12s, box-shadow .12s;
+  }
+  .group-card:hover { border-color: #B7E0C5; background: #F8FCF9; }
+  .group-card.is-on {
+    border-color: var(--g); background: #F1FAF4; box-shadow: 0 0 0 3px #D7F0E1;
+  }
+  .group-card .cb { margin-top: 2px; }
+  .group-card .g-body { flex: 1; min-width: 0; }
+  .group-card .g-name { margin: 0; font-size: 15.5px; font-weight: 700; color: var(--ink2); }
+  .group-card .g-meta { margin: 4px 0 0; font-size: 13px; color: var(--mute2); line-height: 1.4; }
+  .group-card .g-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .group-preview {
+    border: 1.5px dashed #CBD3DF; border-radius: 16px; padding: 16px 18px; background: #F8FAFC;
+  }
+  .group-preview h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--ink2); }
+  .group-preview p { margin: 0; font-size: 13.5px; color: var(--mute2); line-height: 1.45; }
+  .indiv-block { border: 1.5px solid var(--line3); border-radius: 18px; overflow: hidden; }
+  .indiv-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; background: #F6F8FB; border-bottom: 1px solid #E8ECF3;
+  }
+  .indiv-head h4 { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink2); }
+  .indiv-head button {
+    appearance: none; border: 0; background: none; color: var(--g-t); font-weight: 600;
+    font-size: 13.5px; cursor: pointer; padding: 4px 0;
+  }
+  .indiv-body { padding: 14px 18px 18px; display: none; }
+  .indiv-block.is-open .indiv-body { display: block; }
+  .indiv-list { max-height: 280px; overflow-y: auto; margin-top: 12px; border: 1px solid #EEF1F6; border-radius: 12px; }
+  .sticky-bar { z-index: 4; }
+
+  @media (max-width: 900px) {
+    .group-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 1100px) {
+    .xfer {
+      width: 100%; flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: center;
+    }
+    .xfer .grp { flex: 1 1 220px; }
+    .xfer hr { display: none; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding-bottom: 76px; }
+    .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease; box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .crumb-current { max-width: 46vw; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650;
+      font-family: inherit; text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .sticky-bar { bottom: 88px; }
+    .sticky-actions { width: 100%; }
+    .sticky-actions .btn-lg { flex: 1 1 140px; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-meta { display: none; }
+    .assign { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item is-on" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <nav class="crumb" aria-label="Breadcrumb">
+        <a href="dashboard-company-users.html"><i data-lucide="arrow-left"></i> Students</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <a href="dashboard-company-student-detail.html" id="crumb-student">4 student</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current">Assign Courses</span>
+      </nav>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="student-bar">
+        <div class="student-av" id="student-av" aria-hidden="true">4S</div>
+        <div>
+          <h1 id="student-name">4 student</h1>
+          <div class="student-meta">
+            <span>Email: <strong id="student-email">stu4@yopmail.com</strong></span>
+            <span>Username: <strong id="student-user">student6</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <section class="assign" aria-labelledby="assign-heading">
+        <div class="assign-mode-bar">
+          <span class="label">Assign layout preview — try each option</span>
+          <div class="mode-toggle" role="tablist" aria-label="Assign courses layout options">
+            <button type="button" role="tab" class="is-on" data-opt="1" aria-selected="true">1 · Dual shuttle</button>
+            <button type="button" role="tab" data-opt="2" aria-selected="false">2 · Single list</button>
+            <button type="button" role="tab" data-opt="3" aria-selected="false">3 · By category</button>
+          </div>
+        </div>
+
+        <div class="assign-top">
+          <div class="assign-intro">
+            <span class="assign-ico" id="assign-ico"><i data-lucide="book-plus"></i></span>
+            <div>
+              <h2 id="assign-heading">Assign courses</h2>
+              <p id="assign-desc">Move courses between the two lists, then save once. You can also remove courses that are already assigned.</p>
+            </div>
+          </div>
+          <ol class="steps" aria-label="Steps" id="assign-steps">
+            <li class="step on" id="step-1"><span class="n">1</span><span class="step-label">Select courses</span></li>
+            <li class="step" id="step-2"><span class="n">2</span><span class="step-label">Assign or remove</span></li>
+            <li class="step" id="step-3"><span class="n">3</span><span class="step-label">Save changes</span></li>
+          </ol>
+        </div>
+
+        <div class="toast" id="assign-toast" hidden>
+          <span><i data-lucide="check"></i> <span id="toast-text"></span></span>
+          <button type="button" id="toast-dismiss" aria-label="Dismiss"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="assign-opt" id="assign-opt1" data-opt-panel="1">
+          <div class="lane-tabs" role="tablist" aria-label="Course lists">
+            <button type="button" id="lane-available" role="tab" class="is-on" aria-selected="true">Available Courses</button>
+            <button type="button" id="lane-assigned" role="tab" aria-selected="false">Assigned Courses</button>
+          </div>
+          <div class="shuttle" id="shuttle" data-lane="available">
+            <section class="card-lane" aria-labelledby="uTitle">
+              <div class="card-lane-head">
+                <h3 id="uTitle">Available courses <span class="tag" id="out-count">0</span></h3>
+                <span class="sel-note green" id="out-sel"></span>
+              </div>
+              <div class="card-tools">
+                <div class="field-wrap">
+                  <i data-lucide="search"></i>
+                  <input class="field" type="search" id="out-search" placeholder="Search title or provider" aria-label="Search available courses">
+                </div>
+                <div class="sel-wrap">
+                  <select class="sel-box" id="out-sort" aria-label="Sort available courses">
+                    <option value="title">Title (A–Z)</option>
+                    <option value="title-desc">Title (Z–A)</option>
+                    <option value="provider">Provider (A–Z)</option>
+                  </select>
+                  <i data-lucide="chevron-down"></i>
+                </div>
+              </div>
+              <div class="select-bar">
+                <label><input class="cb" type="checkbox" id="out-all"> Select all shown</label>
+                <span class="shown" id="out-shown">Showing 0 of 0</span>
+              </div>
+              <div class="row-list" id="out-list"></div>
+            </section>
+
+            <div class="xfer" hidden>
+              <p class="hint" id="assign-hint"></p>
+              <p class="hint" id="remove-hint"></p>
+            </div>
+
+            <section class="card-lane" aria-labelledby="eTitle">
+              <div class="card-lane-head">
+                <h3 id="eTitle">Assigned to student <span class="tag green" id="in-count">0</span></h3>
+                <span class="sel-note red" id="in-sel"></span>
+              </div>
+              <div class="card-tools">
+                <div class="field-wrap">
+                  <i data-lucide="search"></i>
+                  <input class="field" type="search" id="in-search" placeholder="Search title or provider" aria-label="Search assigned courses">
+                </div>
+                <div class="sel-wrap">
+                  <select class="sel-box" id="in-sort" aria-label="Sort assigned courses">
+                    <option value="title">Title (A–Z)</option>
+                    <option value="title-desc">Title (Z–A)</option>
+                    <option value="provider">Provider (A–Z)</option>
+                  </select>
+                  <i data-lucide="chevron-down"></i>
+                </div>
+              </div>
+              <div class="select-bar">
+                <label><input class="cb" type="checkbox" id="in-all"> Select all shown</label>
+                <span class="shown" id="in-shown">Showing 0 of 0</span>
+              </div>
+              <div class="row-list" id="in-list"></div>
+            </section>
+          </div>
+        </div>
+
+        <div class="assign-opt" id="assign-opt2" data-opt-panel="2" hidden>
+          <div class="bulk-tools">
+            <div class="field-wrap">
+              <i data-lucide="search"></i>
+              <input class="field" type="search" id="bulk-search" placeholder="Search title or provider" aria-label="Search courses">
+            </div>
+            <div class="sel-wrap">
+              <select class="sel-box" id="bulk-filter" aria-label="Filter by assignment">
+                <option value="all">Status: All</option>
+                <option value="out">Not assigned</option>
+                <option value="in">Assigned</option>
+                <option value="pending">Pending changes</option>
+              </select>
+              <i data-lucide="chevron-down"></i>
+            </div>
+            <div class="sel-wrap">
+              <select class="sel-box" id="bulk-sort" aria-label="Sort courses">
+                <option value="title">Sort: Title A–Z</option>
+                <option value="title-desc">Sort: Title Z–A</option>
+                <option value="provider">Sort: Provider A–Z</option>
+              </select>
+              <i data-lucide="chevron-down"></i>
+            </div>
+            <div class="bulk-actions-inline">
+              <button class="btn-lg primary" type="button" id="bulk-assign" disabled>Assign selected</button>
+              <button class="btn-lg danger" type="button" id="bulk-remove" disabled>Remove selected</button>
+            </div>
+          </div>
+          <div class="bulk-lane">
+            <div class="select-bar">
+              <label><input class="cb" type="checkbox" id="bulk-all"> Select all shown</label>
+              <span class="shown" id="bulk-shown">Showing 0 of 0</span>
+            </div>
+            <div class="bulk-list" id="bulk-list"></div>
+          </div>
+        </div>
+
+        <div class="assign-opt" id="assign-opt3" data-opt-panel="3" hidden>
+          <div class="group-grid" id="group-grid" role="group" aria-label="Course categories"></div>
+          <div class="group-preview" id="group-preview">
+            <h4>No categories selected</h4>
+            <p>Pick one or more course categories to preview which courses will be assigned. Already-assigned courses are skipped.</p>
+          </div>
+          <div class="indiv-block" id="indiv-block">
+            <div class="indiv-head">
+              <h4>Add individual courses (optional)</h4>
+              <button type="button" id="indiv-toggle">Show</button>
+            </div>
+            <div class="indiv-body">
+              <div class="field-wrap">
+                <i data-lucide="search"></i>
+                <input class="field" type="search" id="indiv-search" placeholder="Search courses not in selected categories" aria-label="Search individual courses">
+              </div>
+              <div class="indiv-list" id="indiv-list"></div>
+            </div>
+          </div>
+          <div class="bulk-actions-inline" style="margin:0">
+            <button class="btn-lg primary" type="button" id="group-assign" disabled>Assign selected categories</button>
+            <button class="btn-lg ghost" type="button" id="group-clear" disabled>Clear selection</button>
+          </div>
+        </div>
+
+        <div class="sticky-bar" id="sticky-bar" hidden>
+          <div class="sticky-left">
+            <span class="sticky-ico"><i data-lucide="arrow-left-right"></i></span>
+            <div class="sticky-meta">
+              <div class="sticky-pills" id="assign-summary"><span>No pending changes</span></div>
+              <span class="sticky-hint" id="bar-hint">Select courses above to get started.</span>
+            </div>
+          </div>
+          <div class="sticky-actions">
+            <button class="btn-lg primary" type="button" id="btn-assign" hidden>Assign</button>
+            <button class="btn-lg danger" type="button" id="btn-remove" hidden>Remove</button>
+            <button class="btn-lg ghost" type="button" id="btn-discard" disabled>Discard changes</button>
+            <button class="btn-lg primary" type="button" id="btn-save" disabled>Save changes</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a class="is-on" href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  function icons() {
+    lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  }
+  icons();
+
+  var params = new URLSearchParams(location.search);
+  var student = {
+    name: params.get("name") || "4 student",
+    email: params.get("email") || "stu4@yopmail.com",
+    user: params.get("user") || "student6"
+  };
+  document.getElementById("student-name").textContent = student.name;
+  document.getElementById("crumb-student").textContent = student.name;
+  document.getElementById("student-email").textContent = student.email;
+  document.getElementById("student-user").textContent = student.user;
+  document.title = "Assign Courses — " + student.name;
+  document.getElementById("student-av").textContent = student.name.split(/\s+/).map(function (p) {
+    return p.charAt(0);
+  }).join("").slice(0, 2).toUpperCase() || "ST";
+  var detailHref = "dashboard-company-student-detail.html?name=" + encodeURIComponent(student.name) +
+    "&email=" + encodeURIComponent(student.email) +
+    "&user=" + encodeURIComponent(student.user);
+  document.getElementById("crumb-student").href = detailHref;
+
+  var TINTS = [
+    ["#FFF7ED", "#C2410C"],
+    ["#E3F3E8", "#14693A"],
+    ["#EFF6FF", "#1D4ED8"],
+    ["#F5F3FF", "#6D28D9"]
+  ];
+  var ICONS = ["hard-hat", "book-open", "building-2", "flask-conical"];
+
+  var catalog = [
+    { id: "c1", title: "Back Safety in Construction Environments", provider: "eTraining", meta: "45 min · Safety", category: "safety", progress: 35 },
+    { id: "c2", title: "Passing Threshold", provider: "eTraining", meta: "30 min · Assessment", category: "assessment", progress: 0 },
+    { id: "c3", title: "test scorum", provider: "test company netsole", meta: "Company course", category: "company", progress: 0 },
+    { id: "c4", title: "qa test", provider: "test company netsole", meta: "Company course", category: "company", progress: 0 },
+    { id: "c5", title: "Confined Space Entry Awareness", provider: "eTraining", meta: "40 min · Scaffolding", category: "scaffolding", progress: 100 },
+    { id: "c6", title: "Fall Protection Basics", provider: "eTraining", meta: "35 min · Fall Protection", category: "fall", progress: 100 },
+    { id: "c7", title: "Hazard Communication", provider: "eTraining", meta: "25 min · Safety", category: "safety", progress: 0 },
+    { id: "c8", title: "Site Orientation 2026", provider: "test company netsole", meta: "Company course", category: "company", progress: 0 }
+  ];
+  var categories = [
+    { id: "safety", name: "Safety", courseIds: ["c1", "c7"] },
+    { id: "assessment", name: "Assessment", courseIds: ["c2"] },
+    { id: "scaffolding", name: "Scaffolding", courseIds: ["c5"] },
+    { id: "fall", name: "Fall Protection", courseIds: ["c6"] },
+    { id: "company", name: "Company courses", courseIds: ["c3", "c4", "c8"] }
+  ];
+
+  var assigned = { c1: true, c3: true };
+  var saved = { c1: true, c3: true };
+  var sel = {};
+  var groupSel = {};
+  var indivSel = {};
+  var assignOpt = "1";
+  var lane = "available";
+
+  var outList = document.getElementById("out-list");
+  var inList = document.getElementById("in-list");
+  var outSearch = document.getElementById("out-search");
+  var inSearch = document.getElementById("in-search");
+  var outSort = document.getElementById("out-sort");
+  var inSort = document.getElementById("in-sort");
+  var btnAssign = document.getElementById("btn-assign");
+  var btnRemove = document.getElementById("btn-remove");
+  var btnSave = document.getElementById("btn-save");
+  var btnDiscard = document.getElementById("btn-discard");
+  var toastEl = document.getElementById("assign-toast");
+  var toastText = document.getElementById("toast-text");
+  var bulkList = document.getElementById("bulk-list");
+  var bulkSearch = document.getElementById("bulk-search");
+  var bulkFilter = document.getElementById("bulk-filter");
+  var bulkSort = document.getElementById("bulk-sort");
+  var groupGrid = document.getElementById("group-grid");
+  var groupPreview = document.getElementById("group-preview");
+  var indivBlock = document.getElementById("indiv-block");
+  var indivList = document.getElementById("indiv-list");
+  var indivSearch = document.getElementById("indiv-search");
+
+  var OPT_COPY = {
+    "1": {
+      title: "Assign courses",
+      desc: "Move courses between the two lists, then save once. You can also remove courses that are already assigned.",
+      icon: "book-plus",
+      steps: ["Select courses", "Assign or remove", "Save changes"]
+    },
+    "2": {
+      title: "Bulk assign from one list",
+      desc: "Search the full course catalog, filter by status, select courses, then assign or remove in bulk before saving.",
+      icon: "list-checks",
+      steps: ["Filter & select", "Assign or remove", "Save changes"]
+    },
+    "3": {
+      title: "Assign by category",
+      desc: "Pick course categories first. Preview which courses will be added, then optionally include individual exceptions.",
+      icon: "layers",
+      steps: ["Select categories", "Review preview", "Assign & save"]
+    }
+  };
+
+  function byId(id) {
+    for (var i = 0; i < catalog.length; i++) if (catalog[i].id === id) return catalog[i];
+    return null;
+  }
+  function view(list, q, sort) {
+    var needle = (q || "").trim().toLowerCase();
+    var out = list.filter(function (c) {
+      if (!needle) return true;
+      return (c.title + " " + c.provider + " " + c.meta).toLowerCase().indexOf(needle) !== -1;
+    });
+    out.sort(function (a, b) {
+      if (sort === "provider") {
+        return a.provider.localeCompare(b.provider, undefined, { sensitivity: "base" }) ||
+          a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+      }
+      return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+    });
+    if (sort === "title-desc") out.reverse();
+    return out;
+  }
+  function lists() {
+    var uAll = catalog.filter(function (c) { return !assigned[c.id]; });
+    var eAll = catalog.filter(function (c) { return !!assigned[c.id]; });
+    return {
+      uAll: uAll, eAll: eAll,
+      uVis: view(uAll, outSearch.value, outSort.value),
+      eVis: view(eAll, inSearch.value, inSort.value)
+    };
+  }
+  function diff() {
+    return {
+      toAssign: catalog.filter(function (c) { return assigned[c.id] && !saved[c.id]; }).length,
+      toRemove: catalog.filter(function (c) { return !assigned[c.id] && saved[c.id]; }).length
+    };
+  }
+  function updateSticky(extraSel) {
+    var D = diff();
+    var pending = D.toAssign + D.toRemove;
+    var summary = document.getElementById("assign-summary");
+    if (pending === 0) {
+      summary.innerHTML = "<span>No pending changes</span>";
+    } else {
+      summary.innerHTML =
+        '<span class="tag green">+' + D.toAssign + " to assign</span>" +
+        '<span class="tag red">−' + D.toRemove + " to remove</span>";
+    }
+    document.getElementById("bar-hint").textContent = pending === 0
+      ? (extraSel ? "Selection ready. Assign or remove, then save." : "Select a course to continue.")
+      : "Nothing is applied until you save.";
+    btnSave.disabled = pending === 0;
+    btnDiscard.disabled = pending === 0;
+    var showBar = extraSel || pending > 0;
+    document.getElementById("sticky-bar").hidden = !showBar;
+    var onShuttle = assignOpt === "1";
+    btnAssign.hidden = !(onShuttle && lane === "available" && extraSel);
+    btnRemove.hidden = !(onShuttle && lane === "assigned" && extraSel);
+    return { D: D, pending: pending };
+  }
+  function setLane(next) {
+    lane = next === "assigned" ? "assigned" : "available";
+    document.getElementById("shuttle").setAttribute("data-lane", lane);
+    document.getElementById("lane-available").classList.toggle("is-on", lane === "available");
+    document.getElementById("lane-available").setAttribute("aria-selected", lane === "available" ? "true" : "false");
+    document.getElementById("lane-assigned").classList.toggle("is-on", lane === "assigned");
+    document.getElementById("lane-assigned").setAttribute("aria-selected", lane === "assigned" ? "true" : "false");
+    sel = {};
+    paintAll();
+  }
+  function setStep(n) {
+    [1, 2, 3].forEach(function (i) {
+      var el = document.getElementById("step-" + i);
+      el.className = "step" + (i < n ? " done" : i === n ? " on" : "");
+    });
+  }
+  function applyOptCopy() {
+    var c = OPT_COPY[assignOpt];
+    document.getElementById("assign-heading").textContent = c.title;
+    document.getElementById("assign-desc").textContent = c.desc;
+    document.getElementById("assign-ico").innerHTML = '<i data-lucide="' + c.icon + '"></i>';
+    [1, 2, 3].forEach(function (i) {
+      var lab = document.querySelector("#step-" + i + " .step-label");
+      if (lab) lab.textContent = c.steps[i - 1];
+    });
+  }
+  function setAssignOpt(opt) {
+    assignOpt = String(opt);
+    document.querySelectorAll(".mode-toggle [data-opt]").forEach(function (btn) {
+      var on = btn.getAttribute("data-opt") === assignOpt;
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll(".assign-opt").forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-opt-panel") !== assignOpt;
+    });
+    sel = {};
+    applyOptCopy();
+    paintAll();
+  }
+
+  function rowHtml(c, side, idx) {
+    var tint = TINTS[idx % TINTS.length];
+    var icon = ICONS[idx % ICONS.length];
+    var was = !!saved[c.id];
+    var pendAssign = side === "e" && !was;
+    var pendRemove = side === "u" && was;
+    var checked = !!sel[c.id];
+    var cls = "row" + (checked ? " sel" : "") + (pendAssign ? " pe" : "") + (pendRemove ? " pr" : "");
+    var right = "";
+    if (pendRemove) {
+      right = '<span class="tag red">Will be removed</span>';
+    } else if (pendAssign) {
+      right = '<span class="tag green">Will assign</span>';
+    } else if (side === "e") {
+      right =
+        '<span class="tag">' + (c.progress === 0 ? "Not started" : c.progress === 100 ? "Completed" : "In progress") + "</span>" +
+        '<span class="prog-row"><span class="track"><span class="fill" style="width:' + c.progress + '%"></span></span>' +
+        '<span class="prog-pct">' + c.progress + "%</span></span>";
+    } else {
+      right = '<span class="tag">Available</span>';
+    }
+    return (
+      '<label class="' + cls + '" data-id="' + c.id + '">' +
+        '<input class="cb" type="checkbox"' + (checked ? " checked" : "") + ' aria-label="Select ' + c.title + '">' +
+        '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '"><i data-lucide="' + icon + '"></i></span>' +
+        '<span class="who"><span class="nm">' + c.title + '</span><span class="em">' + c.provider + "</span>" +
+        '<span class="meta2"><i data-lucide="clock-3"></i>' + c.meta + "</span>" +
+        '</span><span class="side-meta">' + right + "</span></label>"
+    );
+  }
+
+  function paint1() {
+    var L = lists();
+    var uSel = L.uVis.filter(function (c) { return sel[c.id]; }).length;
+    var eSel = L.eVis.filter(function (c) { return sel[c.id]; }).length;
+
+    if (L.uVis.length) {
+      outList.innerHTML = L.uVis.map(function (c) { return rowHtml(c, "u", catalog.indexOf(c)); }).join("");
+    } else if (L.uAll.length) {
+      outList.innerHTML = '<div class="lane-empty"><strong>No matches for “' + outSearch.value + '”</strong>Try a different title or provider.</div>';
+    } else {
+      outList.innerHTML = '<div class="lane-empty"><strong>All courses assigned</strong>There are no courses left to assign to this student.</div>';
+    }
+
+    if (L.eVis.length) {
+      inList.innerHTML = L.eVis.map(function (c) { return rowHtml(c, "e", catalog.indexOf(c)); }).join("");
+    } else if (L.eAll.length) {
+      inList.innerHTML = '<div class="lane-empty"><strong>No matches for “' + inSearch.value + '”</strong>Try a different title or provider.</div>';
+    } else {
+      inList.innerHTML = '<div class="lane-empty"><strong>No courses assigned yet</strong>Choose Available Courses, select a course, then Assign.</div>';
+    }
+
+    document.getElementById("out-count").textContent = L.uAll.length;
+    document.getElementById("in-count").textContent = L.eAll.length;
+    document.getElementById("out-sel").textContent = uSel ? uSel + " selected" : "";
+    document.getElementById("in-sel").textContent = eSel ? eSel + " selected" : "";
+    document.getElementById("out-shown").textContent = "Showing " + L.uVis.length + " of " + L.uAll.length;
+    document.getElementById("in-shown").textContent = "Showing " + L.eVis.length + " of " + L.eAll.length;
+    document.getElementById("out-all").checked = L.uVis.length > 0 && L.uVis.every(function (c) { return sel[c.id]; });
+    document.getElementById("in-all").checked = L.eVis.length > 0 && L.eVis.every(function (c) { return sel[c.id]; });
+
+    btnAssign.disabled = uSel === 0;
+    btnRemove.disabled = eSel === 0;
+    btnAssign.innerHTML = (uSel ? "Assign (" + uSel + ")" : "Assign") + ' <i data-lucide="arrow-right"></i>';
+    btnRemove.innerHTML = '<i data-lucide="arrow-left"></i> ' + (eSel ? "Remove (" + eSel + ")" : "Remove");
+    document.getElementById("assign-hint").textContent = uSel
+      ? uSel + (uSel === 1 ? " course" : " courses") + " ready to assign"
+      : "Select courses on the left to assign them.";
+    document.getElementById("remove-hint").textContent = eSel
+      ? eSel + (eSel === 1 ? " course" : " courses") + " ready to remove"
+      : "Select courses on the right to remove them.";
+
+    var activeSel = lane === "available" ? uSel : eSel;
+    var st = updateSticky(activeSel > 0);
+    setStep(activeSel > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function bulkVisible() {
+    var filter = bulkFilter.value;
+    var base = catalog.filter(function (c) {
+      var isIn = !!assigned[c.id];
+      var was = !!saved[c.id];
+      var pend = (isIn && !was) || (!isIn && was);
+      if (filter === "out") return !isIn;
+      if (filter === "in") return isIn;
+      if (filter === "pending") return pend;
+      return true;
+    });
+    return view(base, bulkSearch.value, bulkSort.value);
+  }
+
+  function bulkRowHtml(c, idx) {
+    var tint = TINTS[idx % TINTS.length];
+    var icon = ICONS[idx % ICONS.length];
+    var isIn = !!assigned[c.id];
+    var was = !!saved[c.id];
+    var pendAssign = isIn && !was;
+    var pendRemove = !isIn && was;
+    var checked = !!sel[c.id];
+    var cls = "row" + (checked ? " sel" : "") + (pendAssign ? " pe" : "") + (pendRemove ? " pr" : "");
+    var status = pendAssign
+      ? '<span class="status-pill on">Will assign</span>'
+      : pendRemove
+        ? '<span class="tag red">Will remove</span>'
+        : isIn
+          ? '<span class="status-pill on">Assigned</span>'
+          : '<span class="status-pill off">Not assigned</span>';
+    return (
+      '<label class="' + cls + '" data-id="' + c.id + '">' +
+        '<input class="cb" type="checkbox"' + (checked ? " checked" : "") + ' aria-label="Select ' + c.title + '">' +
+        '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '"><i data-lucide="' + icon + '"></i></span>' +
+        '<span class="who"><span class="nm">' + c.title + '</span><span class="em">' + c.provider + "</span>" +
+        '<span class="meta2"><i data-lucide="clock-3"></i>' + c.meta + "</span></span>" +
+        '<span class="side-meta">' + status + "</span></label>"
+    );
+  }
+
+  function paint2() {
+    var vis = bulkVisible();
+    var selected = vis.filter(function (c) { return sel[c.id]; });
+    var canAssign = selected.some(function (c) { return !assigned[c.id]; });
+    var canRemove = selected.some(function (c) { return !!assigned[c.id]; });
+
+    if (vis.length) {
+      bulkList.innerHTML = vis.map(function (c) { return bulkRowHtml(c, catalog.indexOf(c)); }).join("");
+    } else {
+      bulkList.innerHTML = '<div class="lane-empty"><strong>No courses match</strong>Try another search or filter.</div>';
+    }
+    document.getElementById("bulk-shown").textContent = "Showing " + vis.length + " of " + catalog.length;
+    document.getElementById("bulk-all").checked = vis.length > 0 && vis.every(function (c) { return sel[c.id]; });
+    document.getElementById("bulk-assign").disabled = !canAssign;
+    document.getElementById("bulk-remove").disabled = !canRemove;
+    document.getElementById("bulk-assign").textContent = canAssign
+      ? "Assign selected (" + selected.filter(function (c) { return !assigned[c.id]; }).length + ")"
+      : "Assign selected";
+    document.getElementById("bulk-remove").textContent = canRemove
+      ? "Remove selected (" + selected.filter(function (c) { return !!assigned[c.id]; }).length + ")"
+      : "Remove selected";
+
+    var st = updateSticky(selected.length > 0);
+    setStep(selected.length > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function selectedCategoryCourses() {
+    var map = {};
+    categories.forEach(function (g) {
+      if (!groupSel[g.id]) return;
+      g.courseIds.forEach(function (id) { map[id] = true; });
+    });
+    return Object.keys(map).map(byId).filter(Boolean);
+  }
+
+  function paint3() {
+    groupGrid.innerHTML = categories.map(function (g) {
+      var courses = g.courseIds.map(byId).filter(Boolean);
+      var already = courses.filter(function (c) { return !!assigned[c.id]; }).length;
+      var neu = courses.length - already;
+      var on = !!groupSel[g.id];
+      return (
+        '<label class="group-card' + (on ? " is-on" : "") + '" data-gid="' + g.id + '">' +
+          '<input class="cb" type="checkbox"' + (on ? " checked" : "") + ' aria-label="Select ' + g.name + '">' +
+          '<span class="g-body">' +
+            '<p class="g-name">' + g.name + "</p>" +
+            '<p class="g-meta">' + courses.length + " courses · " + already + " already assigned</p>" +
+            '<div class="g-stats">' +
+              '<span class="tag">' + courses.length + " total</span>" +
+              '<span class="tag green">+' + neu + " new</span>" +
+              (already ? '<span class="tag">' + already + " assigned</span>" : "") +
+            "</div></span></label>"
+      );
+    }).join("");
+
+    var courses = selectedCategoryCourses();
+    var groupCount = Object.keys(groupSel).filter(function (k) { return groupSel[k]; }).length;
+    var already = courses.filter(function (c) { return !!assigned[c.id]; }).length;
+    var neu = courses.length - already;
+    var indivIds = Object.keys(indivSel).filter(function (k) { return indivSel[k]; });
+    var indivNew = indivIds.filter(function (id) { return !assigned[id]; }).length;
+
+    if (groupCount === 0 && indivIds.length === 0) {
+      groupPreview.innerHTML = "<h4>No categories selected</h4><p>Pick one or more course categories to preview which courses will be assigned. Already-assigned courses are skipped.</p>";
+    } else {
+      groupPreview.innerHTML =
+        "<h4>" + groupCount + (groupCount === 1 ? " category" : " categories") +
+        (indivIds.length ? " + " + indivIds.length + " individual" + (indivIds.length === 1 ? "" : "s") : "") +
+        "</h4><p>" +
+        courses.length + " courses from categories · <strong>" + neu + " new</strong> to assign · " +
+        already + " already assigned" +
+        (indivNew ? " · +" + indivNew + " from individuals" : "") +
+        ".</p>";
+    }
+
+    var inCat = {};
+    courses.forEach(function (c) { inCat[c.id] = true; });
+    var indivPool = view(
+      catalog.filter(function (c) { return !inCat[c.id]; }),
+      indivSearch.value,
+      "title"
+    );
+    if (indivPool.length) {
+      indivList.innerHTML = indivPool.map(function (c, idx) {
+        var tint = TINTS[idx % TINTS.length];
+        var icon = ICONS[idx % ICONS.length];
+        var on = !!indivSel[c.id];
+        var isIn = !!assigned[c.id];
+        return (
+          '<label class="row' + (on ? " sel" : "") + '" data-id="' + c.id + '">' +
+            '<input class="cb" type="checkbox"' + (on ? " checked" : "") + ' aria-label="Select ' + c.title + '">' +
+            '<span class="av" style="background:' + tint[0] + ";color:" + tint[1] + '"><i data-lucide="' + icon + '"></i></span>' +
+            '<span class="who"><span class="nm">' + c.title + '</span><span class="em">' + c.provider + "</span></span>" +
+            '<span class="side-meta">' + (isIn ? '<span class="status-pill on">Assigned</span>' : '<span class="status-pill off">Not assigned</span>') + "</span></label>"
+        );
+      }).join("");
+    } else {
+      indivList.innerHTML = '<div class="lane-empty"><strong>No extra courses</strong>Everything is already covered by selected categories or your search.</div>';
+    }
+
+    var canAssign = neu > 0 || indivNew > 0;
+    document.getElementById("group-assign").disabled = !canAssign;
+    document.getElementById("group-clear").disabled = groupCount === 0 && indivIds.length === 0;
+    document.getElementById("group-assign").textContent = canAssign
+      ? "Assign (" + (neu + indivNew) + " new)"
+      : "Assign selected categories";
+
+    var st = updateSticky(groupCount + indivIds.length > 0);
+    setStep(groupCount + indivIds.length > 0 ? 2 : (st.pending > 0 ? 3 : 1));
+  }
+
+  function paintAll() {
+    updateSticky(false);
+    if (assignOpt === "1") paint1();
+    else if (assignOpt === "2") paint2();
+    else paint3();
+    icons();
+  }
+
+  function bindList(el, mapName) {
+    el.addEventListener("click", function (e) {
+      var row = e.target.closest(".row");
+      if (!row) return;
+      var id = row.getAttribute("data-id");
+      var map = mapName === "indiv" ? indivSel : sel;
+      if (e.target.classList.contains("cb")) {
+        map[id] = e.target.checked;
+        if (!map[id]) delete map[id];
+      } else {
+        if (map[id]) delete map[id]; else map[id] = true;
+      }
+      paintAll();
+    });
+  }
+  bindList(outList, "sel");
+  bindList(inList, "sel");
+  bindList(bulkList, "sel");
+  bindList(indivList, "indiv");
+
+  function toggleAll(side) {
+    var L = lists();
+    var vis = side === "u" ? L.uVis : L.eVis;
+    var allOn = vis.length > 0 && vis.every(function (c) { return sel[c.id]; });
+    vis.forEach(function (c) {
+      if (allOn) delete sel[c.id]; else sel[c.id] = true;
+    });
+    paintAll();
+  }
+  document.getElementById("out-all").addEventListener("change", function () { toggleAll("u"); });
+  document.getElementById("in-all").addEventListener("change", function () { toggleAll("e"); });
+  document.getElementById("bulk-all").addEventListener("change", function () {
+    var vis = bulkVisible();
+    var allOn = vis.length > 0 && vis.every(function (c) { return sel[c.id]; });
+    vis.forEach(function (c) {
+      if (allOn) delete sel[c.id]; else sel[c.id] = true;
+    });
+    paintAll();
+  });
+
+  function move(side) {
+    var L = lists();
+    var vis = side === "u" ? L.uVis : L.eVis;
+    vis.forEach(function (c) {
+      if (!sel[c.id]) return;
+      if (side === "u") assigned[c.id] = true; else delete assigned[c.id];
+      delete sel[c.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  }
+  btnAssign.addEventListener("click", function () { move("u"); });
+  btnRemove.addEventListener("click", function () { move("e"); });
+
+  document.getElementById("bulk-assign").addEventListener("click", function () {
+    bulkVisible().forEach(function (c) {
+      if (!sel[c.id] || assigned[c.id]) return;
+      assigned[c.id] = true;
+      delete sel[c.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  });
+  document.getElementById("bulk-remove").addEventListener("click", function () {
+    bulkVisible().forEach(function (c) {
+      if (!sel[c.id] || !assigned[c.id]) return;
+      delete assigned[c.id];
+      delete sel[c.id];
+    });
+    toastEl.hidden = true;
+    paintAll();
+  });
+
+  groupGrid.addEventListener("click", function (e) {
+    var card = e.target.closest(".group-card");
+    if (!card) return;
+    var gid = card.getAttribute("data-gid");
+    if (e.target.classList.contains("cb")) {
+      groupSel[gid] = e.target.checked;
+      if (!groupSel[gid]) delete groupSel[gid];
+    } else {
+      if (groupSel[gid]) delete groupSel[gid]; else groupSel[gid] = true;
+    }
+    paintAll();
+  });
+  document.getElementById("group-clear").addEventListener("click", function () {
+    groupSel = {};
+    indivSel = {};
+    paintAll();
+  });
+  document.getElementById("group-assign").addEventListener("click", function () {
+    selectedCategoryCourses().forEach(function (c) { assigned[c.id] = true; });
+    Object.keys(indivSel).forEach(function (id) {
+      if (indivSel[id]) assigned[id] = true;
+    });
+    groupSel = {};
+    indivSel = {};
+    toastEl.hidden = true;
+    paintAll();
+  });
+  document.getElementById("indiv-toggle").addEventListener("click", function () {
+    var open = indivBlock.classList.toggle("is-open");
+    this.textContent = open ? "Hide" : "Show";
+    icons();
+  });
+
+  btnDiscard.addEventListener("click", function () {
+    assigned = Object.assign({}, saved);
+    sel = {};
+    groupSel = {};
+    indivSel = {};
+    toastEl.hidden = true;
+    paintAll();
+  });
+  btnSave.addEventListener("click", function () {
+    var D = diff();
+    var parts = [];
+    if (D.toAssign) parts.push(D.toAssign + (D.toAssign === 1 ? " course assigned" : " courses assigned"));
+    if (D.toRemove) parts.push(D.toRemove + (D.toRemove === 1 ? " course removed" : " courses removed"));
+    saved = Object.assign({}, assigned);
+    sel = {};
+    groupSel = {};
+    indivSel = {};
+    toastText.textContent = "Changes saved: " + (parts.length ? parts.join(", ") : "no changes") + ".";
+    toastEl.hidden = false;
+    paintAll();
+  });
+  document.getElementById("toast-dismiss").addEventListener("click", function () {
+    toastEl.hidden = true;
+  });
+
+  document.getElementById("lane-available").addEventListener("click", function () { setLane("available"); });
+  document.getElementById("lane-assigned").addEventListener("click", function () { setLane("assigned"); });
+
+  document.querySelectorAll(".mode-toggle [data-opt]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setAssignOpt(btn.getAttribute("data-opt"));
+    });
+  });
+
+  [outSearch, inSearch, bulkSearch, indivSearch].forEach(function (el) {
+    el.addEventListener("input", paintAll);
+  });
+  [outSort, inSort, bulkFilter, bulkSort].forEach(function (el) {
+    el.addEventListener("change", paintAll);
+  });
+
+  applyOptCopy();
+  paintAll();
+})();
+</script>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("menu-btn");
+  var userBtn = document.getElementById("user-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!menuBtn || !backdrop) return;
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+})();
+</script>
+</body>
+</html>

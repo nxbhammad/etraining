@@ -1,0 +1,2 @@
+firstname,lastname,email,username,country,address,city,postcode,joblocation,timezone,status
+#SAMPLE,Doe,jane.doe@example.com,jane_doe,US,"123 Main St",Springfield,62704,Midwest,Asia/Karachi,Active

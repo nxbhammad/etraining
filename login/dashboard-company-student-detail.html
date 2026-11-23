@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Details — 4 student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --warn: #d97706;
+    --warn-soft: #fff7ed;
+    --red: #b91c1c;
+    --red-soft: #fef2f2;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left; text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .crumb {
+    display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap;
+  }
+  .crumb a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .crumb a:hover { color: var(--green); }
+  .crumb a svg { width: 16px; height: 16px; }
+  .crumb-sep { color: #c5ced6; font-size: 12px; }
+  .crumb-current {
+    font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--ink);
+  }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .side-close { margin-left: auto; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .signout:hover { text-decoration: underline; }
+
+  .content { padding: 18px 28px 36px; display: flex; flex-direction: column; gap: 14px; }
+
+  .btn {
+    height: 36px; padding: 0 12px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .btn svg { width: 15px; height: 15px; }
+  .btn-outline { border: 1.5px solid var(--green); background: #fff; color: var(--green); }
+  .btn-outline:hover { background: var(--green-soft); }
+  .btn-primary { border: 0; background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost { border: 1px solid var(--line); background: #fff; color: var(--ink); }
+  .btn-ghost:hover { background: var(--ground); }
+
+  .profile {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+    padding: 18px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  }
+  .profile-av {
+    width: 72px; height: 72px; border-radius: 18px; background: linear-gradient(145deg, #dbeafe, #e0e7ff);
+    color: #1e40af; display: grid; place-items: center;
+    font-family: var(--font); font-size: 24px; font-weight: 700; flex: none;
+  }
+  .role {
+    margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .profile-name {
+    margin: 0; font-family: var(--font); font-size: 24px; font-weight: 700; letter-spacing: -.02em;
+  }
+  .profile-meta {
+    margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 12px 18px;
+    font-size: 13px; color: var(--muted);
+  }
+  .profile-meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .profile-meta svg { width: 14px; height: 14px; color: var(--green); }
+  .profile-meta strong { color: var(--ink); font-weight: 600; }
+  .profile-actions { display: flex; flex-wrap: wrap; gap: 8px; align-self: start; }
+
+  .mini-stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+  }
+  .mini {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  }
+  .mini-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .mini-value { margin-top: 4px; font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: -.03em; }
+
+  .seg {
+    display: flex; gap: 4px; padding: 4px; background: #eef2f0; border-radius: 12px; width: fit-content;
+  }
+  .seg-btn {
+    border: 0; background: transparent; min-height: 36px; padding: 0 14px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .seg-btn:hover { color: var(--ink); background: rgba(255,255,255,.55); }
+  .seg-btn.is-on { background: var(--green); color: #fff; }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  }
+  .panel-head {
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 16px 18px; border-bottom: 1px solid var(--line);
+  }
+  .panel-head h2 {
+    margin: 0; font-family: var(--font); font-size: 16px; font-weight: 650;
+  }
+  .panel-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted); max-width: 520px; }
+  .panel-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select {
+    height: 36px; padding: 0 30px 0 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff;
+    appearance: none; font-size: 13px; color: var(--ink);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7c8d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .search {
+    display: flex; align-items: center; gap: 8px; width: 220px; height: 36px;
+    padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff;
+  }
+  .search input {
+    flex: 1; min-width: 0; border: 0; outline: none; font-size: 13px; background: transparent; color: var(--ink);
+  }
+  .search svg { color: var(--muted); width: 15px; height: 15px; }
+
+  .table-wrap { overflow: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+    background: #fafbfb; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td {
+    padding: 14px; border-bottom: 1px solid var(--line); vertical-align: middle; color: var(--ink);
+  }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #fafcfb; }
+  .check { width: 40px; }
+  .check input { width: 15px; height: 15px; accent-color: var(--green); }
+  .course-cell { min-width: 160px; }
+  .course-name { margin: 0; font-weight: 650; font-family: var(--font); font-size: 14px; }
+  .course-sub { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  .muted { color: var(--muted); }
+  .dash { color: #c5ced6; }
+  .status {
+    display: inline-flex; align-items: center; height: 24px; padding: 0 9px;
+    border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+  .status.not-started { background: #f1f5f9; color: #64748b; }
+  .status.in-progress { background: var(--warn-soft); color: #b45309; }
+  .status.completed { background: var(--green-soft); color: var(--green-dark); }
+  .status.passed { background: var(--green-soft); color: var(--green-dark); }
+  .status.failed { background: var(--red-soft); color: var(--red); }
+  .prog { min-width: 120px; }
+  .prog-row { display: flex; align-items: center; gap: 8px; }
+  .bar { flex: 1; height: 6px; border-radius: 999px; background: #e8eef3; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--green); border-radius: inherit; }
+  .pct { font-size: 12px; font-weight: 600; color: var(--muted); width: 34px; }
+  .cert { max-width: 180px; font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .cert.ready { color: var(--green-dark); font-weight: 600; }
+
+  .pager {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted);
+  }
+  .pages { display: flex; gap: 4px; }
+  .page-btn {
+    min-width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    font-size: 13px; font-weight: 600; color: var(--ink);
+  }
+  .page-btn.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .detail-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 18px;
+  }
+  .field {
+    padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fafbfb;
+  }
+  .field-label {
+    margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .field-value { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+
+  @media (max-width: 1100px) {
+    .mini-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .profile { grid-template-columns: auto 1fr; }
+    .profile-actions { grid-column: 1 / -1; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding-bottom: 76px; }
+    .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease; box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .crumb-current { max-width: 46vw; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650;
+      font-family: inherit; text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item is-on" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <nav class="crumb" aria-label="Breadcrumb">
+        <a href="dashboard-company-users.html"><i data-lucide="arrow-left"></i> Students</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current">4 student</span>
+      </nav>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="profile" aria-labelledby="student-name">
+        <div class="profile-av" aria-hidden="true">4S</div>
+        <div>
+          <p class="role">Student</p>
+          <h1 class="profile-name" id="student-name">4 student</h1>
+          <div class="profile-meta">
+            <span><i data-lucide="mail"></i> <strong>stu4@yopmail.com</strong></span>
+            <span><i data-lucide="user-round"></i> Username: <strong>student6</strong></span>
+            <span><i data-lucide="map-pin"></i> Location: <strong>LAHORE</strong></span>
+            <span><i data-lucide="badge-check"></i> Status: <strong>Active</strong></span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <a class="btn btn-outline" id="assign-course-btn" href="dashboard-company-student-assign.html"><i data-lucide="book-plus"></i> Assign Course</a>
+          <button class="btn btn-ghost" type="button"><i data-lucide="bell-ring"></i> Send Reminder</button>
+          <button class="btn btn-ghost" type="button"><i data-lucide="square-pen"></i> Edit</button>
+        </div>
+      </section>
+
+      <div class="mini-stats" aria-label="Training summary">
+        <div class="mini">
+          <div class="mini-label">Assigned</div>
+          <div class="mini-value">4</div>
+        </div>
+        <div class="mini">
+          <div class="mini-label">In Progress</div>
+          <div class="mini-value">1</div>
+        </div>
+        <div class="mini">
+          <div class="mini-label">Completed</div>
+          <div class="mini-value">1</div>
+        </div>
+        <div class="mini">
+          <div class="mini-label">Passed / Failed</div>
+          <div class="mini-value">1 / 1</div>
+        </div>
+      </div>
+
+      <div class="seg" role="tablist" aria-label="Student sections">
+        <button class="seg-btn is-on" type="button" role="tab" aria-selected="true" data-panel="records">Training Records</button>
+        <button class="seg-btn" type="button" role="tab" aria-selected="false" data-panel="detail">Student Detail</button>
+      </div>
+
+      <section class="panel" id="panel-records" data-panel="records" aria-labelledby="records-heading">
+        <div class="panel-head">
+          <div>
+            <h2 id="records-heading">Training Records</h2>
+            <p>Course completion, progress, and test results for this student.</p>
+          </div>
+          <div class="panel-tools">
+            <label class="search">
+              <i data-lucide="search"></i>
+              <input type="search" id="record-search" placeholder="Search courses" aria-label="Search courses">
+            </label>
+            <select class="select" id="record-status" aria-label="Filter by status">
+              <option value="all">All statuses</option>
+              <option value="not-started">Not Started</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+            <select class="select" id="per-page" aria-label="Rows per page">
+              <option>10</option>
+              <option>25</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="check"><input type="checkbox" aria-label="Select all records" id="select-all"></th>
+                <th>Course</th>
+                <th>Assigned</th>
+                <th>Started</th>
+                <th>Completed</th>
+                <th>Status</th>
+                <th>Test</th>
+                <th>Progress</th>
+                <th>Certificate</th>
+              </tr>
+            </thead>
+            <tbody id="record-rows">
+              <tr data-name="test scorum" data-status="not-started">
+                <td class="check"><input type="checkbox" aria-label="Select test scorum"></td>
+                <td class="course-cell">
+                  <p class="course-name">test scorum</p>
+                  <p class="course-sub">Company course</p>
+                </td>
+                <td class="muted">6 Nov 2026</td>
+                <td class="muted">6 Nov 2026</td>
+                <td class="dash">—</td>
+                <td><span class="status not-started">Not Started</span></td>
+                <td class="dash">—</td>
+                <td class="prog"><div class="prog-row"><div class="bar"><span style="width:0%"></span></div><span class="pct">0%</span></div></td>
+                <td class="cert">Available after completion + pass</td>
+              </tr>
+              <tr data-name="back safety in construction environments" data-status="in-progress">
+                <td class="check"><input type="checkbox" aria-label="Select Back Safety"></td>
+                <td class="course-cell">
+                  <p class="course-name">Back Safety in Construction Environments</p>
+                  <p class="course-sub">Excavation</p>
+                </td>
+                <td class="muted">4 Nov 2026</td>
+                <td class="muted">5 Nov 2026</td>
+                <td class="dash">—</td>
+                <td><span class="status in-progress">In Progress</span></td>
+                <td class="dash">—</td>
+                <td class="prog"><div class="prog-row"><div class="bar"><span style="width:35%"></span></div><span class="pct">35%</span></div></td>
+                <td class="cert">Available after completion + pass</td>
+              </tr>
+              <tr data-name="confined space entry awareness" data-status="completed">
+                <td class="check"><input type="checkbox" aria-label="Select Confined Space"></td>
+                <td class="course-cell">
+                  <p class="course-name">Confined Space Entry Awareness</p>
+                  <p class="course-sub">Scaffolding</p>
+                </td>
+                <td class="muted">12 Oct 2026</td>
+                <td class="muted">14 Oct 2026</td>
+                <td class="muted">28 Oct 2026</td>
+                <td><span class="status completed">Completed</span></td>
+                <td><span class="status passed">Passed</span></td>
+                <td class="prog"><div class="prog-row"><div class="bar"><span style="width:100%"></span></div><span class="pct">100%</span></div></td>
+                <td class="cert ready">Issued · Expires 28 Oct 2027</td>
+              </tr>
+              <tr data-name="fall protection basics" data-status="completed">
+                <td class="check"><input type="checkbox" aria-label="Select Fall Protection"></td>
+                <td class="course-cell">
+                  <p class="course-name">Fall Protection Basics</p>
+                  <p class="course-sub">Fall Protection</p>
+                </td>
+                <td class="muted">1 Sep 2026</td>
+                <td class="muted">2 Sep 2026</td>
+                <td class="muted">18 Sep 2026</td>
+                <td><span class="status completed">Completed</span></td>
+                <td><span class="status failed">Failed</span></td>
+                <td class="prog"><div class="prog-row"><div class="bar"><span style="width:100%"></span></div><span class="pct">100%</span></div></td>
+                <td class="cert">Retake required for certificate</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span id="pager-info">Showing 1–4 of 4 entries</span>
+          <div class="pages">
+            <button class="page-btn" type="button" disabled>Previous</button>
+            <button class="page-btn is-on" type="button">1</button>
+            <button class="page-btn" type="button" disabled>Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-detail" data-panel="detail" hidden aria-labelledby="detail-heading">
+        <div class="panel-head">
+          <div>
+            <h2 id="detail-heading">Student Detail</h2>
+            <p>Profile fields and company attributes for this learner.</p>
+          </div>
+          <button class="btn btn-outline" type="button"><i data-lucide="square-pen"></i> Edit Profile</button>
+        </div>
+        <div class="detail-grid">
+          <div class="field"><p class="field-label">Full name</p><p class="field-value">4 student</p></div>
+          <div class="field"><p class="field-label">Email</p><p class="field-value">stu4@yopmail.com</p></div>
+          <div class="field"><p class="field-label">Username</p><p class="field-value">student6</p></div>
+          <div class="field"><p class="field-label">Status</p><p class="field-value">Active</p></div>
+          <div class="field"><p class="field-label">Location</p><p class="field-value">LAHORE</p></div>
+          <div class="field"><p class="field-label">Department</p><p class="field-value">Field Operations</p></div>
+          <div class="field"><p class="field-label">Job title</p><p class="field-value">Site Worker</p></div>
+          <div class="field"><p class="field-label">Joined</p><p class="field-value">6 November 2026</p></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a class="is-on" href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+
+  var params = new URLSearchParams(location.search);
+  var name = params.get("name");
+  var email = params.get("email");
+  var user = params.get("user");
+  if (name) {
+    document.getElementById("student-name").textContent = name;
+    document.querySelector(".crumb-current").textContent = name;
+    document.title = "Student Details — " + name;
+    var initials = name.split(/\s+/).map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase();
+    document.querySelector(".profile-av").textContent = initials || "ST";
+  }
+  if (email) {
+    var meta = document.querySelectorAll(".profile-meta strong");
+    if (meta[0]) meta[0].textContent = email;
+    var fields = document.querySelectorAll(".field-value");
+    if (fields[0] && name) fields[0].textContent = name;
+    if (fields[1]) fields[1].textContent = email;
+  }
+  if (user) {
+    var meta2 = document.querySelectorAll(".profile-meta strong");
+    if (meta2[1]) meta2[1].textContent = user;
+    var fields2 = document.querySelectorAll(".field-value");
+    if (fields2[2]) fields2[2].textContent = user;
+  }
+
+  var assignBtn = document.getElementById("assign-course-btn");
+  if (assignBtn) {
+    assignBtn.href = "dashboard-company-student-assign.html?name=" +
+      encodeURIComponent(name || "4 student") +
+      "&email=" + encodeURIComponent(email || "stu4@yopmail.com") +
+      "&user=" + encodeURIComponent(user || "student6");
+  }
+
+  document.querySelectorAll(".seg-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var id = btn.getAttribute("data-panel");
+      document.querySelectorAll(".seg-btn").forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle("is-on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll("[data-panel].panel").forEach(function (panel) {
+        panel.hidden = panel.getAttribute("data-panel") !== id;
+      });
+    });
+  });
+
+  var search = document.getElementById("record-search");
+  var status = document.getElementById("record-status");
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#record-rows tr"));
+  var info = document.getElementById("pager-info");
+
+  function paint() {
+    var q = search.value.trim().toLowerCase();
+    var st = status.value;
+    var visible = 0;
+    rows.forEach(function (row) {
+      var name = row.getAttribute("data-name") || "";
+      var rowSt = row.getAttribute("data-status") || "";
+      var ok = (!q || name.indexOf(q) !== -1) && (st === "all" || rowSt === st);
+      row.hidden = !ok;
+      if (ok) visible += 1;
+    });
+    info.textContent = visible
+      ? "Showing 1–" + visible + " of " + visible + " entries"
+      : "No matching records";
+  }
+  search.addEventListener("input", paint);
+  status.addEventListener("change", paint);
+
+  document.getElementById("select-all").addEventListener("change", function (e) {
+    rows.forEach(function (row) {
+      if (!row.hidden) row.querySelector("input[type=checkbox]").checked = e.target.checked;
+    });
+  });
+})();
+</script>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("menu-btn");
+  var userBtn = document.getElementById("user-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!menuBtn || !backdrop) return;
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+})();
+</script>
+</body>
+</html>

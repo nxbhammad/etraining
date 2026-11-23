@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Students — Company Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --red: #b91c1c;
+    --red-soft: #fef2f2;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--ground); }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff;
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 16px 28px; background: #fff; border-bottom: 1px solid var(--line);
+  }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .side-close { margin-left: auto; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .signout:hover { text-decoration: underline; }
+
+  .content { padding: 20px 28px 36px; display: flex; flex-direction: column; gap: 14px; }
+
+  .tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--line); margin: 0 -4px;
+  }
+  .tab {
+    position: relative; border: 0; background: transparent; padding: 10px 14px;
+    font-size: 14px; font-weight: 600; color: var(--muted);
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.is-on { color: var(--green); }
+  .tab.is-on::after {
+    content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px; height: 2px;
+    background: var(--green); border-radius: 2px 2px 0 0;
+  }
+  .tab .count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px;
+    border-radius: 999px; background: #eef2f5; color: var(--muted); font-size: 11px; font-weight: 700;
+  }
+  .tab.is-on .count { background: var(--green-soft); color: var(--green-dark); }
+
+  .toolbar {
+    position: relative;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding-bottom: 14px;
+  }
+  .preview-switches { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 0 0 12px; }
+  .filter-preview {
+    display: flex; align-items: center; gap: 8px; margin: 0;
+  }
+  .filter-preview p {
+    margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .filter-preview button {
+    min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
+  }
+  .filter-preview button.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+  .filter-anchor { position: relative; }
+  #filters-btn.is-open { background: var(--green); border-color: var(--green); color: #fff; }
+  .filter-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+    background: var(--green); color: #fff; font-size: 11px; font-weight: 700;
+  }
+  #filters-btn.is-open .filter-count { background: #fff; color: var(--green-dark); }
+  .filter-surface {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+    padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  }
+  #view-students[data-filter-ux="1"] .filter-surface { flex: 1 0 100%; }
+  #view-students[data-filter-ux="2"] .filter-surface {
+    position: absolute; z-index: 30; margin: 0;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, .12);
+  }
+  #filter-apply { display: none; }
+  .filter-field { display: flex; flex-direction: column; gap: 4px; min-width: 140px; flex: 1; }
+  .filter-field span { font-size: 12px; font-weight: 650; color: var(--muted); }
+  .filter-field .select { width: 100%; }
+  .filter-clear {
+    height: 40px; padding: 0 8px; border: 0; background: transparent; color: var(--ink);
+    font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; white-space: nowrap;
+  }
+  .search {
+    display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px; max-width: 340px;
+    height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+  }
+  .search input {
+    flex: 1; min-width: 0; border: 0; outline: none; font-size: 14px; color: var(--ink); background: transparent;
+  }
+  .search input::placeholder { color: #9aa8b5; }
+  .search svg { color: var(--muted); flex: none; }
+  .select {
+    height: 40px; padding: 0 32px 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    appearance: none; font-size: 13px; color: var(--ink);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7c8d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .btn {
+    height: 40px; padding: 0 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-ghost {
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+  }
+  .btn-ghost:hover { background: var(--ground); }
+  .btn-primary {
+    border: 0; background: var(--green); color: #fff;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-outline {
+    border: 1.5px solid var(--green); background: #fff; color: var(--green);
+  }
+  .btn-outline:hover { background: var(--green-soft); }
+  .toolbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: nowrap; }
+  .toolbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+  .file-note {
+    margin: 0; padding: 10px 14px; border-radius: 10px;
+    background: #fff; border: 1px solid var(--line); color: var(--ink);
+    font-size: 13px; font-weight: 600;
+  }
+  .everyday { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+  .bulk-bar, .bulk-swap { display: none; }
+  .bulk-count { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .bulk-select {
+    display: inline-flex; align-items: center; gap: 8px; flex: none;
+    font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap;
+    padding-right: 10px; border-right: 1px solid var(--line);
+  }
+  .bulk-select input { width: 15px; height: 15px; accent-color: var(--green); }
+  .bulk-actions { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+  .bulk-actions .btn { height: 36px; }
+  .bulk-bar {
+    align-items: center; gap: 10px; margin: 0 0 12px; padding: 10px 12px;
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: auto;
+  }
+  #view-students[data-bulk-ux="1"].has-selection .bulk-bar { display: flex; }
+  #view-students[data-bulk-ux="2"].has-selection .everyday { display: none; }
+  #view-students[data-bulk-ux="2"].has-selection .bulk-swap { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  @media (min-width: 801px) {
+    #view-students[data-bulk-ux="2"].has-selection .search { max-width: 160px; min-width: 120px; }
+    #view-students[data-bulk-ux="2"].has-selection .toolbar { flex-wrap: nowrap; }
+    #view-students[data-bulk-ux="2"].has-selection .toolbar-right { min-width: 0; flex: 1 1 auto; }
+    #view-students[data-bulk-ux="2"].has-selection .toolbar-actions { min-width: 0; flex: 1 1 auto; flex-shrink: 1; }
+    #view-students[data-bulk-ux="2"].has-selection .bulk-swap { flex: 1 1 auto; overflow: hidden; }
+    #view-students[data-bulk-ux="2"].has-selection .bulk-actions { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+    #view-students[data-bulk-ux="2"].has-selection .bulk-actions::-webkit-scrollbar { display: none; }
+  }
+  .list {
+    display: block; width: 100%;
+  }
+  /* A browser extension injects #list { background: rgb(51, 51, 51) }. */
+  #list { background: transparent !important; color: inherit; }
+  .person {
+    display: block;
+    width: 100%; min-height: 76px; margin: 0 0 8px; box-sizing: border-box;
+    padding: 14px 16px; background: #fff; border: 0; border-radius: 14px;
+    box-shadow: 0 0 0 1px #e5ebe8, 0 1px 2px rgba(16,24,40,.04);
+    color: var(--ink);
+  }
+  .person-main {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; width: 100%;
+  }
+  .person:hover { box-shadow: 0 0 0 1px #b7dbc4, 0 6px 18px rgba(16,24,40,.06); }
+  .person.is-hide { display: none !important; }
+  .person input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--green); margin: 0; flex: none; }
+  .who { display: flex; align-items: center; gap: 12px; flex: 1 1 220px; min-width: 180px; }
+  .av {
+    width: 42px; height: 42px; border-radius: 50%; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .av.c1 { background: #dbeafe; color: #1e40af; }
+  .av.c2 { background: #fce7f3; color: #9d174d; }
+  .av.c3 { background: #e0e7ff; color: #3730a3; }
+  .av.c4 { background: #ffedd5; color: #c2410c; }
+  .av.c5 { background: #dcfce7; color: #166534; }
+  .who-text { min-width: 0; }
+  .nm {
+    margin: 0; font-family: var(--font); font-size: 15px; font-weight: 650; color: var(--ink);
+  }
+  .nm a { color: var(--ink); text-decoration: none; }
+  .nm a:hover { color: var(--green); text-decoration: underline; }
+  .em, .un {
+    margin: 2px 0 0; font-size: 12px; color: var(--muted);
+  }
+  .un { display: flex; align-items: center; gap: 4px; }
+  .un svg { width: 12px; height: 12px; }
+  .metrics { flex: 1 1 160px; min-width: 140px; }
+  .metrics-label {
+    margin: 0 0 6px; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px;
+    border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap;
+  }
+  .pill.blue { background: var(--blue-soft); color: var(--blue); }
+  .pill.green { background: var(--green-soft); color: var(--green-dark); }
+  .pill.red { background: var(--red-soft); color: var(--red); }
+  .row-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; flex: none; }
+  .icon-ghost {
+    width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    color: var(--muted); display: inline-flex; align-items: center; justify-content: center;
+  }
+  .icon-ghost:hover { background: var(--ground); color: var(--ink); }
+  .person [data-view] svg { width: 14px; height: 14px; transition: transform .15s ease; }
+  .person.is-open [data-view] { background: var(--green-soft); border-color: #b7dbc4; color: var(--green-dark); }
+  .person.is-open [data-view] svg { transform: rotate(180deg); }
+  .assigned {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  .assigned h3 {
+    margin: 0 0 10px; font-family: var(--font); font-size: 14px; font-weight: 650; color: var(--ink);
+  }
+  .assigned-wrap { overflow: auto; }
+  .assigned table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  .assigned th {
+    padding: 0 16px 10px 0; text-align: left; font-size: 11px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+  }
+  .assigned td {
+    padding: 12px 16px 4px 0; font-size: 13.5px; color: var(--ink); vertical-align: middle;
+    border-top: 1px solid var(--line);
+  }
+  .assigned td.assigned-empty { color: var(--muted); border-top: 0; padding-top: 2px; }
+  .course-name { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; }
+  .course-name svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+  .tag {
+    display: inline-flex; align-items: center; height: 24px; padding: 0 10px;
+    border-radius: 999px; font-size: 12px; font-weight: 650; white-space: nowrap;
+  }
+  .tag.done { background: #e8f7ee; color: #157f3d; }
+  .tag.progress { background: var(--blue-soft); color: var(--blue); }
+  .tag.pass { background: #e8f7ee; color: #157f3d; }
+  .tag.fail { background: var(--red-soft); color: var(--red); }
+  .tag.none { background: var(--ground); color: var(--muted); }
+
+  .empty {
+    text-align: center; padding: 48px 20px; border: 1px dashed var(--line);
+    border-radius: 14px; background: #fff; color: var(--muted);
+  }
+  .empty strong { display: block; color: var(--ink); margin-bottom: 4px; font-family: var(--font); }
+
+  .pager {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding-top: 4px; font-size: 13px; color: var(--muted);
+  }
+  .pager-info { font-weight: 500; }
+  .pages { display: flex; align-items: center; gap: 4px; }
+  .page-btn {
+    min-width: 34px; height: 34px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px;
+    background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .page-btn:hover:not(:disabled) { background: var(--ground); }
+  .page-btn.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .pager-right { display: flex; align-items: center; gap: 8px; }
+
+  .group-card {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center;
+    padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  }
+  .group-card:hover { border-color: #cfe0d6; box-shadow: 0 6px 18px rgba(16,24,40,.05); }
+  .group-ico {
+    width: 44px; height: 44px; border-radius: 12px; background: var(--green-soft); color: var(--green-dark);
+    display: grid; place-items: center;
+  }
+  .group-ico svg { width: 20px; height: 20px; }
+  .group-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding-bottom: 76px; }
+    .menu-btn { display: grid; width: 40px; height: 40px; flex: none; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease; box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45); }
+    .nav-item { min-height: 44px; }
+    .nav-item.nav-mobile-only { display: flex; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .user-chip, .signout, .logged-in, .user-meta, .top-right .avatar, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .top-title { font-size: 18px; }
+    .crumb-current { max-width: 46vw; }
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650;
+      font-family: inherit; text-decoration: none; cursor: pointer;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .toolbar-right { margin-left: 0; width: 100%; flex-direction: column; align-items: stretch; }
+    .toolbar-actions { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .everyday { display: contents; }
+    .toolbar-actions .btn, .bulk-actions .btn { min-height: 44px; height: auto; justify-content: center; padding: 0 10px; }
+    #view-students[data-bulk-ux="2"].has-selection .toolbar-actions { display: flex; overflow: auto; }
+    .bulk-bar { max-width: 100%; }
+    .filter-preview button { min-height: 44px; }
+    .search { max-width: none; }
+    #view-students .search { flex: 1 1 auto; min-width: 0; }
+    #view-students .filter-anchor { flex: none; }
+    #view-students .filter-surface {
+      position: absolute; z-index: 30; left: 0; width: 100%; flex: none;
+      flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+      max-height: min(62vh, 440px); overflow: auto;
+      box-shadow: 0 12px 32px rgba(16, 24, 40, .12);
+    }
+    #view-students .filter-field { flex: none; min-width: 0; width: 100%; }
+    #view-students .filter-clear { width: 100%; min-height: 44px; }
+    #view-students .filter-field .select { height: 44px; font-size: 16px; }
+  }
+  @media (min-width: 801px) and (max-width: 1440px) {
+    #view-students .search { min-width: 140px; max-width: 340px; flex: 1 1 140px; }
+    #view-students .toolbar > .select { flex: 0 1 136px; width: 136px; min-width: 120px; }
+    #view-students .filter-anchor,
+    #view-students .toolbar-right,
+    #view-students .toolbar-actions,
+    #view-students .everyday { flex-shrink: 0; }
+    #view-students .toolbar-right { width: auto; margin-left: auto; flex-wrap: nowrap; }
+  }
+  @media (min-width: 801px) {
+    #view-students.actions-compact #bulk-upload span,
+    #view-students.actions-compact #export-students span {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    #view-students.actions-compact #bulk-upload,
+    #view-students.actions-compact #export-students {
+      width: 40px; padding: 0; justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item is-on" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <h1 class="top-title" id="page-title">Students</h1>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="tabs" role="tablist" aria-label="User types">
+        <button class="tab is-on" type="button" role="tab" aria-selected="true" data-view="students">Students <span class="count" id="count-students">25</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-view="admins">Company Admins <span class="count" id="count-admins">1</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-view="managers">Training Managers <span class="count" id="count-managers">12</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-view="groups">Student Groups <span class="count" id="count-groups">8</span></button>
+      </div>
+
+      <div id="view-students" data-filter-ux="1" data-bulk-ux="1">
+        <div class="preview-switches">
+          <div class="filter-preview" role="group" aria-label="Filter layout preview">
+            <p>Filter layout</p>
+            <button type="button" data-filter-ux="1" class="is-on" aria-pressed="true">1 · Row</button>
+            <button type="button" data-filter-ux="2" aria-pressed="false">2 · Panel</button>
+          </div>
+          <div class="filter-preview" role="group" aria-label="Bulk action preview">
+            <p>Bulk actions</p>
+            <button type="button" data-bulk-ux="1" class="is-on" aria-pressed="true">1 · Bar</button>
+            <button type="button" data-bulk-ux="2" aria-pressed="false">2 · Swap</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <label class="search">
+            <i data-lucide="search"></i>
+            <input type="search" id="search" placeholder="Name, username or email" aria-label="Search students">
+          </label>
+          <select class="select" id="sort" aria-label="Sort by">
+            <option value="name-asc">Sort By: Name A–Z</option>
+            <option value="name-desc">Sort By: Name Z–A</option>
+            <option value="progress">Sort By: Progress</option>
+            <option value="passed">Sort By: Tests passed</option>
+          </select>
+          <select class="select" id="status" aria-label="Status">
+            <option value="all">Status: All</option>
+            <option value="active">Status: Active</option>
+            <option value="inactive">Status: Inactive</option>
+          </select>
+          <div class="filter-anchor">
+            <button class="btn btn-ghost" type="button" id="filters-btn" aria-expanded="false" aria-controls="filter-surface">
+              <i data-lucide="sliders-horizontal"></i> Filters
+              <span class="filter-count" id="filter-count" hidden>0</span>
+            </button>
+          </div>
+          <div class="toolbar-right">
+            <div class="toolbar-actions">
+              <div class="everyday">
+                <a class="btn btn-outline" href="dashboard-company-student-add.html"><i data-lucide="plus"></i> Add Student</a>
+                <a class="btn btn-ghost" id="bulk-upload" href="dashboard-company-bulk-upload.html" aria-label="Bulk Upload"><i data-lucide="upload"></i> <span>Bulk Upload</span></a>
+                <button class="btn btn-ghost" type="button" id="export-students" aria-label="Export"><i data-lucide="download"></i> <span>Export</span></button>
+              </div>
+              <div class="bulk-swap">
+                <label class="bulk-select"><input type="checkbox" data-select-all-students aria-label="Select all students"> <span>Select all students</span></label>
+                <p class="bulk-count">0 selected</p>
+                <div class="bulk-actions">
+                  <button class="btn btn-ghost" type="button" data-bulk="Reset Password"><i data-lucide="key-round"></i> Reset Password</button>
+                  <button class="btn btn-ghost" type="button" data-bulk="Mark Inactive"><i data-lucide="user-x"></i> Mark Inactive</button>
+                  <button class="btn btn-ghost" type="button" data-bulk="Mark Active"><i data-lucide="user-check"></i> Mark Active</button>
+                  <button class="btn btn-ghost" type="button" data-bulk="Change Group"><i data-lucide="users-round"></i> Change Group</button>
+                  <button class="btn btn-ghost" type="button" data-bulk-clear>Clear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="filter-surface" id="filter-surface" hidden>
+            <label class="filter-field"><span>Department</span>
+              <select class="select" id="filter-department" aria-label="Department">
+                <option value="all">All</option>
+                <option>Operations</option>
+                <option>Safety</option>
+                <option>Field</option>
+                <option>Office</option>
+              </select>
+            </label>
+            <label class="filter-field"><span>Location</span>
+              <select class="select" id="filter-location" aria-label="Location">
+                <option value="all">All</option>
+                <option>Lahore</option>
+                <option>Houston</option>
+                <option>Chicago</option>
+                <option>Dubai</option>
+              </select>
+            </label>
+            <label class="filter-field"><span>Gender</span>
+              <select class="select" id="filter-gender" aria-label="Gender">
+                <option value="all">All</option>
+                <option>Female</option>
+                <option>Male</option>
+              </select>
+            </label>
+            <label class="filter-field"><span>Test attribute</span>
+              <select class="select" id="filter-attr" aria-label="Test attribute">
+                <option value="all">All</option>
+                <option>OSHA</option>
+                <option>HAZWOPER</option>
+                <option value="None">None</option>
+              </select>
+            </label>
+            <button class="filter-clear" type="button" id="filter-clear">Clear all</button>
+            <button class="btn btn-primary" type="button" id="filter-apply">Apply</button>
+          </div>
+        </div>
+        <p class="file-note" id="file-note" hidden></p>
+        <div class="bulk-bar" id="bulk-bar">
+          <label class="bulk-select"><input type="checkbox" data-select-all-students aria-label="Select all students"> <span>Select all students</span></label>
+          <p class="bulk-count">0 selected</p>
+          <div class="bulk-actions">
+            <button class="btn btn-ghost" type="button" data-bulk="Reset Password"><i data-lucide="key-round"></i> Reset Password</button>
+            <button class="btn btn-ghost" type="button" data-bulk="Mark Inactive"><i data-lucide="user-x"></i> Mark Inactive</button>
+            <button class="btn btn-ghost" type="button" data-bulk="Mark Active"><i data-lucide="user-check"></i> Mark Active</button>
+            <button class="btn btn-ghost" type="button" data-bulk="Change Group"><i data-lucide="users-round"></i> Change Group</button>
+            <button class="btn btn-ghost" type="button" data-bulk-clear>Clear</button>
+          </div>
+        </div>
+
+        <div class="list" id="list" aria-live="polite"></div>
+        <div class="empty" id="empty" hidden>
+          <strong>No students match</strong>
+          Try another search or clear filters.
+        </div>
+
+        <div class="pager">
+          <div class="pager-info" id="pager-info">Showing 1–10 of 13 records · Page 1 of 2</div>
+          <div class="pages" id="pages"></div>
+          <div class="pager-right">
+            <label for="per-page">Records per page</label>
+            <select class="select" id="per-page" aria-label="Records per page">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-admins" hidden>
+        <div class="list" id="list-admins"></div>
+        <div class="empty" id="empty-admins" hidden>
+          <strong>No company admins</strong>
+          Invite a company admin to help manage this account.
+        </div>
+      </div>
+      <div id="view-managers" hidden>
+        <div class="list" id="list-managers"></div>
+      </div>
+      <div id="view-groups" hidden>
+        <div class="list" id="list-groups"></div>
+      </div>
+    </div>
+  </div>
+
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a class="is-on" href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  function icons() {
+    try {
+      if (window.lucide && typeof lucide.createIcons === "function") {
+        lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+      }
+    } catch (err) { /* icons optional */ }
+  }
+  icons();
+
+  var COLORS = ["c1", "c2", "c3", "c4", "c5"];
+  function enrich(list, prefix) {
+    return list.map(function (s, i) {
+      return Object.assign({}, s, {
+        id: prefix + i,
+        color: COLORS[i % COLORS.length],
+        initials: s.name.split(/\s+/).map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase()
+      });
+    });
+  }
+  var students = enrich([
+    { name: "4 student", email: "stu4@yopmail.com", user: "student6", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Hou Mei", email: "mei@yopmail.com", user: "mei@yopmail.com", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Imran Quratulain", email: "annieshah025@gmail.com", user: "new", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Noor Zara", email: "zara@yopmail.com", user: "zara@yopmail.com", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Robo Mark", email: "markrobo@yopmail.com", user: "markrobo@yopmail.com", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "smith john", email: "js@yopmail.com", user: "js", status: "active", inProgress: 0, complete: 0, passed: 1, failed: 1 },
+    { name: "Ayesha Malik", email: "ayesha.malik@yopmail.com", user: "ayeshamalik", status: "active", inProgress: 2, complete: 1, passed: 1, failed: 0 },
+    { name: "Bilal Ahmed", email: "bilal.ahmed@yopmail.com", user: "bilala", status: "active", inProgress: 1, complete: 0, passed: 0, failed: 0 },
+    { name: "Daniel Carter", email: "dcarter@yopmail.com", user: "dcarter", status: "active", inProgress: 1, complete: 0, passed: 0, failed: 0 },
+    { name: "Fatima Noor", email: "fatima.noor@yopmail.com", user: "fatimanoor", status: "active", inProgress: 0, complete: 2, passed: 2, failed: 0 },
+    { name: "Hassan Raza", email: "hraza@yopmail.com", user: "hraza", status: "active", inProgress: 0, complete: 1, passed: 0, failed: 1 },
+    { name: "Maria Lopez", email: "maria.lopez@yopmail.com", user: "mlopez", status: "inactive", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Smith Lucy", email: "lucyssm@yopmail.com", user: "lucyssm", status: "active", inProgress: 1, complete: 0, passed: 0, failed: 0 },
+    { name: "Omar Brooks", email: "omar.brooks@yopmail.com", user: "obrooks", status: "active", inProgress: 3, complete: 1, passed: 1, failed: 0 },
+    { name: "Camila Castro", email: "camila.castro@yopmail.com", user: "ccastro", status: "active", inProgress: 0, complete: 3, passed: 3, failed: 0 },
+    { name: "Nadia Lopez", email: "nadia.lopez@yopmail.com", user: "nlopez", status: "active", inProgress: 1, complete: 0, passed: 0, failed: 0 },
+    { name: "James Kim", email: "james.kim@yopmail.com", user: "jkim", status: "active", inProgress: 2, complete: 2, passed: 1, failed: 1 },
+    { name: "Priya Fernandez", email: "priya.f@yopmail.com", user: "pfernandez", status: "active", inProgress: 0, complete: 1, passed: 1, failed: 0 },
+    { name: "Quinn Turner", email: "quinn.turner@yopmail.com", user: "qturner", status: "inactive", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Ravi Walsh", email: "ravi.walsh@yopmail.com", user: "rwalsh", status: "active", inProgress: 1, complete: 1, passed: 0, failed: 1 },
+    { name: "Sara Khan", email: "sara.khan@yopmail.com", user: "skhan", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 },
+    { name: "Tom Lee", email: "tom.lee@yopmail.com", user: "tlee", status: "active", inProgress: 4, complete: 0, passed: 0, failed: 0 },
+    { name: "Uma Vargas", email: "uma.vargas@yopmail.com", user: "uvargas", status: "active", inProgress: 0, complete: 2, passed: 2, failed: 0 },
+    { name: "Victor Chen", email: "victor.chen@yopmail.com", user: "vchen", status: "active", inProgress: 1, complete: 1, passed: 1, failed: 0 },
+    { name: "Wendy Park", email: "wendy.park@yopmail.com", user: "wpark", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 }
+  ], "s");
+  var DEPTS = ["Operations", "Safety", "Field", "Office"];
+  var LOCS = ["Lahore", "Houston", "Chicago", "Dubai"];
+  var GENDERS = ["Female", "Male"];
+  var ATTRS = ["OSHA", "HAZWOPER", "None"];
+  students.forEach(function (s, i) {
+    s.department = DEPTS[i % DEPTS.length];
+    s.location = LOCS[i % LOCS.length];
+    s.gender = GENDERS[i % GENDERS.length];
+    s.testAttr = ATTRS[i % ATTRS.length];
+  });
+
+  var managers = enrich([
+    { name: "Amir Hussain", email: "amir.hussain@yopmail.com", user: "ahussain", status: "active", inProgress: 4, complete: 12, passed: 10, failed: 2 },
+    { name: "Beth Morgan", email: "beth.morgan@yopmail.com", user: "bmorgan", status: "active", inProgress: 2, complete: 8, passed: 7, failed: 1 },
+    { name: "Carlos Rivera", email: "carlos.rivera@yopmail.com", user: "crivera", status: "active", inProgress: 6, complete: 5, passed: 4, failed: 1 },
+    { name: "Diana Cole", email: "diana.cole@yopmail.com", user: "dcole", status: "active", inProgress: 1, complete: 15, passed: 14, failed: 0 },
+    { name: "Ethan Brooks", email: "ethan.brooks@yopmail.com", user: "ebrooks", status: "active", inProgress: 3, complete: 9, passed: 8, failed: 1 },
+    { name: "Farah Siddiqui", email: "farah.s@yopmail.com", user: "fsiddiqui", status: "active", inProgress: 5, complete: 6, passed: 5, failed: 0 },
+    { name: "Grace Patel", email: "grace.patel@yopmail.com", user: "gpatel", status: "active", inProgress: 0, complete: 11, passed: 11, failed: 0 },
+    { name: "Henry Wu", email: "henry.wu@yopmail.com", user: "hwu", status: "active", inProgress: 2, complete: 7, passed: 6, failed: 1 },
+    { name: "Irene Blake", email: "irene.blake@yopmail.com", user: "iblake", status: "inactive", inProgress: 0, complete: 3, passed: 2, failed: 1 },
+    { name: "Jamal Okonkwo", email: "jamal.o@yopmail.com", user: "jokonkwo", status: "active", inProgress: 7, complete: 4, passed: 3, failed: 1 },
+    { name: "Karen Singh", email: "karen.singh@yopmail.com", user: "ksingh", status: "active", inProgress: 1, complete: 10, passed: 9, failed: 0 },
+    { name: "Luis Ortega", email: "luis.ortega@yopmail.com", user: "lortega", status: "active", inProgress: 4, complete: 8, passed: 7, failed: 0 }
+  ], "m");
+
+  var admins = enrich([
+    { name: "company manager cm", email: "cm1+dub1@yopmail.com", user: "companymanager.cm", status: "active", inProgress: 0, complete: 0, passed: 0, failed: 0 }
+  ], "a");
+
+  var groups = [
+    { name: "Excavation Crew — Lahore", members: 18, courses: 4, updated: "Nov 6, 2026" },
+    { name: "Scaffolding Team A", members: 12, courses: 3, updated: "Nov 4, 2026" },
+    { name: "Fall Protection Cohort", members: 24, courses: 2, updated: "Oct 28, 2026" },
+    { name: "OSHA New Hires 2026", members: 31, courses: 5, updated: "Nov 1, 2026" },
+    { name: "HAZWOPER Site Ops", members: 9, courses: 2, updated: "Oct 22, 2026" },
+    { name: "Fire Safety Wardens", members: 15, courses: 1, updated: "Nov 8, 2026" },
+    { name: "Electrical Maintenance", members: 11, courses: 3, updated: "Oct 30, 2026" },
+    { name: "Equipment Operators", members: 20, courses: 4, updated: "Nov 3, 2026" }
+  ];
+
+  var state = {
+    page: 1, perPage: 10, q: "", sort: "name-asc", status: "all", selected: {},
+    filters: { department: "all", location: "all", gender: "all", testAttr: "all" }
+  };
+  var listEl = document.getElementById("list");
+  var emptyEl = document.getElementById("empty");
+  var pageTitle = document.getElementById("page-title");
+
+  document.getElementById("count-students").textContent = students.length;
+  document.getElementById("count-admins").textContent = admins.length;
+  document.getElementById("count-managers").textContent = managers.length;
+
+  function filtered() {
+    var q = state.q.trim().toLowerCase();
+    var out = students.filter(function (s) {
+      if (state.status !== "all" && s.status !== state.status) return false;
+      var f = state.filters;
+      if (f.department !== "all" && s.department !== f.department) return false;
+      if (f.location !== "all" && s.location !== f.location) return false;
+      if (f.gender !== "all" && s.gender !== f.gender) return false;
+      if (f.testAttr !== "all" && s.testAttr !== f.testAttr) return false;
+      if (!q) return true;
+      return (s.name + " " + s.email + " " + s.user).toLowerCase().indexOf(q) !== -1;
+    });
+    out.sort(function (a, b) {
+      if (state.sort === "name-desc") return b.name.localeCompare(a.name);
+      if (state.sort === "progress") return (b.inProgress + b.complete) - (a.inProgress + a.complete) || a.name.localeCompare(b.name);
+      if (state.sort === "passed") return b.passed - a.passed || a.name.localeCompare(b.name);
+      return a.name.localeCompare(b.name);
+    });
+    return out;
+  }
+
+  function detailHref(s) {
+    return "dashboard-company-student-detail.html?name=" + encodeURIComponent(s.name) +
+      "&email=" + encodeURIComponent(s.email) +
+      "&user=" + encodeURIComponent(s.user || "");
+  }
+  var COURSE_BANK = [
+    "Advanced Data Analytics & Business Intelligence",
+    "Fall Protection",
+    "OSHA 30-Hour Construction",
+    "HAZWOPER Awareness",
+    "Fire Safety Warden",
+    "Scaffolding Safety"
+  ];
+  var COURSE_DATES = [
+    ["3 December 2025, 7:51 PM", "3 December 2025, 7:51 PM", "4 June 2026, 3:53 PM"],
+    ["12 January 2026, 9:14 AM", "12 January 2026, 9:20 AM", "18 March 2026, 2:05 PM"],
+    ["2 February 2026, 11:02 AM", "2 February 2026, 11:08 AM", "9 May 2026, 4:40 PM"],
+    ["20 March 2026, 8:30 AM", "21 March 2026, 10:15 AM", ""]
+  ];
+  var openRows = {};
+  function coursesFor(s) {
+    var total = Math.min(4, (s.inProgress || 0) + (s.complete || 0));
+    var start = parseInt(String(s.id).replace(/\D/g, ""), 10) || 0;
+    var courses = [];
+    for (var i = 0; i < total; i++) {
+      var done = i < (s.complete || 0);
+      var dates = COURSE_DATES[(start + i) % COURSE_DATES.length];
+      var failed = done && i >= (s.passed || 0) && (i - (s.passed || 0)) < (s.failed || 0);
+      courses.push({
+        name: COURSE_BANK[(start + i) % COURSE_BANK.length],
+        assigned: dates[0],
+        start: dates[1],
+        completed: done ? (dates[2] || dates[1]) : "—",
+        status: done ? "Completed" : "In Progress",
+        test: done ? (failed ? "Failed" : "Passed") : "—",
+        progress: done ? "100%" : (35 + ((start + i) % 4) * 15) + "%"
+      });
+    }
+    return courses;
+  }
+  function assignedHtml(s) {
+    var courses = coursesFor(s);
+    var body = courses.length ? courses.map(function (c) {
+      var status = c.status === "Completed" ? "done" : "progress";
+      var test = c.test === "Passed" ? "pass" : c.test === "Failed" ? "fail" : "none";
+      return "<tr>" +
+        '<td><span class="course-name"><i data-lucide="book-open"></i>' + c.name + "</span></td>" +
+        "<td>" + c.assigned + "</td>" +
+        "<td>" + c.start + "</td>" +
+        "<td>" + c.completed + "</td>" +
+        '<td><span class="tag ' + status + '">' + c.status + "</span></td>" +
+        '<td><span class="tag ' + test + '">' + c.test + "</span></td>" +
+        "<td>" + c.progress + "</td>" +
+      "</tr>";
+    }).join("") : '<tr><td class="assigned-empty" colspan="7">No courses assigned.</td></tr>';
+    return (
+      '<div class="assigned"' + (openRows[s.id] ? "" : " hidden") + ">" +
+        "<h3>Assigned Courses (" + courses.length + ")</h3>" +
+        '<div class="assigned-wrap"><table><thead><tr>' +
+          "<th>Course name</th><th>Assigned date</th><th>Start date</th><th>Completed date</th><th>Status</th><th>Test</th><th>Course progress</th>" +
+        "</tr></thead><tbody>" + body + "</tbody></table></div></div>"
+    );
+  }
+  function rowHtml(s) {
+    var checked = state.selected[s.id] ? " checked" : "";
+    var showUser = s.user && s.user !== s.email;
+    var open = !!openRows[s.id];
+    return (
+      '<article class="person' + (open ? " is-open" : "") + '" data-id="' + s.id + '">' +
+        '<div class="person-main">' +
+          '<input type="checkbox" aria-label="Select ' + s.name + '"' + checked + '>' +
+          '<div class="who">' +
+            '<span class="av ' + s.color + '">' + s.initials + '</span>' +
+            '<div class="who-text">' +
+              '<p class="nm"><a href="' + detailHref(s) + '">' + s.name + '</a></p>' +
+              '<p class="em">' + s.email + '</p>' +
+              (showUser ? '<p class="un">@' + s.user + '</p>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="metrics">' +
+            '<p class="metrics-label">Course</p>' +
+            '<div class="pills">' +
+              '<span class="pill blue">In Progress: ' + s.inProgress + '</span>' +
+              '<span class="pill green">Complete: ' + s.complete + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="metrics">' +
+            '<p class="metrics-label">Test</p>' +
+            '<div class="pills">' +
+              '<span class="pill green">Passed: ' + s.passed + '</span>' +
+              '<span class="pill red">Failed: ' + s.failed + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="row-actions">' +
+            '<button class="btn btn-ghost" type="button" data-view aria-expanded="' + (open ? "true" : "false") + '" style="height:34px">View <i data-lucide="chevron-down"></i></button>' +
+            '<button class="icon-ghost" type="button" aria-label="More actions for ' + s.name + '">...</button>' +
+          '</div>' +
+        '</div>' +
+        assignedHtml(s) +
+      '</article>'
+    );
+  }
+
+  function paint() {
+    if (!listEl) return;
+    var all = filtered();
+    var pages = Math.max(1, Math.ceil(all.length / state.perPage));
+    if (state.page > pages) state.page = pages;
+    var start = (state.page - 1) * state.perPage;
+    var slice = all.slice(start, start + state.perPage);
+
+    listEl.style.display = "block";
+    listEl.removeAttribute("hidden");
+    listEl.innerHTML = slice.length ? slice.map(rowHtml).join("") : "";
+    if (emptyEl) emptyEl.hidden = slice.length > 0;
+
+    var from = all.length ? start + 1 : 0;
+    var to = Math.min(start + state.perPage, all.length);
+    var pagerInfo = document.getElementById("pager-info");
+    if (pagerInfo) {
+      pagerInfo.textContent = "Showing " + from + "-" + to + " of " + all.length + " records · Page " + state.page + " of " + pages;
+    }
+
+    var pagesEl = document.getElementById("pages");
+    if (pagesEl) {
+      var html = '<button class="page-btn" type="button" data-page="prev" aria-label="Previous"' + (state.page <= 1 ? " disabled" : "") + '>&lt;</button>';
+      for (var p = 1; p <= pages; p++) {
+        html += '<button class="page-btn' + (p === state.page ? " is-on" : "") + '" type="button" data-page="' + p + '">' + p + "</button>";
+      }
+      html += '<button class="page-btn" type="button" data-page="next" aria-label="Next"' + (state.page >= pages ? " disabled" : "") + '>&gt;</button>';
+      pagesEl.innerHTML = html;
+    }
+
+    var countEl = document.getElementById("count-students");
+    if (countEl) countEl.textContent = String(students.length);
+    updateBulk();
+    icons();
+  }
+  function updateBulk() {
+    var n = Object.keys(state.selected).length;
+    var view = document.getElementById("view-students");
+    if (view) view.classList.toggle("has-selection", n > 0);
+    document.querySelectorAll(".bulk-count").forEach(function (el) {
+      el.textContent = n + " selected";
+    });
+    var all = filtered();
+    var allOn = all.length > 0 && all.every(function (s) { return state.selected[s.id]; });
+    var some = all.some(function (s) { return state.selected[s.id]; });
+    document.querySelectorAll("[data-select-all-students]").forEach(function (box) {
+      box.checked = allOn;
+      box.indeterminate = some && !allOn;
+    });
+    fitToolbarActions();
+  }
+
+  function paintPeople(list, targetId, emptyId) {
+    var el = document.getElementById(targetId);
+    el.innerHTML = list.map(rowHtml).join("");
+    if (emptyId) {
+      var empty = document.getElementById(emptyId);
+      empty.hidden = list.length > 0;
+      el.hidden = list.length === 0;
+    }
+    icons();
+  }
+
+  function paintGroups() {
+    var el = document.getElementById("list-groups");
+    el.innerHTML = groups.map(function (g) {
+      return (
+        '<article class="group-card">' +
+          '<span class="group-ico"><i data-lucide="users-round"></i></span>' +
+          '<div><p class="nm">' + g.name + '</p><p class="group-meta">' + g.members + " members · " + g.courses + " courses · Updated " + g.updated + "</p></div>" +
+          '<div class="row-actions">' +
+            '<button class="btn btn-ghost" type="button" style="height:34px">View</button>' +
+            '<button class="icon-ghost" type="button" aria-label="More for ' + g.name + '"><i data-lucide="ellipsis-vertical"></i></button>' +
+          "</div></article>"
+      );
+    }).join("");
+    document.getElementById("count-groups").textContent = groups.length;
+    icons();
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-view]");
+    if (!btn) return;
+    var row = btn.closest(".person");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    var panel = row.querySelector(".assigned");
+    if (openRows[id]) delete openRows[id]; else openRows[id] = true;
+    var open = !!openRows[id];
+    row.classList.toggle("is-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (panel) panel.hidden = !open;
+  });
+
+  listEl.addEventListener("change", function (e) {
+    if (e.target.type !== "checkbox") return;
+    var row = e.target.closest(".person");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    if (e.target.checked) state.selected[id] = true; else delete state.selected[id];
+    updateBulk();
+  });
+
+  document.querySelectorAll("[data-select-all-students]").forEach(function (box) {
+    box.addEventListener("change", function (e) {
+      filtered().forEach(function (s) {
+        if (e.target.checked) state.selected[s.id] = true; else delete state.selected[s.id];
+      });
+      paint();
+    });
+  });
+
+  document.getElementById("pages").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-page]");
+    if (!btn || btn.disabled) return;
+    var v = btn.getAttribute("data-page");
+    var pages = Math.max(1, Math.ceil(filtered().length / state.perPage));
+    if (v === "prev") state.page = Math.max(1, state.page - 1);
+    else if (v === "next") state.page = Math.min(pages, state.page + 1);
+    else state.page = parseInt(v, 10);
+    paint();
+  });
+
+  document.getElementById("search").addEventListener("input", function (e) {
+    state.q = e.target.value;
+    state.page = 1;
+    paint();
+  });
+  document.getElementById("sort").addEventListener("change", function (e) {
+    state.sort = e.target.value;
+    paint();
+    paintFilterButton();
+  });
+  document.getElementById("status").addEventListener("change", function (e) {
+    state.status = e.target.value;
+    state.page = 1;
+    paint();
+    paintFilterButton();
+  });
+
+  var studentView = document.getElementById("view-students");
+  var filtersBtn = document.getElementById("filters-btn");
+  var filterSurface = document.getElementById("filter-surface");
+  var filterCount = document.getElementById("filter-count");
+  var filterFields = {
+    department: document.getElementById("filter-department"),
+    location: document.getElementById("filter-location"),
+    gender: document.getElementById("filter-gender"),
+    testAttr: document.getElementById("filter-attr")
+  };
+  function filterUx() {
+    return studentView.getAttribute("data-filter-ux") || "1";
+  }
+  function readFilters() {
+    return {
+      department: filterFields.department.value,
+      location: filterFields.location.value,
+      gender: filterFields.gender.value,
+      testAttr: filterFields.testAttr.value
+    };
+  }
+  function writeFilters(f) {
+    filterFields.department.value = f.department;
+    filterFields.location.value = f.location;
+    filterFields.gender.value = f.gender;
+    filterFields.testAttr.value = f.testAttr;
+  }
+  function isPhone() { return window.innerWidth <= 800; }
+  var sortEl = document.getElementById("sort");
+  var statusEl = document.getElementById("status");
+  var filterAnchor = document.querySelector("#view-students .filter-anchor");
+  var sortLabel = document.createElement("label");
+  var statusLabel = document.createElement("label");
+  sortLabel.className = "filter-field";
+  statusLabel.className = "filter-field";
+  sortLabel.innerHTML = "<span>Sort by</span>";
+  statusLabel.innerHTML = "<span>Status</span>";
+  function fitToolbarActions() {
+    var view = document.getElementById("view-students");
+    if (!view) return;
+    if (isPhone()) {
+      view.classList.remove("actions-compact");
+      return;
+    }
+    var search = view.querySelector(".search");
+    var everyday = view.querySelector(".everyday");
+    if (!search || !everyday) return;
+    view.classList.remove("actions-compact");
+    if (getComputedStyle(everyday).display === "none") return;
+    var dropped = everyday.getBoundingClientRect().top > search.getBoundingClientRect().top + 4;
+    if (dropped) view.classList.add("actions-compact");
+  }
+  function layoutFilterControls() {
+    if (isPhone()) {
+      if (sortEl.parentNode !== sortLabel) sortLabel.appendChild(sortEl);
+      if (statusEl.parentNode !== statusLabel) statusLabel.appendChild(statusEl);
+      if (sortLabel.parentNode !== filterSurface) {
+        filterSurface.insertBefore(statusLabel, filterSurface.firstChild);
+        filterSurface.insertBefore(sortLabel, filterSurface.firstChild);
+      }
+    } else {
+      if (sortEl.parentNode !== filterAnchor.parentNode) {
+        filterAnchor.parentNode.insertBefore(sortEl, filterAnchor);
+        filterAnchor.parentNode.insertBefore(statusEl, filterAnchor);
+      }
+      if (sortLabel.parentNode) sortLabel.parentNode.removeChild(sortLabel);
+      if (statusLabel.parentNode) statusLabel.parentNode.removeChild(statusLabel);
+    }
+  }
+  function activeFilterCount() {
+    var f = state.filters;
+    var n = ["department", "location", "gender", "testAttr"].filter(function (key) {
+      return f[key] !== "all";
+    }).length;
+    if (state.status !== "all") n += 1;
+    return n;
+  }
+  function paintFilterButton() {
+    var n = activeFilterCount();
+    filterCount.textContent = String(n);
+    filterCount.hidden = n === 0;
+  }
+  function placeFilterPanel() {
+    if (filterSurface.hidden) return;
+    if (!isPhone() && filterUx() !== "2") return;
+    var toolbar = filterSurface.parentElement;
+    var btn = filtersBtn.getBoundingClientRect();
+    var bar = toolbar.getBoundingClientRect();
+    var left = Math.max(0, btn.left - bar.left);
+    if (window.innerWidth <= 800) {
+      filterSurface.style.left = "0px";
+      filterSurface.style.width = "100%";
+    } else {
+      filterSurface.style.left = left + "px";
+      filterSurface.style.width = Math.min(640, bar.width - left) + "px";
+    }
+    filterSurface.style.top = (btn.bottom - bar.top + 8) + "px";
+  }
+  function openFilters() {
+    if (filterUx() === "2") {
+      writeFilters(state.filters);
+      sortEl.value = state.sort;
+      statusEl.value = state.status;
+    }
+    if (!isPhone() && filterUx() !== "2") {
+      filterSurface.style.left = "";
+      filterSurface.style.top = "";
+      filterSurface.style.width = "";
+    }
+    filterSurface.hidden = false;
+    filtersBtn.classList.add("is-open");
+    filtersBtn.setAttribute("aria-expanded", "true");
+    placeFilterPanel();
+  }
+  function closeFilters() {
+    filterSurface.hidden = true;
+    filtersBtn.classList.remove("is-open");
+    filtersBtn.setAttribute("aria-expanded", "false");
+  }
+  function applyFiltersFromFields() {
+    state.filters = readFilters();
+    state.sort = sortEl.value;
+    state.status = statusEl.value;
+    state.page = 1;
+    paint();
+    paintFilterButton();
+  }
+  filtersBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (filterSurface.hidden) openFilters();
+    else closeFilters();
+  });
+  Object.keys(filterFields).forEach(function (key) {
+    filterFields[key].addEventListener("change", applyFiltersFromFields);
+  });
+  document.getElementById("filter-clear").addEventListener("click", function () {
+    writeFilters({ department: "all", location: "all", gender: "all", testAttr: "all" });
+    if (isPhone()) {
+      sortEl.value = "name-asc";
+      statusEl.value = "all";
+    }
+    applyFiltersFromFields();
+  });
+  document.querySelectorAll("[data-bulk-ux]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var next = btn.getAttribute("data-bulk-ux");
+      studentView.setAttribute("data-bulk-ux", next);
+      document.querySelectorAll("[data-bulk-ux]").forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle("is-on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    });
+  });
+  document.querySelectorAll("[data-bulk]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var note = document.getElementById("file-note");
+      if (!note) return;
+      note.textContent = btn.getAttribute("data-bulk") + " is not in this preview.";
+      note.hidden = false;
+      clearTimeout(note._timer);
+      note._timer = setTimeout(function () { note.hidden = true; }, 3200);
+    });
+  });
+  document.querySelectorAll("[data-bulk-clear]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      state.selected = {};
+      paint();
+    });
+  });
+  document.querySelectorAll(".filter-preview [data-filter-ux]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var next = btn.getAttribute("data-filter-ux");
+      studentView.setAttribute("data-filter-ux", next);
+      document.querySelectorAll(".filter-preview [data-filter-ux]").forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle("is-on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      closeFilters();
+      if (next === "1") {
+        filterSurface.style.left = "";
+        filterSurface.style.top = "";
+        filterSurface.style.width = "";
+        applyFiltersFromFields();
+      } else paintFilterButton();
+    });
+  });
+  document.addEventListener("click", function (e) {
+    var menu = filterUx() === "2" || isPhone();
+    if (!menu || filterSurface.hidden) return;
+    if (filterSurface.contains(e.target) || filtersBtn.contains(e.target)) return;
+    closeFilters();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !filterSurface.hidden && (filterUx() === "2" || isPhone())) closeFilters();
+  });
+  var wasPhone = isPhone();
+  window.addEventListener("resize", function () {
+    var phone = isPhone();
+    if (phone !== wasPhone) closeFilters();
+    wasPhone = phone;
+    layoutFilterControls();
+    placeFilterPanel();
+    fitToolbarActions();
+  });
+  layoutFilterControls();
+  fitToolbarActions();
+  paintFilterButton();
+  document.getElementById("per-page").addEventListener("change", function (e) {
+    state.perPage = parseInt(e.target.value, 10);
+    state.page = 1;
+    paint();
+  });
+
+  var titles = {
+    students: "Students",
+    admins: "Company Admins",
+    managers: "Training Managers",
+    groups: "Student Groups"
+  };
+  document.querySelectorAll(".tabs .tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var view = tab.getAttribute("data-view");
+      document.querySelectorAll(".tabs .tab").forEach(function (t) {
+        var on = t === tab;
+        t.classList.toggle("is-on", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      ["students", "admins", "managers", "groups"].forEach(function (id) {
+        document.getElementById("view-" + id).hidden = id !== view;
+      });
+      pageTitle.textContent = titles[view];
+      if (view === "admins") paintPeople(admins, "list-admins", "empty-admins");
+      if (view === "managers") paintPeople(managers, "list-managers");
+      if (view === "groups") paintGroups();
+    });
+  });
+
+  try {
+    paint();
+    paintPeople(admins, "list-admins", "empty-admins");
+    paintPeople(managers, "list-managers");
+    paintGroups();
+  } catch (err) {
+    console.error("Users page failed to render:", err);
+    if (emptyEl) {
+      emptyEl.hidden = false;
+      emptyEl.innerHTML = "<strong>Could not load students</strong>Refresh the page. If it still fails, open the console for details.";
+    }
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("menu-btn");
+  var userBtn = document.getElementById("user-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!menuBtn || !backdrop) return;
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  var fileNote = document.getElementById("file-note");
+  var fileTimer;
+  function showFileNote(text) {
+    if (!fileNote) return;
+    fileNote.textContent = text;
+    fileNote.hidden = false;
+    clearTimeout(fileTimer);
+    fileTimer = setTimeout(function () { fileNote.hidden = true; }, 3200);
+  }
+  var exportBtn = document.getElementById("export-students");
+  if (exportBtn) exportBtn.addEventListener("click", function () {
+    showFileNote("Export is not in this preview.");
+  });
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  if (userBtn) userBtn.addEventListener("click", function () { setNav(true); });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+})();
+</script>
+</body>
+</html>

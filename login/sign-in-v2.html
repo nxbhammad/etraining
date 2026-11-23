@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign-in v2 — one field, any proof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #0054A4;
+    --brand-dark: #003F7A;
+    --bar: #0A2E52;
+    --ink: #1B2430;
+    --muted: #4A5565;
+    --line: #D5DBE3;
+    --field: #7D8796;
+    --ground: #F2F4F7;
+    --card: #fff;
+    --focus: #8DB8EC;
+    --err: #B42318; --err-bg: #FEF3F2; --err-line: #F1B8B2;
+    --ok: #146C43; --ok-bg: #EEF8F1; --ok-line: #A6D9B8;
+    --info-bg: #EEF5FC; --info-line: #B8D4F1;
+    --warn: #7A4A00; --warn-bg: #FFF4E0;
+    --font: "Source Sans 3", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --mono: ui-monospace, Consolas, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: var(--font); color: var(--ink); background: #E7EBF0; font-size: 16px; line-height: 1.5; }
+  button, input { font-family: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 24px 56px; }
+  .kicker { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--brand); }
+  h1.title { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 700; }
+  .lead { margin: 10px 0 0; max-width: 700px; color: var(--muted); font-size: 17px; }
+  .lead strong { color: var(--ink); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: flex-end; margin: 24px 0 16px; }
+  .group { display: flex; flex-direction: column; gap: 6px; }
+  .group-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 600;
+  }
+  .chip[aria-pressed="true"] { background: var(--bar); border-color: var(--bar); color: #fff; }
+  .chip.admin[aria-pressed="true"] { background: #3C4A5C; border-color: #3C4A5C; }
+
+  .stage { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 22px; align-items: start; }
+  .notes { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 18px 16px; position: sticky; top: 16px; }
+  .notes h2 { margin: 0 0 6px; font-size: 18px; }
+  .notes p { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+  .notes h3 { margin: 14px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .notes ul { margin: 0; padding-left: 18px; font-size: 15px; }
+  .notes li + li { margin-top: 5px; }
+  .notes .kit { color: var(--muted); }
+  .notes .kit::before { content: "Kit: "; font-weight: 700; color: var(--ink); }
+  .notes .ours::before { content: "Here: "; font-weight: 700; color: var(--brand); }
+  .demo { margin-top: 14px; padding: 10px 12px; background: var(--ground); border-radius: 8px; font-size: 14px; }
+  .demo code { font-family: var(--mono); font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+  .demo-title { margin: 0 0 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .demo-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .demo-rows li { display: grid; grid-template-columns: 78px 1fr; gap: 8px; align-items: center; }
+  .demo-rows li span { color: var(--muted); font-size: 13px; font-weight: 600; }
+  .demo-note { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+
+  .viewport { display: flex; justify-content: center; }
+  .device { width: 100%; max-width: 1120px; transition: max-width .25s ease; }
+  .device[data-width="phone"] { max-width: 390px; }
+  .device[data-width="tablet"] { max-width: 820px; }
+
+  /* Product */
+  .lx { background: var(--ground); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-height: 640px; display: flex; flex-direction: column; }
+  .lx-bar { background: var(--bar); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; }
+  .lx-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .lx-brand__chip {
+    background: #fff; border-radius: 6px; padding: 3px 5px; display: flex; align-items: center;
+    height: 36px; flex: none;
+  }
+  .lx-brand__chip img { display: block; height: 30px; width: auto; }
+  .lx-brand__name { font-weight: 700; font-size: 17px; white-space: nowrap; }
+  .lx-brand__powered {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #C9D6E6; white-space: nowrap;
+  }
+  .lx-brand__powered img { display: block; height: 22px; width: auto; }
+  .lx-bar__help { color: #fff; font-weight: 600; font-size: 15px; background: none; border: 0; padding: 8px 4px; }
+  .lx-user { font-size: 14px; font-weight: 600; }
+  .lx-main { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 24px 48px; }
+  .lx-main--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 0;
+    padding: 0;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+  }
+  .lx-pane {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 36px 40px 48px;
+    background: #fff;
+    overflow: auto;
+  }
+  .lx-help {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 36px 32px 28px;
+    color: #fff;
+    background:
+      radial-gradient(ellipse 90% 50% at 100% 0%, rgba(141, 184, 236, .28), transparent 55%),
+      linear-gradient(165deg, #0A2E52 0%, #0054A4 62%, #1A6BB5 100%);
+    overflow: hidden;
+  }
+  .lx-help::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 85%);
+    pointer-events: none;
+  }
+  .lx-help > * { position: relative; z-index: 1; }
+  .lx-help__kicker {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #B8D4F1;
+  }
+  .lx-help__head { margin: 0 0 20px; }
+  .lx-help__title {
+    margin: 0 0 8px;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .lx-help__lead {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #D6E6F5;
+  }
+  .lx-help__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 14px;
+  }
+  .lx-help__list li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #F2F7FC;
+  }
+  .lx-help__list li strong { display: block; font-size: 16px; margin-bottom: 2px; color: #fff; }
+  .lx-help__list li span { color: #C9D6E6; }
+  .lx-help__n {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.22);
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+    flex: none;
+  }
+  .lx-help__foot {
+    margin: auto 0 0;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.18);
+    font-size: 14px;
+    line-height: 1.45;
+    color: #C9D6E6;
+  }
+  .lx-help__foot strong { color: #fff; }
+  .lx-card { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 30px 36px 26px; }
+  .lx-card.wide { max-width: 940px; }
+  .lx-card.bare { border: 0; box-shadow: none; background: transparent; padding: 0; max-width: 440px; }
+  .lx-company { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .lx-mark {
+    width: 56px; height: 64px; border-radius: 0; background: transparent; color: var(--brand);
+    display: flex; align-items: center; justify-content: center; flex: none; padding: 0;
+  }
+  .lx-mark img { display: block; width: 56px; height: auto; max-height: 64px; object-fit: contain; }
+  .lx-company strong { display: block; font-size: 16px; line-height: 1.2; }
+  .lx-company span { display: block; color: var(--muted); font-size: 13px; }
+  .printcard .lx-mark { width: 48px; height: 56px; }
+  .printcard .lx-mark img { width: 48px; max-height: 56px; }
+  .lx-h1 { margin: 0 0 6px; font-size: 26px; line-height: 1.2; font-weight: 700; }
+  .lx-lead { margin: 0 0 20px; color: var(--muted); font-size: 16px; }
+  .lx-field { display: flex; flex-direction: column; gap: 6px; margin: 0 0 16px; }
+  .lx-label { font-size: 16px; font-weight: 700; }
+  .lx-hint { font-size: 14px; color: var(--muted); }
+  .lx-input, .lx-select { width: 100%; height: 52px; border: 1.5px solid var(--field); border-radius: 8px; padding: 0 14px; font: 400 17px/1 var(--font); color: var(--ink); background: #fff; }
+  .lx-input:focus, .lx-select:focus { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--brand); }
+  .lx-input[aria-invalid="true"], .lx-select[aria-invalid="true"] { border-color: var(--err); }
+  .lx-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+  .lx-pw { position: relative; }
+  .lx-pw .lx-input { padding-right: 96px; }
+  .lx-eye { position: absolute; right: 5px; top: 5px; height: 42px; min-width: 84px; border: 0; border-radius: 6px; background: #EAEFF5; color: var(--bar); font: 700 15px var(--font); }
+  .lx-ferr { font-size: 15px; font-weight: 700; color: var(--err); }
+  .lx-caps {
+    display: none; margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--warn);
+    background: var(--warn-bg); border-radius: 6px; padding: 8px 10px;
+  }
+  .lx-caps.is-on { display: block; }
+  .lx-btn { width: 100%; min-height: 52px; border: 0; border-radius: 8px; padding: 12px 16px; background: var(--brand); color: #fff; font: 700 17px var(--font); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+  .lx-btn:hover { background: var(--brand-dark); }
+  .lx-btn--ghost { background: #fff; color: var(--brand); border: 1.5px solid var(--brand); }
+  .lx-btn--ghost:hover { background: var(--info-bg); }
+  .lx-btn--quiet { background: #fff; color: var(--ink); border: 1.5px solid var(--line); }
+  .lx-btn--quiet:hover { background: var(--ground); }
+  .lx-btn[disabled] { opacity: .55; cursor: default; }
+  .lx-link { background: none; border: 0; padding: 10px 0; min-height: 44px; color: var(--brand); font: 700 16px var(--font); text-decoration: underline; text-align: left; }
+  .lx-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .lx-who { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--ground); border-radius: 8px; padding: 10px 12px; margin: 0 0 18px; }
+  .lx-who strong { font-family: var(--mono); font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+  .lx-who button { background: none; border: 0; color: var(--brand); font: 700 14px var(--font); padding: 4px 6px; }
+  .lx-msg { border-radius: 8px; padding: 12px 14px; margin: 0 0 18px; border: 1px solid; font-size: 15px; }
+  .lx-msg strong { display: block; font-size: 16px; }
+  .lx-msg--error { background: var(--err-bg); border-color: var(--err-line); }
+  .lx-msg--error strong { color: #912018; }
+  .lx-msg--ok { background: var(--ok-bg); border-color: var(--ok-line); }
+  .lx-msg--ok strong { color: var(--ok); }
+  .lx-msg--info { background: var(--info-bg); border-color: var(--info-line); }
+  .lx-or { display: flex; align-items: center; gap: 12px; margin: 20px 0 10px; color: var(--muted); font-size: 14px; font-weight: 600; }
+  .lx-or::before, .lx-or::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+  .ways { display: grid; gap: 8px; }
+  .way { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; text-align: left; background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; color: var(--ink); }
+  .way:hover { border-color: var(--brand); background: var(--info-bg); }
+  .way .ic { width: 36px; height: 36px; border-radius: 8px; background: var(--info-bg); color: var(--brand); display: grid; place-items: center; flex: none; }
+  .way .ic svg { width: 20px; height: 20px; }
+  .way strong { display: block; font-size: 16px; line-height: 1.2; }
+  .way span { display: block; color: var(--muted); font-size: 14px; }
+  .way.primary { border-color: var(--brand); }
+  .codes { display: flex; gap: 8px; margin: 4px 0 6px; }
+  .codes input { width: 100%; height: 60px; text-align: center; font: 700 26px var(--font); border: 1.5px solid var(--field); border-radius: 8px; color: var(--ink); }
+  .codes input:focus { outline: 3px solid var(--focus); border-color: var(--brand); }
+  .resend { color: var(--muted); font-size: 15px; margin: 6px 0 16px; }
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .switch strong { display: block; font-size: 16px; }
+  .switch span { display: block; color: var(--muted); font-size: 14px; }
+  .toggle { width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--line); position: relative; flex: none; }
+  .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .toggle[aria-checked="true"] { background: var(--ok); }
+  .toggle[aria-checked="true"]::after { left: 23px; }
+  .course { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 0 0 14px; }
+  .course strong { display: block; }
+  .course span { color: var(--muted); font-size: 14px; }
+  .course .lx-btn { width: auto; min-height: 44px; padding: 0 16px; }
+  .progress { height: 6px; background: var(--ground); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 65%; background: var(--ok); }
+  .name { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--info-bg); color: var(--brand); display: grid; place-items: center; font-weight: 700; }
+  .name strong { display: block; font-size: 18px; line-height: 1.2; }
+  .name span { color: var(--muted); font-size: 14px; }
+  .code-input { font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+  /* Admin */
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-size: 13px; color: var(--muted); font-weight: 700; padding: 0 10px 8px; }
+  td { padding: 12px 10px; border-top: 1px solid var(--line); vertical-align: middle; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .req-banner {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin: 0 0 16px; padding: 14px 16px; border-radius: 10px;
+    background: var(--info-bg); border: 1.5px solid var(--info-line);
+  }
+  .req-banner strong { display: block; font-size: 16px; color: var(--bar); }
+  .req-banner span { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .req-banner .mini { flex: none; }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.bad { background: var(--err-bg); color: var(--err); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .mini { min-height: 40px; padding: 0 14px; font-size: 15px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
+  .mini.solid { background: var(--brand); color: #fff; border: 0; }
+  .mini.quiet { background: #fff; color: var(--ink); border: 1.5px solid var(--line); }
+  .td-name strong { display: block; }
+  .td-name span { color: var(--muted); font-size: 13px; }
+  .sheet { margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--ground); }
+  .sheet h3 { margin: 0 0 4px; font-size: 18px; }
+  .sheet p { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+  .bigcode { font-family: var(--mono); font-size: 34px; font-weight: 700; letter-spacing: .08em; background: #fff; border: 1.5px dashed var(--field); border-radius: 10px; padding: 14px 18px; text-align: center; margin: 0 0 12px; }
+  .sheet-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sheet-actions .mini { flex: 1 1 160px; }
+  .printcard { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px; max-width: 420px; margin: 0 auto; }
+  .printcard header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .printcard h3 { margin: 0; font-size: 18px; }
+  .printcard .qr { width: 132px; height: 132px; display: grid; grid-template-columns: repeat(11, 1fr); gap: 2px; margin: 0 auto 10px; }
+  .printcard .qr i { display: block; background: var(--ink); border-radius: 1px; }
+  .printcard .qr i.o { background: transparent; }
+  .printcard .url { text-align: center; font-family: var(--mono); font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+  .printcard dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 15px; }
+  .printcard dt { color: var(--muted); }
+  .printcard dd { margin: 0; font-weight: 700; font-family: var(--mono); }
+  .printcard .steps { margin: 14px 0 0; padding-left: 20px; font-size: 15px; }
+  .printcard .steps li + li { margin-top: 4px; }
+
+  /* Comparison + build */
+  .section { margin-top: 44px; }
+  .section h2 { margin: 0 0 6px; font-size: 22px; }
+  .section > p { margin: 0 0 16px; color: var(--muted); max-width: 720px; }
+  .cmp { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 15px; }
+  .cmp th, .cmp td { padding: 12px 14px; vertical-align: top; text-align: left; border-top: 1px solid var(--line); }
+  .cmp th { background: var(--ground); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-top: 0; }
+  .cmp td:first-child { font-weight: 700; width: 24%; }
+  .cmp td:nth-child(2) { color: var(--muted); width: 34%; }
+  .cmp td:nth-child(3) { border-left: 3px solid var(--brand); }
+  .phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .phase { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .phase h3 { margin: 0; font-size: 17px; }
+  .phase .when { color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin: 2px 0 10px; }
+  .phase ul { margin: 0; padding-left: 18px; font-size: 15px; }
+  .phase li + li { margin-top: 5px; }
+  .phase.now { border-color: var(--brand); }
+
+  @media (max-width: 960px) {
+    .stage { grid-template-columns: 1fr; }
+    .notes { position: static; }
+    .phases { grid-template-columns: 1fr; }
+    .cmp, .cmp thead, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: auto; }
+    .cmp thead { display: none; }
+    .cmp td:first-child { border-top: 2px solid var(--brand); }
+    .cmp td:nth-child(3) { border-left: 0; }
+  }
+  /* phone-width product tweaks driven by the device frame, not the window */
+  .device[data-width="phone"] .lx-bar { padding: 10px 14px; }
+  .device[data-width="phone"] .lx-brand__powered { display: none; }
+  .device[data-width="phone"] .lx-main:not(.lx-main--split) { padding: 20px 12px 28px; }
+  .device[data-width="phone"] .lx-main--split { grid-template-columns: 1fr; }
+  .device[data-width="phone"] .lx-pane { padding: 20px 14px 8px; align-items: flex-start; }
+  .device[data-width="phone"] .lx-help { padding: 22px 18px 24px; }
+  .device[data-width="phone"] .lx-help__foot { margin-top: 20px; }
+  .device[data-width="phone"] .lx-help__title { font-size: 22px; }
+  .device[data-width="phone"] .lx-card,
+  .device[data-width="phone"] .lx-card.bare { padding: 22px 18px 20px; max-width: none; }
+  .device[data-width="phone"] .lx-card.bare { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 18px 20px; }
+  .device[data-width="phone"] .lx-h1 { font-size: 23px; }
+  .device[data-width="phone"] table, .device[data-width="phone"] tbody, .device[data-width="phone"] tr, .device[data-width="phone"] td { display: block; width: 100%; }
+  .device[data-width="phone"] thead { display: none; }
+  .device[data-width="phone"] tr { border-top: 1px solid var(--line); padding: 10px 0; }
+  .device[data-width="phone"] td { border: 0; padding: 3px 0; text-align: left !important; }
+  .device[data-width="phone"] td:last-child { padding-top: 8px; }
+  .device[data-width="tablet"] .lx-main--split { grid-template-columns: minmax(0, 1fr) minmax(230px, 0.72fr); }
+  .device[data-width="tablet"] .lx-pane { padding: 28px 22px; align-items: flex-start; }
+  .device[data-width="tablet"] .lx-help { padding: 28px 22px 22px; }
+  .device[data-width="tablet"] .lx-help__title { font-size: 22px; }
+  .device[data-width="tablet"] .pill, .device[data-width="tablet"] .mini { white-space: normal; }
+  .device[data-width="tablet"] .lx-card.wide { max-width: 740px; }
+
+  .full-btn {
+    border: 0; background: var(--brand); color: #fff;
+    border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .full-btn:hover { background: var(--brand-dark); }
+  .full-btn svg { width: 16px; height: 16px; }
+  .full-exit {
+    position: fixed; top: 14px; right: 14px; z-index: 10000;
+    border: 0; background: rgba(12, 47, 82, .92); color: #fff;
+    border-radius: 999px; padding: 10px 16px; font-size: 14px; font-weight: 700;
+    display: none; align-items: center; gap: 8px;
+    box-shadow: 0 2px 10px rgba(16, 24, 40, .2);
+  }
+  .full-exit svg { width: 16px; height: 16px; }
+  body.is-fullscreen .full-exit { display: inline-flex; }
+  body.is-fullscreen {
+    background: var(--ground);
+    overflow: hidden;
+  }
+  body.is-fullscreen .wrap {
+    max-width: none; margin: 0; padding: 0; height: 100vh;
+  }
+  body.is-fullscreen .wrap > .kicker,
+  body.is-fullscreen .wrap > .title,
+  body.is-fullscreen .wrap > .lead,
+  body.is-fullscreen .wrap > .controls,
+  body.is-fullscreen .wrap > .section,
+  body.is-fullscreen .notes {
+    display: none !important;
+  }
+  body.is-fullscreen .stage {
+    display: block; height: 100vh; margin: 0;
+  }
+  body.is-fullscreen .viewport {
+    height: 100vh;
+  }
+  body.is-fullscreen .device {
+    max-width: none !important;
+    height: 100%;
+  }
+  body.is-fullscreen .lx {
+    border: 0; border-radius: 0; min-height: 100vh; height: 100%;
+  }
+  body.is-fullscreen .lx-main:not(.lx-main--split) {
+    padding-top: 48px; padding-bottom: 64px; align-items: center;
+  }
+  body.is-fullscreen .lx-main--split {
+    min-height: calc(100vh - 52px);
+  }
+  body.is-fullscreen .lx-pane {
+    padding: 48px 56px 56px;
+    align-items: flex-start;
+  }
+  body.is-fullscreen .lx-help {
+    padding: 48px 40px 32px;
+  }
+</style>
+</head>
+<body>
+<button class="full-exit" type="button" id="exit-full" aria-label="Exit full view">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 9 3 3m0 6V3h6M15 15l6 6m0-6v6h-6"/></svg>
+  Exit full view
+</button>
+<div class="wrap">
+  <p class="kicker">eTraining LMS · BL Harbert portal · proposal v2</p>
+  <h1 class="title">One field. Any proof. Nothing to remember.</h1>
+  <p class="lead">The kit keeps username + password and explains it better. This version removes the two causes behind the <strong>36% failure rate</strong> the kit measured: learners who don’t know which kind of username they have, and learners who can’t open the email on their account.</p>
+
+  <div class="controls">
+    <div class="group">
+      <span class="group-label">Learner</span>
+      <div class="chips" id="learner-chips">
+        <button class="chip" data-screen="start">1 Start</button>
+        <button class="chip" data-screen="choose">2 Choose how</button>
+        <button class="chip" data-screen="code">3 Enter code</button>
+        <button class="chip" data-screen="welcome">4 In</button>
+        <button class="chip" data-screen="wrongpw">Wrong password</button>
+        <button class="chip" data-screen="notfound">Wrong ID</button>
+        <button class="chip" data-screen="askhelp">Ask my manager</button>
+        <button class="chip" data-screen="asksent">Request sent</button>
+        <button class="chip" data-screen="mgrcode">Code from manager</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="group-label">Company admin</span>
+      <div class="chips" id="admin-chips">
+        <button class="chip admin" data-screen="students">Students</button>
+        <button class="chip admin" data-screen="card">Printed card</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="group-label">Width</span>
+      <div class="chips" id="width-chips">
+        <button class="chip" data-width="desktop" aria-pressed="true">Desktop</button>
+        <button class="chip" data-width="tablet">Tablet</button>
+        <button class="chip" data-width="phone">Phone</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="group-label">Preview</span>
+      <button class="full-btn" type="button" id="enter-full" title="Show only the login UI full screen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        Full view
+      </button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <aside class="notes" id="notes"></aside>
+    <div class="viewport"><div class="device" id="device" data-width="desktop"></div></div>
+  </div>
+
+  <section class="section">
+    <h2>Against the kit, finding by finding</h2>
+    <p>Every row is something the kit found on the live site on Oct 19. Left is what the kit does about it; right is what this version does.</p>
+    <table class="cmp">
+      <thead><tr><th>Live-site finding</th><th>Kit (Oct 19)</th><th>This proposal</th></tr></thead>
+      <tbody>
+        <tr><td>563 accounts (26%) have a short username. Email sign-in is off, so typing an email always fails for them.</td><td>Label becomes “Username”. An email tip appears after a failed try. Recommends turning on sign-in by email.</td><td>One field accepts username, email, or mobile. The server resolves it, trims spaces and ignores capitals. Nobody has to know which kind they have.</td></tr>
+        <tr><td>Every account has an email, but many learners can’t open that inbox (placeholder addresses).</td><td>Reset goes to that email. Everyone else asks a manager for a temporary password, then is forced to change it.</td><td>A 6-digit code by text to the mobile on file. Or an 8-character access code the manager hands over. If they forgot username, email, and mobile, Ask my manager sends name + crew to the admin Students queue.</td></tr>
+        <tr><td>Learners forget the password, then forget it again.</td><td>Reset by email, 30-minute link, stronger password rules checklist.</td><td>Password is one option, not the gate. Code sign-in is a first-class button. Stay signed in 60 days on that device. Passkey (fingerprint / face) in phase 3.</td></tr>
+        <tr><td>Learners forget the username.</td><td>A “Forgot username?” section tells them to find the welcome sheet or ask a manager.</td><td>Mobile number works as the identifier. The printed card has a QR that opens the portal with the username filled in.</td></tr>
+        <tr><td>Repeated failures with no way forward.</td><td>Counts tries in the tab; after 3, shows a warning line.</td><td>After the first miss, the page itself offers “Text me a code instead.” No counting.</td></tr>
+        <tr><td>Managers do the resets by hand.</td><td>Manager sets a temporary password and tells the learner.</td><td>Admin sees who hasn’t signed in, presses Give access code, and texts or prints it. Code expires in 24 hours.</td></tr>
+        <tr><td>Deploy with no PHP.</td><td>Yes: settings, SCSS, template, strings.</td><td>Phase 1 is the same no-PHP set. Codes and SMS need one small Moodle plugin (phase 2).</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>How it ships in Moodle 4.3.5 + IOMAD</h2>
+    <p>Phase 1 can go out with the kit’s own files. Phase 2 is where the failure rate actually drops.</p>
+    <div class="phases">
+      <div class="phase now">
+        <h3>Phase 1 · settings and template</h3>
+        <p class="when">No PHP · this week</p>
+        <ul>
+          <li>Turn on “Allow log in via email” after checking for shared emails.</li>
+          <li>Support name and email fixed, as in the kit.</li>
+          <li>New <code>loginform.mustache</code>: one identifier field, company header, Show/Hide, 52 px targets.</li>
+          <li>Longer session plus a persistent-login plugin for “Stay signed in on this device.”</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <h3>Phase 2 · code sign-in plugin</h3>
+        <p class="when">One auth plugin · 3–4 weeks</p>
+        <ul>
+          <li>Resolve identifier: username, email, or mobile (IOMAD profile field).</li>
+          <li>6-digit code by SMS (Twilio or AWS SNS) or email, 10-minute life, one use.</li>
+          <li>Manager access code: 8 characters, 24 hours, created from the IOMAD company user list.</li>
+          <li>Rate limits per account and per IP. Codes never shown in logs.</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <h3>Phase 3 · passkeys</h3>
+        <p class="when">After phase 2 is stable</p>
+        <ul>
+          <li>“Use fingerprint or face next time” on the welcome screen.</li>
+          <li>WebAuthn on the same plugin; falls back to a code on a new device.</li>
+          <li>Company SSO (Microsoft / Google) per portal where the company has it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const notes = {
+  start: {
+    title: "One question: who are you?",
+    body: "The learner types whatever they were given. The server works out whether it is a username, an email, or a mobile number.",
+    kit: "Label says Username; an email tip appears only after a failed attempt.",
+    ours: "Username, email, or mobile all work in the same box. Spaces and capitals are ignored.",
+    demo: `
+      <p class="demo-title">Correct demos — James Smith</p>
+      <ul class="demo-rows">
+        <li><span>Username</span><code>jsmith</code></li>
+        <li><span>Email</span><code>jsmith@blharbert.com</code></li>
+        <li><span>Mobile</span><code>205 555 4419</code></li>
+      </ul>
+      <p class="demo-note">Also works: <code>msantos</code>. Anything else shows Wrong ID. Don’t know any of those? Press <strong>I don’t know my login</strong>.</p>`
+  },
+  notfound: {
+    title: "Not on this company’s list",
+    body: "Because this is a company portal, we can say the identifier isn’t on the BL Harbert roster. That is safer than a public signup site, and clearer than a silent fail.",
+    kit: "Same “doesn’t match” message for wrong username and wrong password. No way to tell them apart.",
+    ours: "Wrong ID gets its own screen: try again, use a manager code, or ask the training admin for help. Wrong password is a different path.",
+    demo: "From Start, type <code>wrongperson</code> or <code>nobody@email.com</code> and press Continue. Or press <strong>I don’t know my login</strong>."
+  },
+  askhelp: {
+    title: "Ask without revealing accounts",
+    body: "When the learner remembers none of username, email, or mobile, they send a name + crew request. The portal never searches the user list for them — only the admin sees the match.",
+    kit: "No path. Learner is stuck or calls support with guessing.",
+    ours: "Full name and crew only. Admin gets a pending request on Students and presses Give access code.",
+    demo: "Name <code>Maria Santos</code>, crew <code>Site crew</code>. Then open the <strong>Students</strong> chip to see the request."
+  },
+  asksent: {
+    title: "Confirmation, not a login",
+    body: "The learner is told what happens next. They don’t get a username back — that would leak whether an account exists.",
+    kit: "N/A — no request flow.",
+    ours: "They wait for a manager code (text or in person), then use Code from my manager.",
+    demo: "Open <strong>Students</strong> (admin) to clear the request with Give access code."
+  },
+  choose: {
+    title: "Password is one option, not the gate",
+    body: "The identifier is shown back so a typo is obvious. The password box is there for people who know it. Forgot password? emails a sign-in code instead of a reset link.",
+    kit: "Password only. Forgot password sends a 30-minute reset email.",
+    ours: "Forgot password? Text me a code, or a manager code — no temporary password to remember.",
+    demo: "Password <code>Safety2026!</code> signs in. <strong>Forgot password?</strong> sends an email code. Anything else shows Wrong password."
+  },
+  code: {
+    title: "Six digits, ten minutes",
+    body: "Boxes auto-advance. The number is shown masked only after the code is sent, so the page never reveals whether an account exists before that.",
+    kit: "Reset link by email, 30 minutes, only the newest works.",
+    ours: "Works for the people with a placeholder email, because it goes to the phone in their pocket.",
+    demo: "Any six digits sign in. Resend unlocks after 30 seconds."
+  },
+  welcome: {
+    title: "The next visit skips all of this",
+    body: "Stay signed in is on by default for 60 days on this device. The course they were doing is the first thing on the page.",
+    kit: "Redirects to the course dashboard after fixing the bounce bug.",
+    ours: "Same destination, plus the device remembers them. Passkey offer comes in phase 3.",
+    demo: "Toggle Stay signed in, or press Not you to go back to the start."
+  },
+  wrongpw: {
+    title: "A miss becomes a path, not a count",
+    body: "The error says what happened and the primary button changes to the thing most likely to work.",
+    kit: "Same message for wrong user and wrong password; a warning line after 3 tries.",
+    ours: "After one miss, Text me a code is the primary button. Try the password again is secondary.",
+    demo: "Press Text me a code instead, or go back and enter <code>Safety2026!</code>."
+  },
+  mgrcode: {
+    title: "The manager hands over a code, not a password",
+    body: "For the learner with no reachable email and no mobile on file. The admin creates the code in 10 seconds; it works once, for 24 hours.",
+    kit: "Manager sets a temporary password; learner must change it on first sign-in.",
+    ours: "No temporary password to transcribe, no forced change screen, nothing the learner has to keep.",
+    demo: "Enter any code of 8 or more characters, like <code>BLH-7K2M-9Q</code>."
+  },
+  students: {
+    title: "Admin sees who is stuck",
+    body: "The IOMAD company user list gains a Sign-in column and one button. Pending Ask-my-manager requests land at the top so the admin never hunts.",
+    kit: "Admin resets the password and reads a temporary one to the learner.",
+    ours: "Give access code shows a code to text or print. Hasn’t signed in and open requests are visible without digging.",
+    demo: "If a learner used Ask my manager, the blue request bar appears first. Press Give access code on Maria’s request or row."
+  },
+  card: {
+    title: "Paper for people who live on paper",
+    body: "A printed card per learner, from the same admin screen. The QR opens the company portal with the username filled in; the access code is on the card for the first sign-in.",
+    kit: "Copy points learners to their welcome sheet.",
+    ours: "The welcome sheet becomes the sign-in itself.",
+    demo: "Static preview. The QR is a placeholder pattern."
+  }
+};
+
+const state = {
+  screen: "start", who: "", err: false, codeVia: "sms", stay: true, codeGiven: false, resend: 30,
+  askName: "Maria Santos", askCrew: "Site crew", askRequested: false
+};
+let resendTimer = null;
+
+const LOGO = "assets/bl-harbert-logo-clear.png";
+const ETRAIN_LOGO = "assets/etraining-logo-clear.png";
+
+const bar = (right) => `
+  <header class="lx-bar">
+    <div class="lx-brand">
+      <span class="lx-brand__chip"><img src="${LOGO}" alt="BL Harbert International"></span>
+      <span class="lx-brand__name">BL Harbert Training</span>
+      <span class="lx-brand__powered">· powered by <img src="${ETRAIN_LOGO}" alt="eTraining"></span>
+    </div>
+    ${right}
+  </header>`;
+
+const company = `
+  <div class="lx-company">
+    <div class="lx-mark"><img src="${LOGO}" alt=""></div>
+    <div><strong>BL Harbert International</strong><span>Safety and compliance training</span></div>
+  </div>`;
+
+const shell = (inner, right = `<button class="lx-bar__help" type="button">Help</button>`) =>
+  `<div class="lx">${bar(right)}<main class="lx-main">${inner}</main></div>`;
+
+function helpPanel({ kicker, title, lead, items, foot }) {
+  return `
+    <aside class="lx-help" aria-label="Help signing in">
+      <div class="lx-help__head">
+        <p class="lx-help__kicker">${kicker}</p>
+        <h2 class="lx-help__title">${title}</h2>
+        <p class="lx-help__lead">${lead}</p>
+      </div>
+      <ul class="lx-help__list">
+        ${items.map((it, i) => `
+          <li>
+            <span class="lx-help__n">${i + 1}</span>
+            <div><strong>${it.title}</strong><span>${it.body}</span></div>
+          </li>`).join("")}
+      </ul>
+      ${foot ? `<p class="lx-help__foot">${foot}</p>` : ""}
+    </aside>`;
+}
+
+function authShell(formInner, help, right = `<button class="lx-bar__help" type="button">Help</button>`) {
+  return `<div class="lx">${bar(right)}
+    <main class="lx-main lx-main--split">
+      <div class="lx-pane"><section class="lx-card bare" aria-label="Sign in">${formInner}</section></div>
+      ${help}
+    </main>
+  </div>`;
+}
+
+const helpStart = () => helpPanel({
+  kicker: "Need help signing in?",
+  title: "Use what your company gave you",
+  lead: "You don’t need to remember which kind of login you have. One field accepts all three.",
+  items: [
+    { title: "Username, email, or mobile", body: "Type it exactly as it is on your welcome sheet or text from your supervisor." },
+    { title: "No password needed", body: "After Continue, you can text or email yourself a code instead of using a password." },
+    { title: "Don’t know any of those?", body: "Press I don’t know my login. Your manager gets a request and can hand you an access code." }
+  ],
+  foot: "<strong>Support:</strong> Report Issue chat · lms-support@etraintoday.com · 8 am – 5 pm Central"
+});
+
+const helpChoose = () => helpPanel({
+  kicker: "Need help signing in?",
+  title: "Pick the easiest way in",
+  lead: "Password is optional. Forgot password? sends a sign-in code to the email on your account.",
+  items: [
+    { title: "Forgot password?", body: "Emails a 6-digit code so you can sign in without resetting a password." },
+    { title: "Text me a code", body: "Six digits to the mobile on your account. Works for 10 minutes." },
+    { title: "Code from my manager", body: "An 8-character code they give you. Works once, for 24 hours." }
+  ],
+  foot: "<strong>Tip:</strong> Leave Stay signed in on so you skip this next time on this device."
+});
+
+const helpCode = () => helpPanel({
+  kicker: "Need help with the code?",
+  title: "Check the newest message",
+  lead: "Only the latest code works. Older ones expire as soon as a new one is sent.",
+  items: [
+    { title: "Wait a few seconds", body: "Texts and emails can take a moment. Check Spam if you chose email." },
+    { title: "Resend after 30 seconds", body: "Use Send a new code if nothing arrives." },
+    { title: "Still stuck?", body: "Switch to the other method, or ask your manager for an access code." }
+  ],
+  foot: "<strong>Support:</strong> Report Issue chat · lms-support@etraintoday.com"
+});
+
+const helpWrong = () => helpPanel({
+  kicker: "Password didn’t work",
+  title: "Skip the password",
+  lead: "Nothing is locked. A text code gets you in without remembering anything.",
+  items: [
+    { title: "Text me a code instead", body: "Primary path — goes to the mobile on your account." },
+    { title: "Try the password again", body: "Press Show to check Caps Lock and typos." },
+    { title: "Manager access code", body: "If you can’t open email or mobile, your admin can give you a code." }
+  ],
+  foot: "<strong>Support:</strong> Report Issue chat · lms-support@etraintoday.com"
+});
+
+const helpNotFound = () => helpPanel({
+  kicker: "Not on this company’s list",
+  title: "Check the spelling, then ask",
+  lead: "That username, email, or mobile isn’t on the BL Harbert training roster.",
+  items: [
+    { title: "Fix a typo", body: "Capitals and spaces don’t matter, but extra letters do." },
+    { title: "Ask my manager", body: "Send your full name and crew. Your training admin gets a request and can give you a code." },
+    { title: "Use a manager code", body: "If they already gave you one, enter it under I have a code from my manager." }
+  ],
+  foot: "<strong>Support:</strong> Report Issue chat · lms-support@etraintoday.com · 8 am – 5 pm Central"
+});
+
+const helpAsk = () => helpPanel({
+  kicker: "Forgot everything?",
+  title: "Your manager looks you up",
+  lead: "We don’t search accounts from this page — that keeps other people’s logins private. Your training admin matches your name to your student row.",
+  items: [
+    { title: "Full name and crew", body: "Enough for your company admin to find you on the Students list." },
+    { title: "They send an access code", body: "Usually by text, or they read it to you. It works once for 24 hours." },
+    { title: "Then sign in with the code", body: "Use I have a code from my manager on the sign-in screen." }
+  ],
+  foot: "<strong>Support:</strong> Report Issue chat · lms-support@etraintoday.com · 8 am – 5 pm Central"
+});
+
+const helpMgr = () => helpPanel({
+  kicker: "Manager access code",
+  title: "One code, one sign-in",
+  lead: "Your training manager creates this from the student list. It is not a password you keep.",
+  items: [
+    { title: "8 characters", body: "Looks like BLH-7K2M-9Q. Dashes and capitals don’t matter." },
+    { title: "Works once", body: "Valid for 24 hours. After you sign in, ask for a new one next time if you need it." },
+    { title: "After you’re in", body: "Turn on Stay signed in, or use Text me a code on your next visit." }
+  ],
+  foot: "<strong>Don’t have a code?</strong> Ask your supervisor or training admin — they can text or print one."
+});
+
+const svgPhone = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>`;
+const svgMail = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>`;
+const svgKey = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="14" r="4"/><path d="m11 11 9-9M15 7l2 2M18 4l2 2"/></svg>`;
+
+function who() {
+  return `<div class="lx-who"><div><span class="lx-hint">Signing in as</span><br><strong>${esc(state.who)}</strong></div><button type="button" data-go="start">Change</button></div>`;
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+/* Demo roster for BL Harbert. Real site looks up IOMAD company users. */
+const KNOWN = {
+  jsmith: { display: "jsmith", name: "James Smith" },
+  "jsmith@blharbert.com": { display: "jsmith@blharbert.com", name: "James Smith" },
+  "2055554419": { display: "205 555 4419", name: "James Smith" },
+  "205 555 4419": { display: "205 555 4419", name: "James Smith" },
+  msantos: { display: "msantos", name: "Maria Santos" },
+  "msantos@blharbert.com": { display: "msantos@blharbert.com", name: "Maria Santos" },
+  "maria.santos@blharbert.com": { display: "maria.santos@blharbert.com", name: "Maria Santos" },
+  dowens: { display: "dowens", name: "Dale Owens" },
+  "dowens@blharbert.com": { display: "dowens@blharbert.com", name: "Dale Owens" }
+};
+
+function normalizeIdent(raw) {
+  const v = String(raw || "").trim().replace(/\s+/g, " ");
+  const digits = v.replace(/\D/g, "");
+  if (digits.length >= 10) return digits;
+  return v.toLowerCase();
+}
+
+function lookupIdent(raw) {
+  const key = normalizeIdent(raw);
+  if (KNOWN[key]) return KNOWN[key];
+  if (KNOWN[String(raw || "").trim().toLowerCase()]) return KNOWN[String(raw).trim().toLowerCase()];
+  return null;
+}
+
+const screens = {
+  start: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">Sign in</h2>
+      <p class="lx-lead">Use whatever BL Harbert gave you.</p>
+      <form id="f-start" novalidate>
+        <div class="lx-field">
+          <label class="lx-label" for="ident">Username, email, or mobile number</label>
+          <input class="lx-input" id="ident" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" value="${esc(state.who)}" ${state.err === "empty" ? 'aria-invalid="true"' : ""}>
+          <span class="lx-hint">Capitals and spaces don’t matter.</span>
+          ${state.err === "empty" ? `<div class="lx-ferr">Enter the username, email, or mobile your company gave you.</div>` : ""}
+        </div>
+        <button class="lx-btn" type="submit">Continue</button>
+      </form>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-go="askhelp">I don’t know my login</button>
+        <button class="lx-link" type="button" data-go="mgrcode">I have a code from my manager</button>
+      </div>
+  `, helpStart()),
+
+  notfound: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">We couldn’t find that</h2>
+      <div class="lx-msg lx-msg--error">
+        <strong>Not on the BL Harbert list</strong>
+        <span style="font-family:var(--mono);font-weight:700">${esc(state.who || "wrongperson")}</span> isn’t a username, email, or mobile we have for this company.
+      </div>
+      <p class="lx-lead" style="margin-top:0">Check for a typo, or ask your training manager for help.</p>
+      <button class="lx-btn" type="button" data-go="start">Try a different username, email, or mobile</button>
+      <div style="height:10px"></div>
+      <button class="lx-btn lx-btn--quiet" type="button" data-go="askhelp">I don’t know my login — ask my manager</button>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-go="mgrcode">I have a code from my manager</button>
+      </div>
+  `, helpNotFound()),
+
+  choose: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">How do you want to sign in?</h2>
+      ${who()}
+      <form id="f-pw" novalidate>
+        <div class="lx-field">
+          <div class="lx-row" style="margin-bottom:6px">
+            <label class="lx-label" for="pw" style="margin:0">Password</label>
+            <button class="lx-link" type="button" data-via="email" style="min-height:0;padding:0;font-size:15px">Forgot password?</button>
+          </div>
+          <div class="lx-pw">
+            <input class="lx-input" id="pw" type="password" autocomplete="current-password">
+            <button class="lx-eye" type="button" id="eye" aria-pressed="false" aria-controls="pw">Show</button>
+          </div>
+          <div class="lx-caps" id="caps" role="status" aria-live="polite">Caps Lock is on — passwords are case-sensitive.</div>
+        </div>
+        <button class="lx-btn" type="submit">Sign in</button>
+      </form>
+      <div class="lx-or">or, no password needed</div>
+      <div class="ways">
+        <button class="way" type="button" data-via="sms"><span class="ic">${svgPhone}</span><div><strong>Text me a code</strong><span>To the mobile on your account</span></div></button>
+        <button class="way" type="button" data-via="email"><span class="ic">${svgMail}</span><div><strong>Email me a code</strong><span>To the email on your account</span></div></button>
+        <button class="way" type="button" data-go="mgrcode"><span class="ic">${svgKey}</span><div><strong>Use a code from my manager</strong><span>8 characters, works for 24 hours</span></div></button>
+      </div>
+  `, helpChoose()),
+
+  wrongpw: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">That password didn’t match</h2>
+      ${who()}
+      <div class="lx-msg lx-msg--error"><strong>Nothing is locked.</strong>You can try again, or skip the password entirely.</div>
+      <button class="lx-btn" type="button" data-via="sms">${svgPhone} Text me a code instead</button>
+      <div style="height:10px"></div>
+      <button class="lx-btn lx-btn--quiet" type="button" data-go="choose">Try the password again</button>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-via="email">Email me a code</button>
+        <button class="lx-link" type="button" data-go="mgrcode">Code from my manager</button>
+      </div>
+  `, helpWrong()),
+
+  code: () => {
+    const sms = state.codeVia === "sms";
+    return authShell(`
+      ${company}
+      <h2 class="lx-h1">Enter the code</h2>
+      <p class="lx-lead">${sms ? "We texted a 6-digit code to the mobile ending in <strong>4419</strong>." : "We emailed a 6-digit code to <strong>j•••••@blharbert.com</strong>."} It works for 10 minutes.</p>
+      ${state.err ? `<div class="lx-msg lx-msg--error"><strong>That code didn’t work.</strong>Check the newest message, or send a new code.</div>` : ""}
+      <form id="f-code" novalidate>
+        <div class="codes" id="codes" aria-label="6-digit code">
+          ${[0,1,2,3,4,5].map(i => `<input inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="${i === 0 ? "one-time-code" : "off"}" aria-label="Digit ${i + 1}">`).join("")}
+        </div>
+        <p class="resend" id="resend">${state.resend > 0 ? `Didn’t get it? Resend in 0:${String(state.resend).padStart(2, "0")}` : ""}${state.resend <= 0 ? `<button class="lx-link lx-link--inline" type="button" id="resend-btn" style="min-height:0;padding:0">Send a new code</button>` : ""}</p>
+        <button class="lx-btn" type="submit">Sign in</button>
+      </form>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-via="${sms ? "email" : "sms"}">${sms ? "Email me instead" : "Text me instead"}</button>
+        <button class="lx-link" type="button" data-go="choose">Other ways</button>
+      </div>
+    `, helpCode());
+  },
+
+  welcome: () => shell(`
+    <section class="lx-card" aria-label="Welcome back">
+      <div class="name"><div class="avatar">JS</div><div><strong>Welcome back, James</strong><span>BL Harbert International · Site crew</span></div></div>
+      <article class="course">
+        <div><strong>Fall protection refresher</strong><span>Due Fri · 12 minutes left</span><div class="progress"><i></i></div></div>
+        <button class="lx-btn" type="button" id="resume">Resume</button>
+      </article>
+      <div class="switch">
+        <div><strong>Stay signed in on this device</strong><span>For 60 days, or until you sign out.</span></div>
+        <button class="toggle" type="button" id="stay" role="switch" aria-checked="${state.stay}"></button>
+      </div>
+      <div class="switch">
+        <div><strong>Use fingerprint or face next time</strong><span>Phase 3 · passkey on this phone.</span></div>
+        <button class="mini quiet" type="button" disabled>Set up</button>
+      </div>
+      <div class="lx-row" style="margin-top:8px">
+        <button class="lx-link" type="button" data-go="start">Not you? Sign out</button>
+      </div>
+    </section>`, `<span class="lx-user">James Smith</span>`),
+
+  askhelp: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">Ask your manager for help</h2>
+      <p class="lx-lead">Don’t know your username, email, or mobile? Send your name and crew. Your training admin will look you up and give you an access code.</p>
+      <form id="f-ask" novalidate>
+        <div class="lx-field">
+          <label class="lx-label" for="ask-name">Full name</label>
+          <input class="lx-input" id="ask-name" autocomplete="name" value="${esc(state.askName)}" ${state.err === "name" ? 'aria-invalid="true"' : ""}>
+          ${state.err === "name" ? `<div class="lx-ferr">Enter the name your company knows you by.</div>` : ""}
+        </div>
+        <div class="lx-field">
+          <label class="lx-label" for="ask-crew">Crew or site</label>
+          <select class="lx-select" id="ask-crew" ${state.err === "crew" ? 'aria-invalid="true"' : ""}>
+            <option value="">Choose one</option>
+            <option value="Site crew" ${state.askCrew === "Site crew" ? "selected" : ""}>Site crew</option>
+            <option value="Foreman" ${state.askCrew === "Foreman" ? "selected" : ""}>Foreman</option>
+            <option value="Office" ${state.askCrew === "Office" ? "selected" : ""}>Office</option>
+            <option value="Not sure" ${state.askCrew === "Not sure" ? "selected" : ""}>I’m not sure</option>
+          </select>
+          ${state.err === "crew" ? `<div class="lx-ferr">Pick the crew or site that fits best.</div>` : ""}
+        </div>
+        <button class="lx-btn" type="submit">Send request to my manager</button>
+      </form>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-go="start">Back to sign in</button>
+        <button class="lx-link" type="button" data-go="mgrcode">I already have a code</button>
+      </div>
+  `, helpAsk()),
+
+  asksent: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">Request sent</h2>
+      <div class="lx-msg lx-msg--ok">
+        <strong>Your training admin has your request.</strong>
+        We sent <strong>${esc(state.askName || "your name")}</strong> · ${esc(state.askCrew || "crew")} to BL Harbert’s training team.
+      </div>
+      <p class="lx-lead">They’ll match you to your student record and give you an access code — usually by text, or in person. This page does not show your username.</p>
+      <button class="lx-btn" type="button" data-go="mgrcode">I have the access code</button>
+      <div style="height:10px"></div>
+      <button class="lx-btn lx-btn--quiet" type="button" data-go="start">Back to sign in</button>
+  `, helpAsk()),
+
+  mgrcode: () => authShell(`
+      ${company}
+      <h2 class="lx-h1">Code from your manager</h2>
+      <p class="lx-lead">Your training manager or company admin can give you an 8-character code. It works once, for 24 hours.</p>
+      ${state.err ? `<div class="lx-msg lx-msg--error"><strong>That code isn’t valid.</strong>Check it with your manager. They can make a new one in a few seconds.</div>` : ""}
+      <form id="f-mgr" novalidate>
+        <div class="lx-field">
+          <label class="lx-label" for="mgr">Access code</label>
+          <input class="lx-input code-input" id="mgr" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="BLH-XXXX-XX">
+          <span class="lx-hint">Dashes and capitals don’t matter.</span>
+        </div>
+        <button class="lx-btn" type="submit">Sign in</button>
+      </form>
+      <div class="lx-row" style="margin-top:10px">
+        <button class="lx-link" type="button" data-go="start">Back</button>
+        <button class="lx-link" type="button" data-go="askhelp">I don’t have a code yet</button>
+      </div>
+  `, helpMgr()),
+
+  students: () => shell(`
+    <section class="lx-card wide" aria-label="Students">
+      <div class="lx-row" style="margin-bottom:14px">
+        <div><h2 class="lx-h1" style="margin:0">Students</h2><span class="lx-hint">BL Harbert International · 48 people${state.askRequested && !state.codeGiven ? " · 1 access request" : ""}</span></div>
+        <button class="mini quiet" type="button">Add student</button>
+      </div>
+      ${state.askRequested && !state.codeGiven ? `
+      <div class="req-banner" role="status">
+        <div>
+          <strong>${esc(state.askName || "Maria Santos")} requested access</strong>
+          <span>${esc(state.askCrew || "Site crew")} · 3 min ago · from sign-in · Ask my manager</span>
+        </div>
+        <button class="mini solid" type="button" id="give-req">Give access code</button>
+      </div>` : ""}
+      <table>
+        <thead><tr><th>Student</th><th>Can sign in with</th><th>Last sign-in</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-name"><strong>James Smith</strong><span>jsmith · Site crew</span></td>
+            <td>Email, mobile, password</td>
+            <td><span class="pill ok">2 days ago</span></td>
+            <td style="text-align:right"><button class="mini quiet" type="button">Give access code</button></td>
+          </tr>
+          <tr>
+            <td class="td-name"><strong>Maria Santos</strong><span>msantos · Site crew${state.askRequested && !state.codeGiven ? ' · <span class="pill warn">Access request</span>' : ""}</span></td>
+            <td>Mobile · email is a placeholder</td>
+            <td><span class="pill bad">Hasn’t signed in</span></td>
+            <td style="text-align:right"><button class="mini solid" type="button" id="give">Give access code</button></td>
+          </tr>
+          <tr>
+            <td class="td-name"><strong>Dale Owens</strong><span>dowens@blharbert.com · Foreman</span></td>
+            <td>Email, password</td>
+            <td><span class="pill warn">41 days ago</span></td>
+            <td style="text-align:right"><button class="mini quiet" type="button">Give access code</button></td>
+          </tr>
+        </tbody>
+      </table>
+      ${state.codeGiven ? `
+      <div class="sheet" id="sheet">
+        <h3>Access code for ${esc(state.askName || "Maria Santos")}</h3>
+        <p>Works once, until tomorrow 2:30 PM. ${esc((state.askName || "Maria").split(" ")[0])} enters it under “I have a code from my manager.”${state.askRequested ? " This clears the open access request." : ""}</p>
+        <div class="bigcode">BLH-7K2M-9Q</div>
+        <div class="sheet-actions">
+          <button class="mini solid" type="button" id="text-code">Text to •••• 4419</button>
+          <button class="mini quiet" type="button" data-go="card">Print card</button>
+          <button class="mini quiet" type="button" id="new-code">New code</button>
+        </div>
+      </div>` : ""}
+    </section>`, `<span class="lx-user">Jordan Lee · Admin</span>`),
+
+  card: () => shell(`
+    <section class="lx-card wide" aria-label="Printed card">
+      <div class="lx-row" style="margin-bottom:16px">
+        <div><h2 class="lx-h1" style="margin:0">Printed card</h2><span class="lx-hint">Wallet size · prints from the student row</span></div>
+        <button class="mini quiet" type="button" data-go="students">Back to students</button>
+      </div>
+      <div class="printcard">
+        <header><div class="lx-mark"><img src="${LOGO}" alt=""></div><div><h3>BL Harbert training</h3><span class="lx-hint">Your sign-in card</span></div></header>
+        <div class="qr" aria-label="QR placeholder">${qr()}</div>
+        <p class="url">blharbert.etraininglms.com</p>
+        <dl>
+          <dt>Name</dt><dd>Maria Santos</dd>
+          <dt>Username</dt><dd>msantos</dd>
+          <dt>First-time code</dt><dd>BLH-7K2M-9Q</dd>
+        </dl>
+        <ol class="steps">
+          <li>Scan the code, or open the address above.</li>
+          <li>Type your username or mobile number.</li>
+          <li>First time: enter the code. After that: text me a code.</li>
+        </ol>
+      </div>
+    </section>`, `<span class="lx-user">Jordan Lee · Admin</span>`)
+};
+
+function qr() {
+  const seed = [1,0,1,1,0,1,0,0,1,1,0, 0,1,1,0,1,1,0,1,0,0,1, 1,1,0,1,0,0,1,1,0,1,0];
+  let out = "";
+  for (let i = 0; i < 121; i++) {
+    const r = Math.floor(i / 11), c = i % 11;
+    const finder = (r < 3 && c < 3) || (r < 3 && c > 7) || (r > 7 && c < 3);
+    const on = finder ? !(r === 1 && c === 1) && !(r === 1 && c === 9) && !(r === 9 && c === 1) : seed[(i * 7) % seed.length];
+    out += `<i class="${on ? "" : "o"}"></i>`;
+  }
+  return out;
+}
+
+const device = document.getElementById("device");
+const notesEl = document.getElementById("notes");
+
+function go(screen) {
+  state.screen = screen;
+  state.err = false;
+  if (screen !== "code") stopResend();
+  draw();
+}
+
+function draw() {
+  device.innerHTML = screens[state.screen]();
+  const n = notes[state.screen];
+  notesEl.innerHTML = `
+    <h2>${n.title}</h2>
+    <p>${n.body}</p>
+    <h3>Compared with the kit</h3>
+    <ul><li class="kit">${n.kit}</li><li class="ours">${n.ours}</li></ul>
+    <div class="demo">${n.demo}</div>`;
+  document.querySelectorAll(".chip[data-screen]").forEach(b => b.setAttribute("aria-pressed", b.dataset.screen === state.screen ? "true" : "false"));
+  bind();
+}
+
+function bind() {
+  device.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+  device.querySelectorAll("[data-via]").forEach(b => b.onclick = () => { state.codeVia = b.dataset.via; state.resend = 30; go("code"); startResend(); });
+
+  const fStart = document.getElementById("f-start");
+  if (fStart) {
+    const input = document.getElementById("ident");
+    input.focus({ preventScroll: true });
+    fStart.onsubmit = (e) => {
+      e.preventDefault();
+      const v = input.value.trim().replace(/\s+/g, " ");
+      if (!v) { state.err = "empty"; draw(); return; }
+      const hit = lookupIdent(v);
+      if (!hit) {
+        state.who = v;
+        go("notfound");
+        return;
+      }
+      state.who = hit.display;
+      go("choose");
+    };
+  }
+
+  const fPw = document.getElementById("f-pw");
+  if (fPw) {
+    const pw = document.getElementById("pw");
+    const eye = document.getElementById("eye");
+    const caps = document.getElementById("caps");
+    pw.focus({ preventScroll: true });
+    const syncCaps = (e) => {
+      if (!caps) return;
+      const on = e && e.getModifierState ? e.getModifierState("CapsLock") : false;
+      caps.classList.toggle("is-on", on);
+    };
+    pw.addEventListener("keydown", syncCaps);
+    pw.addEventListener("keyup", syncCaps);
+    pw.addEventListener("focus", syncCaps);
+    pw.addEventListener("blur", () => { if (caps) caps.classList.remove("is-on"); });
+    eye.onclick = () => {
+      const show = pw.type === "password";
+      pw.type = show ? "text" : "password";
+      eye.textContent = show ? "Hide" : "Show";
+      eye.setAttribute("aria-pressed", String(show));
+      pw.focus();
+    };
+    fPw.onsubmit = (e) => {
+      e.preventDefault();
+      if (pw.value === "Safety2026!") go("welcome");
+      else go("wrongpw");
+    };
+  }
+
+  const fCode = document.getElementById("f-code");
+  if (fCode) {
+    const boxes = [...document.querySelectorAll("#codes input")];
+    boxes[0].focus({ preventScroll: true });
+    boxes.forEach((b, i) => {
+      b.oninput = () => {
+        b.value = b.value.replace(/\D/g, "").slice(-1);
+        if (b.value && boxes[i + 1]) boxes[i + 1].focus();
+        if (boxes.every(x => x.value)) fCode.requestSubmit();
+      };
+      b.onkeydown = (e) => { if (e.key === "Backspace" && !b.value && boxes[i - 1]) boxes[i - 1].focus(); };
+      b.onpaste = (e) => {
+        const t = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
+        if (!t) return;
+        e.preventDefault();
+        [...t].forEach((ch, k) => { if (boxes[k]) boxes[k].value = ch; });
+        (boxes[t.length] || boxes[5]).focus();
+        if (t.length === 6) fCode.requestSubmit();
+      };
+    });
+    fCode.onsubmit = (e) => {
+      e.preventDefault();
+      const v = boxes.map(x => x.value).join("");
+      if (v.length === 6) go("welcome");
+      else { state.err = true; draw(); }
+    };
+    const rb = document.getElementById("resend-btn");
+    if (rb) rb.onclick = () => { state.resend = 30; state.err = false; draw(); startResend(); };
+  }
+
+  const fAsk = document.getElementById("f-ask");
+  if (fAsk) {
+    const name = document.getElementById("ask-name");
+    const crew = document.getElementById("ask-crew");
+    name.focus({ preventScroll: true });
+    fAsk.onsubmit = (e) => {
+      e.preventDefault();
+      const n = name.value.trim().replace(/\s+/g, " ");
+      const c = crew.value;
+      if (!n) { state.err = "name"; state.askName = ""; draw(); return; }
+      if (!c) { state.err = "crew"; state.askName = n; draw(); return; }
+      state.askName = n;
+      state.askCrew = c;
+      state.askRequested = true;
+      state.codeGiven = false;
+      go("asksent");
+    };
+  }
+
+  const fMgr = document.getElementById("f-mgr");
+  if (fMgr) {
+    const m = document.getElementById("mgr");
+    m.focus({ preventScroll: true });
+    fMgr.onsubmit = (e) => {
+      e.preventDefault();
+      const v = m.value.replace(/[^a-z0-9]/gi, "");
+      if (v.length >= 8) { state.who = "msantos"; state.askRequested = false; go("welcome"); }
+      else { state.err = true; draw(); document.getElementById("mgr").value = m.value; }
+    };
+  }
+
+  const stay = document.getElementById("stay");
+  if (stay) stay.onclick = () => { state.stay = !state.stay; stay.setAttribute("aria-checked", String(state.stay)); };
+  const resume = document.getElementById("resume");
+  if (resume) resume.onclick = () => { resume.textContent = "Opening"; resume.disabled = true; };
+
+  const openCodeSheet = () => {
+    state.codeGiven = true;
+    state.askRequested = false;
+    draw();
+    const sheet = document.getElementById("sheet");
+    if (sheet) sheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+  const give = document.getElementById("give");
+  if (give) give.onclick = openCodeSheet;
+  const giveReq = document.getElementById("give-req");
+  if (giveReq) giveReq.onclick = openCodeSheet;
+  const text = document.getElementById("text-code");
+  if (text) text.onclick = () => { text.textContent = "Sent to •••• 4419"; text.disabled = true; };
+  const nc = document.getElementById("new-code");
+  if (nc) nc.onclick = () => { document.querySelector(".bigcode").textContent = "BLH-3PX8-R4"; const t = document.getElementById("text-code"); if (t) { t.textContent = "Text to •••• 4419"; t.disabled = false; } };
+}
+
+function startResend() {
+  stopResend();
+  resendTimer = setInterval(() => {
+    state.resend -= 1;
+    const el = document.getElementById("resend");
+    if (!el) { stopResend(); return; }
+    if (state.resend > 0) el.textContent = `Didn’t get it? Resend in 0:${String(state.resend).padStart(2, "0")}`;
+    else { stopResend(); draw(); }
+  }, 1000);
+}
+function stopResend() { if (resendTimer) { clearInterval(resendTimer); resendTimer = null; } }
+
+document.querySelectorAll(".chip[data-screen]").forEach(b => b.onclick = () => {
+  if (b.dataset.screen === "choose" && !state.who) state.who = "jsmith";
+  if (b.dataset.screen === "wrongpw" && !state.who) state.who = "jsmith";
+  if (b.dataset.screen === "notfound" && !state.who) state.who = "wrongperson";
+  if (b.dataset.screen === "askhelp") {
+    state.askName = state.askName || "Maria Santos";
+    state.askCrew = state.askCrew || "Site crew";
+  }
+  if (b.dataset.screen === "asksent") {
+    state.askName = state.askName || "Maria Santos";
+    state.askCrew = state.askCrew || "Site crew";
+    state.askRequested = true;
+  }
+  if (b.dataset.screen === "code") { state.resend = 30; }
+  go(b.dataset.screen);
+  if (b.dataset.screen === "code") startResend();
+});
+document.querySelectorAll("#width-chips .chip").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#width-chips .chip").forEach(x => x.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  device.dataset.width = b.dataset.width;
+});
+
+const enterFull = document.getElementById("enter-full");
+const exitFull = document.getElementById("exit-full");
+let savedWidth = "desktop";
+
+function setFullscreen(on) {
+  document.body.classList.toggle("is-fullscreen", on);
+  enterFull.setAttribute("aria-pressed", String(on));
+  if (on) {
+    savedWidth = device.dataset.width || "desktop";
+    device.dataset.width = "desktop";
+    document.querySelectorAll("#width-chips .chip").forEach(x => {
+      x.setAttribute("aria-pressed", x.dataset.width === "desktop" ? "true" : "false");
+    });
+    const root = document.documentElement;
+    if (root.requestFullscreen) root.requestFullscreen().catch(() => {});
+    else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+  } else {
+    device.dataset.width = savedWidth;
+    document.querySelectorAll("#width-chips .chip").forEach(x => {
+      x.setAttribute("aria-pressed", x.dataset.width === savedWidth ? "true" : "false");
+    });
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+  }
+}
+
+enterFull.onclick = () => setFullscreen(true);
+exitFull.onclick = () => setFullscreen(false);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("is-fullscreen")) {
+    setFullscreen(false);
+  }
+});
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement && document.body.classList.contains("is-fullscreen")) {
+    document.body.classList.remove("is-fullscreen");
+    device.dataset.width = savedWidth;
+  }
+});
+
+draw();
+</script>
+</body>
+</html>

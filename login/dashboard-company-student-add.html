@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Student — Company Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #6b7c8d;
+    --line: #e5ebe8;
+    --ground: #f5f7f6;
+    --card: #ffffff;
+    --side: #0a1628;
+    --side-text: #c8d4e0;
+    --side-muted: #7d8fa3;
+    --green: #22a45a;
+    --green-dark: #1a8a4a;
+    --green-soft: #e8f7ee;
+    --warn: #b45309;
+    --warn-soft: #fff7ed;
+    --warn-line: #fde68a;
+    --font: Outfit, "Segoe UI", sans-serif;
+    --ui: "Source Sans 3", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--ui); color: var(--ink); background: var(--ground);
+    display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+  }
+  button, input, select { font-family: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid #8db8ec; outline-offset: 2px; }
+  svg.lucide { width: 18px; height: 18px; stroke-width: 2; }
+
+  .side {
+    background: var(--side); color: #fff;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .side-close { display: none; margin-left: auto; color: #fff; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 8px; background: #fff;
+    display: grid; place-items: center; overflow: hidden; flex: none;
+  }
+  .brand-mark img { width: 24px; height: 24px; object-fit: contain; }
+  .brand-name { font-family: var(--font); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .brand-sub { margin-top: 2px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+  .nav { flex: 1; overflow: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px; }
+  .nav-label {
+    margin: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--side-muted);
+  }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px;
+    padding: 0 12px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--side-text); font-size: 14px; font-weight: 500; text-align: left; text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .nav-item.is-on { background: var(--green); color: #fff; }
+  .nav-item.is-on svg { stroke: #fff; }
+  .side-foot { padding: 12px 14px 18px; }
+  .report-btn {
+    width: 100%; min-height: 42px; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .report-btn:hover { background: var(--green-dark); }
+
+  .main { min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line); flex: none;
+  }
+  .top-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .menu-btn { display: none; }
+  .nav-backdrop[hidden] { display: none !important; }
+  .top-title { margin: 0; font-family: var(--font); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #e8eef3; color: var(--ink);
+    display: grid; place-items: center; font-family: var(--font); font-size: 11px; font-weight: 700;
+  }
+  .user-meta { line-height: 1.15; }
+  .user-meta strong { display: block; font-size: 12px; font-weight: 600; }
+  .user-meta span { font-size: 11px; color: var(--muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .icon-btn:hover { background: var(--ground); color: var(--ink); }
+  .menu-btn, .side-close, .user-btn { display: none; }
+  .nav-item.nav-mobile-only { display: none; }
+  .bottom-nav { display: none; }
+  .signout { font-size: 13px; font-weight: 600; color: var(--green); }
+  .signout:hover { text-decoration: underline; }
+
+  .content {
+    padding: 16px 28px 0; display: flex; flex-direction: column; gap: 12px;
+    flex: 1; min-height: 0;
+  }
+
+  .banner {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 10px;
+    background: var(--warn-soft); border: 1px solid var(--warn-line); color: var(--warn);
+    font-size: 13px; line-height: 1.4;
+  }
+  .banner svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+  .banner strong { font-weight: 700; }
+
+  .ux-bar {
+    --g: #157F3D; --ink2: #0F1B2D;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 14px; border-radius: 14px; background: #F4F7FB; border: 1px solid #E3E8F0;
+    position: sticky; top: 0; z-index: 6;
+  }
+  .ux-bar .label { font-size: 13px; font-weight: 600; color: #5B6577; }
+  .mode-toggle {
+    display: inline-flex; flex-wrap: wrap; gap: 6px; padding: 4px; border-radius: 12px;
+    background: #fff; border: 1px solid #D7DEE8;
+  }
+  .mode-toggle button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    height: 36px; padding: 0 14px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; color: #475569;
+  }
+  .mode-toggle button:hover { background: #F3F5F9; color: var(--ink2); }
+  .mode-toggle button.is-on { background: var(--g); color: #fff; }
+  .mode-toggle button:focus-visible { outline: 3px solid #BFE5CC; outline-offset: 1px; }
+
+  .ux-steps {
+    display: none; list-style: none; margin: 0; padding: 0; gap: 8px; flex-wrap: wrap;
+  }
+  .ux-steps button {
+    display: flex; align-items: center; gap: 8px;
+    border: 0; cursor: pointer;
+    padding: 8px 12px; border-radius: 999px;
+    background: #f1f5f3; color: var(--muted); font-size: 13px; font-weight: 650;
+  }
+  .ux-steps .n {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: #d7e0db; color: var(--ink); font-size: 12px; font-weight: 700;
+  }
+  .ux-steps button.is-on { background: var(--green-soft); color: var(--green-dark); }
+  .ux-steps button.is-on .n { background: var(--green); color: #fff; }
+  .ux-steps button.is-done .n { background: var(--green-soft); color: var(--green-dark); }
+  form[data-ux="2"] .ux-steps { display: flex; }
+  form[data-ux="2"] .section { display: none; }
+  form[data-ux="2"][data-step="1"] [data-step-panel="1"],
+  form[data-ux="2"][data-step="2"] [data-step-panel="2"],
+  form[data-ux="2"][data-step="3"] [data-step-panel="3"] { display: block; }
+
+  form[data-ux="3"] .form-scroll {
+    display: grid; grid-template-columns: 1fr 1fr; align-items: start;
+  }
+  form[data-ux="3"] .ux-col {
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+  }
+  form[data-ux="3"] .grid { grid-template-columns: 1fr 1fr; }
+  .ux-col { display: contents; }
+
+  .btn {
+    height: 40px; padding: 0 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-ghost { border: 1px solid var(--line); background: #fff; color: var(--ink); }
+  .btn-ghost:hover { background: var(--ground); }
+  .btn-outline { border: 1.5px solid var(--green); background: #fff; color: var(--green); }
+  .btn-outline:hover { background: var(--green-soft); }
+  .btn-primary { border: 0; background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-sm { height: 34px; padding: 0 12px; border-radius: 8px; font-size: 12px; }
+
+  .form-shell {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    display: flex; flex-direction: column; min-height: 0; flex: 1;
+    width: 100%;
+  }
+  .form-scroll {
+    padding: 18px 20px 8px; overflow: auto; flex: 1; min-height: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .profile-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fafbfb;
+  }
+  .photo {
+    width: 64px; height: 64px; border-radius: 50%; flex: none;
+    background: #eef2f5; color: var(--muted);
+    display: grid; place-items: center; border: 1.5px dashed #c5ced6;
+  }
+  .photo svg { width: 26px; height: 26px; }
+  .photo-copy { min-width: 0; flex: 1; }
+  .photo-copy strong {
+    display: block; font-family: var(--font); font-size: 14px; font-weight: 650; margin-bottom: 2px;
+  }
+  .photo-copy span { font-size: 12px; color: var(--muted); }
+
+  .section {
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff;
+  }
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 14px; background: #f7f9f8; border-bottom: 1px solid var(--line);
+  }
+  .section-head h2 {
+    margin: 0; font-family: var(--font); font-size: 14px; font-weight: 650;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-head h2 svg { width: 16px; height: 16px; color: var(--green); }
+  .section-head p { margin: 0; font-size: 12px; color: var(--muted); }
+  .section-body { padding: 14px; }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 14px;
+  }
+  .grid .span-2 { grid-column: span 2; }
+  .grid .span-3 { grid-column: 1 / -1; }
+  .pair {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px;
+  }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .label {
+    font-size: 12px; font-weight: 700; color: #475569; letter-spacing: .01em;
+  }
+  .label .req { color: #dc2626; margin-left: 2px; }
+  .control, .select {
+    width: 100%; height: 40px; border: 1.5px solid #d5dde6; border-radius: 9px;
+    background: #fff; color: var(--ink); padding: 0 12px; font-size: 14px; outline: none;
+  }
+  .control::placeholder { color: #9aa8b5; }
+  .control:focus, .select:focus {
+    border-color: var(--green); outline: 3px solid #bfe5cc;
+  }
+  .select {
+    appearance: none; padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7c8d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  .picker { position: relative; }
+  .picker-btn {
+    display: flex; align-items: center; text-align: left; cursor: pointer;
+  }
+  .picker-btn .picker-value {
+    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .picker-value.is-placeholder { color: #9aa8b5; }
+  .picker-menu {
+    position: fixed; z-index: 40; background: #fff;
+    border: 1.5px solid #d5dde6; border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(16, 24, 40, .14); overflow: hidden;
+  }
+  .picker-options { max-height: 180px; overflow: auto; padding: 4px; }
+  .picker-opt {
+    width: 100%; text-align: left; border: 0; background: transparent;
+    padding: 8px 10px; border-radius: 8px; font-size: 14px; color: var(--ink);
+  }
+  .picker-opt:hover { background: #f4f7f5; }
+  .picker-opt.is-on { background: var(--green-soft); color: var(--green-dark); font-weight: 650; }
+  .picker-add { border-top: 1px solid var(--line); padding: 6px; background: #fafbfb; }
+  .picker-compose { display: flex; gap: 6px; margin-bottom: 6px; }
+  .picker-compose input {
+    flex: 1; min-width: 0; height: 36px; border: 1.5px solid #d5dde6; border-radius: 8px;
+    padding: 0 10px; font-size: 13px; color: var(--ink); outline: none; background: #fff;
+  }
+  .picker-compose input:focus { border-color: var(--green); outline: 3px solid #bfe5cc; }
+  .picker-check {
+    width: 36px; height: 36px; flex: none; border: 0; border-radius: 8px;
+    background: var(--green); color: #fff; display: grid; place-items: center;
+  }
+  .picker-check:hover { background: var(--green-dark); }
+  .picker-check svg { width: 16px; height: 16px; }
+  .picker-new {
+    width: 100%; border: 0; background: transparent; text-align: left;
+    padding: 8px 10px; border-radius: 8px; color: var(--green); font-weight: 700; font-size: 13px;
+  }
+  .picker-new:hover { background: var(--green-soft); }
+
+  .pass-wrap { position: relative; }
+  .pass-wrap .control { padding-right: 42px; }
+  .pass-toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--muted); display: grid; place-items: center;
+  }
+  .pass-toggle:hover { background: var(--ground); color: var(--ink); }
+  .pass-toggle svg { width: 16px; height: 16px; }
+  .hint-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--green);
+  }
+  .hint-link:hover { text-decoration: underline; }
+  .hint-link svg { width: 14px; height: 14px; }
+
+  .form-foot,
+  .sticky-bar {
+    --g: #157F3D; --g-d: #116B33; --g-s: #E3F3E8; --g-t: #14693A;
+    --ink2: #0F1B2D; --mute2: #5B6577; --line3: #DFE5EE;
+    position: sticky; bottom: 16px; z-index: 5;
+    margin: 4px 16px 16px;
+    background: #fff; border: 1.5px solid var(--line3);
+    border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 27, 45, .10);
+    padding: 16px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  }
+  .sticky-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .sticky-ico {
+    width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--g-s); color: var(--g);
+    display: grid; place-items: center;
+  }
+  .sticky-ico svg { width: 22px; height: 22px; }
+  .sticky-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .sticky-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; color: var(--ink2); }
+  .sticky-hint { color: var(--mute2); font-size: 13.5px; }
+  .sticky-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sticky-actions.step-actions { display: none; }
+  form[data-ux="2"]:not([data-step="3"]) .save-actions { display: none; }
+  form[data-ux="2"]:not([data-step="3"]) .sticky-actions.step-actions { display: flex; }
+  form[data-ux="2"][data-step="1"] #step-back { visibility: hidden; }
+  .btn-lg {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 46px; padding: 0 20px; border-radius: 12px; font-weight: 600; font-size: 15px;
+    cursor: pointer; border: 1.5px solid transparent; width: auto; min-width: 120px;
+    text-decoration: none;
+  }
+  .btn-lg.primary { background: var(--g); color: #fff; border: 0; }
+  .btn-lg.primary:hover { background: var(--g-d); }
+  .btn-lg.ghost { background: #fff; color: #334155; border-color: #CBD3DF; }
+  .btn-lg.ghost:hover { background: #F3F5F9; }
+  .btn-lg svg { width: 18px; height: 18px; }
+
+  .toast {
+    position: fixed; right: 24px; bottom: 24px; z-index: 40;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: 12px; background: #0f172a; color: #fff;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .22); font-size: 13px; font-weight: 600;
+  }
+  .toast svg { width: 18px; height: 18px; color: #4ade80; }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid .span-3 { grid-column: 1 / -1; }
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid .span-2, .grid .span-3 { grid-column: auto; }
+    .pair { grid-template-columns: 1fr; }
+    form[data-ux="3"] .form-scroll { grid-template-columns: 1fr; }
+    form[data-ux="3"] .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; height: 100dvh; min-height: 100dvh; overflow: hidden; }
+    .main { height: 100dvh; min-height: 0; overflow: hidden; }
+    .content { overflow: hidden; }
+    .menu-btn { display: grid; width: 40px; height: 40px; }
+    .side-close { display: grid; width: 40px; height: 40px; background: transparent; color: #fff; }
+    .side {
+      position: fixed; z-index: 40; top: 0; left: 0; width: min(280px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .2s ease;
+      box-shadow: none;
+    }
+    body.nav-open .side { transform: none; box-shadow: 12px 0 32px rgba(0,0,0,.25); }
+    .nav-backdrop {
+      position: fixed; inset: 0; z-index: 35; background: rgba(10, 22, 40, .45);
+    }
+    .nav-item { min-height: 44px; }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .content { padding-bottom: 0; }
+    .user-chip, .signout, .top-right > .icon-btn:not(.user-btn) { display: none; }
+    .ux-bar { padding: 10px; }
+    .ux-bar .label { display: none; }
+    .mode-toggle { display: flex; width: 100%; }
+    .mode-toggle button { flex: 1; min-height: 44px; height: 44px; padding: 0 6px; font-size: 12px; }
+    .user-btn {
+      display: grid; width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .nav-item.nav-mobile-only { display: flex; }
+    .bottom-nav {
+      display: flex; flex: none; background: #fff; border-top: 1px solid var(--line);
+      z-index: 25; padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav a, .bottom-nav button {
+      flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent;
+      color: var(--muted); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; font-size: 11px; font-weight: 650; text-decoration: none;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; }
+    .bottom-nav .is-on { color: var(--green-dark); }
+    .profile-row { align-items: center; padding: 10px 12px; }
+    .photo { width: 48px; height: 48px; }
+    .top-title { font-size: 18px; }
+    .control, .select, .picker-compose input { height: 44px; font-size: 16px; }
+    .form-scroll { padding-bottom: 12px; }
+    .profile-row, .ux-steps, .section { flex: none; }
+    form[data-ux="2"] .ux-steps { display: flex; }
+    .section-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .save-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+    .save-actions .btn-lg.primary { grid-column: 1 / -1; }
+    form[data-ux="2"]:not([data-step="3"]) .save-actions { display: none; }
+    .sticky-actions.step-actions { display: none; }
+    form[data-ux="2"]:not([data-step="3"]) .sticky-actions.step-actions { display: flex; width: 100%; }
+    form[data-ux="2"][data-step="1"] #step-back { display: none; }
+    form[data-ux="2"]:not([data-step="1"]):not([data-step="3"]) #step-next { flex: 1; }
+    .sticky-bar {
+      position: static; left: auto; right: auto; bottom: auto;
+      margin: 0 12px 12px; flex: none; z-index: 5;
+    }
+    .sticky-left { display: none; }
+    .btn-lg { width: 100%; min-width: 0; min-height: 44px; }
+    form[data-ux="2"]:not([data-step="3"]) .btn-lg { width: auto; }
+    form[data-ux="2"][data-step="1"] #step-next { width: 100%; }
+    form[data-ux="2"]:not([data-step="1"]):not([data-step="3"]) #step-back { width: auto; }
+    .picker-options { max-height: min(52vh, 360px); }
+    .picker-opt { min-height: 44px; }
+    .toast { left: 12px; right: 12px; bottom: 96px; }
+  }
+</style>
+</head>
+<body>
+  <aside class="side" aria-label="Company admin navigation">
+    <div class="brand">
+      <span class="brand-mark"><img src="etraining-logo.png" alt=""></span>
+      <div>
+        <div class="brand-name">eTraining</div>
+        <div class="brand-sub">Learning Platform</div>
+      </div>
+      <button class="icon-btn side-close" type="button" id="side-close" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <p class="nav-label">Menu</p>
+        <a class="nav-item" href="dashboard-company-admin.html"><i data-lucide="home"></i> Home</a>
+        <a class="nav-item" href="dashboard-company-courses.html"><i data-lucide="book-open"></i> Courses</a>
+        <a class="nav-item is-on" href="dashboard-company-users.html"><i data-lucide="users"></i> Users</a>
+        <button class="nav-item" type="button"><i data-lucide="calendar"></i> Calendar</button>
+        <button class="nav-item" type="button"><i data-lucide="chart-column"></i> Reports</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Company Setup</p>
+        <button class="nav-item" type="button"><i data-lucide="layout-grid"></i> Student Attributes</button>
+        <button class="nav-item" type="button"><i data-lucide="settings"></i> Company Settings</button>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">Account</p>
+        <button class="nav-item" type="button"><i data-lucide="user-round"></i> My Profile</button>
+        <button class="nav-item" type="button"><i data-lucide="life-buoy"></i> Contact Support</button>
+        <a class="nav-item nav-mobile-only" href="sign-in-on-action.html"><i data-lucide="log-out"></i> Sign out</a>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <button class="report-btn" type="button"><i data-lucide="message-circle"></i> Report Issue</button>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+        <h1 class="top-title">Add Student</h1>
+      </div>
+      <div class="top-right">
+        <button class="icon-btn user-btn" type="button" id="user-btn" aria-label="Account">
+          <i data-lucide="user-round"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+        <div class="user-chip">
+          <span class="avatar">AU</span>
+          <div class="user-meta">
+            <strong>company manager cm</strong>
+            <span>Company Admin</span>
+          </div>
+        </div>
+        <a class="signout" href="sign-in-on-action.html">Sign out</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="banner" role="status">
+        <i data-lucide="triangle-alert"></i>
+        <div><strong>System Maintenance:</strong> The system will be under maintenance from 11:00 PM to 1:00 AM CST. Please save your work.</div>
+      </div>
+
+      <div class="ux-bar">
+        <span class="label">Add student layout preview — try each option</span>
+        <div class="mode-toggle" role="tablist" aria-label="Add student layout options">
+          <button type="button" role="tab" class="is-on" data-ux="1" aria-selected="true">1 · Grouped</button>
+          <button type="button" role="tab" data-ux="2" aria-selected="false">2 · Steps</button>
+          <button type="button" role="tab" data-ux="3" aria-selected="false">3 · Split</button>
+        </div>
+      </div>
+
+      <form class="form-shell" id="add-form" data-ux="1" data-step="1" novalidate>
+        <div class="form-scroll">
+          <div class="ux-col">
+          <div class="profile-row">
+            <div class="photo" aria-hidden="true"><i data-lucide="user-round"></i></div>
+            <div class="photo-copy">
+              <strong>Profile photo</strong>
+              <span>Optional · JPG or PNG up to 2 MB</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" type="button" id="upload-btn">
+              <i data-lucide="upload"></i> Upload Photo
+            </button>
+            <input type="file" id="photo-input" accept="image/png,image/jpeg" hidden>
+          </div>
+          <ol class="ux-steps" aria-label="Form steps">
+            <li><button type="button" data-step-tab="1" class="is-on"><span class="n">1</span> Account</button></li>
+            <li><button type="button" data-step-tab="2"><span class="n">2</span> Organization</button></li>
+            <li><button type="button" data-step-tab="3"><span class="n">3</span> Address</button></li>
+          </ol>
+
+          <section class="section" data-step-panel="1" aria-labelledby="account-heading">
+            <div class="section-head">
+              <h2 id="account-heading"><i data-lucide="id-card"></i> Account details</h2>
+              <p>Login credentials for this student</p>
+            </div>
+            <div class="section-body">
+              <div class="grid">
+                <div class="field">
+                  <label class="label" for="first-name">First Name <span class="req">*</span></label>
+                  <input class="control" id="first-name" name="firstName" type="text" placeholder="Enter first name" required autocomplete="given-name">
+                </div>
+                <div class="field">
+                  <label class="label" for="last-name">Last Name <span class="req">*</span></label>
+                  <input class="control" id="last-name" name="lastName" type="text" placeholder="Enter last name" required autocomplete="family-name">
+                </div>
+                <div class="field">
+                  <label class="label" for="gender">Gender</label>
+                  <div class="picker" data-name="gender" data-noun="Gender" data-options="Male|Female|Prefer not to say">
+                    <button class="control select picker-btn" type="button" id="gender" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value is-placeholder">Select</span>
+                    </button>
+                    <input type="hidden" name="gender" value="">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="username">Username <span class="req">*</span></label>
+                  <input class="control" id="username" name="username" type="text" placeholder="Enter username" required autocomplete="username">
+                </div>
+                <div class="field">
+                  <label class="label" for="email">Email Address <span class="req">*</span></label>
+                  <input class="control" id="email" name="email" type="email" placeholder="Enter email address" required autocomplete="email">
+                </div>
+                <div class="field">
+                  <label class="label" for="password">Password <span class="req">*</span></label>
+                  <div class="pass-wrap">
+                    <input class="control" id="password" name="password" type="password" placeholder="Create password" required autocomplete="new-password">
+                    <button class="pass-toggle" type="button" data-toggle="password" aria-label="Show password"><i data-lucide="eye"></i></button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="confirm">Confirm Password <span class="req">*</span></label>
+                  <div class="pass-wrap">
+                    <input class="control" id="confirm" name="confirm" type="password" placeholder="Re-enter password" required autocomplete="new-password">
+                    <button class="pass-toggle" type="button" data-toggle="confirm" aria-label="Show confirm password"><i data-lucide="eye"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          </div>
+          <div class="ux-col">
+          <section class="section" data-step-panel="2" aria-labelledby="org-heading">
+            <div class="section-head">
+              <h2 id="org-heading"><i data-lucide="building-2"></i> Organization</h2>
+              <p>Company placement and attributes</p>
+            </div>
+            <div class="section-body">
+              <div class="grid">
+                <div class="field">
+                  <label class="label" for="company">Company</label>
+                  <div class="picker" data-name="company" data-value="test company netsole" data-options="test company netsole|eTraining Demo Co">
+                    <button class="control select picker-btn" type="button" id="company" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value">test company netsole</span>
+                    </button>
+                    <input type="hidden" name="company" value="test company netsole">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="department">Department</label>
+                  <div class="picker" data-name="department" data-noun="Department" data-options="Field Operations|Safety|Administration">
+                    <button class="control select picker-btn" type="button" id="department" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value is-placeholder">Select</span>
+                    </button>
+                    <input type="hidden" name="department" value="">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="location">Location</label>
+                  <div class="picker" data-name="location" data-noun="Location" data-options="LAHORE|KARACHI|ISLAMABAD">
+                    <button class="control select picker-btn" type="button" id="location" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value is-placeholder">Select</span>
+                    </button>
+                    <input type="hidden" name="location" value="">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="test-attr">Test Attribute</label>
+                  <div class="picker" data-name="testAttr" data-noun="Test Attribute" data-options="Option A|Option B">
+                    <button class="control select picker-btn" type="button" id="test-attr" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value is-placeholder">Select</span>
+                    </button>
+                    <input type="hidden" name="testAttr" value="">
+                  </div>
+                </div>
+              </div>
+              <a class="hint-link" href="#" id="manage-attrs">
+                <i data-lucide="settings-2"></i> Manage Job Roles, Departments &amp; Locations
+              </a>
+            </div>
+          </section>
+
+          <section class="section" data-step-panel="3" aria-labelledby="address-heading">
+            <div class="section-head">
+              <h2 id="address-heading"><i data-lucide="map-pin"></i> Address &amp; status</h2>
+              <p>Contact location and account state</p>
+            </div>
+            <div class="section-body">
+              <div class="grid">
+                <div class="field">
+                  <label class="label" for="country">Country</label>
+                  <div class="picker" data-name="country" data-value="United States" data-options="United States|Pakistan|United Kingdom|Canada">
+                    <button class="control select picker-btn" type="button" id="country" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value">United States</span>
+                    </button>
+                    <input type="hidden" name="country" value="United States">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="timezone">Timezone</label>
+                  <div class="picker" data-name="timezone" data-value="America/Chicago" data-options="America/Chicago|America/New_York|Asia/Karachi|Europe/London">
+                    <button class="control select picker-btn" type="button" id="timezone" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value">America/Chicago</span>
+                    </button>
+                    <input type="hidden" name="timezone" value="America/Chicago">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label" for="address">Address</label>
+                  <input class="control" id="address" name="address" type="text" placeholder="Enter address" autocomplete="street-address">
+                </div>
+                <div class="field">
+                  <label class="label" for="city">City</label>
+                  <input class="control" id="city" name="city" type="text" placeholder="Enter city" autocomplete="address-level2">
+                </div>
+                <div class="field">
+                  <label class="label" for="zip">Zip Code</label>
+                  <input class="control" id="zip" name="zip" type="text" placeholder="Enter zip code" autocomplete="postal-code">
+                </div>
+                <div class="field">
+                  <label class="label" for="status">Status</label>
+                  <div class="picker" data-name="status" data-value="Active" data-options="Active|Inactive">
+                    <button class="control select picker-btn" type="button" id="status" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="picker-value">Active</span>
+                    </button>
+                    <input type="hidden" name="status" value="Active">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          </div>
+        </div>
+
+        <div class="sticky-bar">
+          <div class="sticky-left">
+            <span class="sticky-ico"><i data-lucide="user-plus"></i></span>
+            <div class="sticky-meta">
+              <div class="sticky-pills" id="bar-title"><span>Add this student</span></div>
+              <span class="sticky-hint" id="bar-hint">Fill the required fields, then save or assign courses.</span>
+            </div>
+          </div>
+          <div class="sticky-actions save-actions">
+            <a class="btn-lg ghost" href="dashboard-company-users.html">Cancel</a>
+            <button class="btn-lg ghost" type="submit" data-next="list">Add User</button>
+            <button class="btn-lg primary" type="submit" data-next="assign">
+              <i data-lucide="book-plus"></i> Add &amp; Assign Courses
+            </button>
+          </div>
+          <div class="sticky-actions step-actions">
+            <button class="btn-lg ghost" type="button" id="step-back">Back</button>
+            <button class="btn-lg primary" type="button" id="step-next">Next</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="dashboard-company-admin.html"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="dashboard-company-courses.html"><i data-lucide="book-open"></i><span>Courses</span></a>
+      <a class="is-on" href="dashboard-company-users.html"><i data-lucide="users"></i><span>Users</span></a>
+      <button type="button"><i data-lucide="calendar"></i><span>Calendar</span></button>
+      <button type="button"><i data-lucide="chart-column"></i><span>Reports</span></button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" hidden>
+    <i data-lucide="circle-check"></i>
+    <span id="toast-msg">Student created</span>
+  </div>
+
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<script>
+(function () {
+  function icons() {
+    lucide.createIcons({ attrs: { "stroke-width": 2, "aria-hidden": "true" } });
+  }
+  icons();
+
+  var form = document.getElementById("add-form");
+  var toast = document.getElementById("toast");
+  var toastMsg = document.getElementById("toast-msg");
+  var nextAction = "list";
+  var openPicker = null;
+
+  document.querySelectorAll(".picker").forEach(function (picker) {
+    var noun = picker.getAttribute("data-noun");
+    var options = (picker.getAttribute("data-options") || "").split("|").filter(Boolean);
+    var btn = picker.querySelector(".picker-btn");
+    var valueEl = picker.querySelector(".picker-value");
+    var hidden = picker.querySelector("input[type=hidden]");
+    var menu = document.createElement("div");
+    menu.className = "picker-menu";
+    menu.hidden = true;
+    menu.innerHTML = '<div class="picker-options" role="listbox"></div>' + (noun
+      ? '<div class="picker-add">' +
+          '<div class="picker-compose" hidden>' +
+            '<input type="text" placeholder="New ' + noun.toLowerCase() + '" aria-label="New ' + noun + '">' +
+            '<button class="picker-check" type="button" aria-label="Add ' + noun + '"><i data-lucide="check"></i></button>' +
+          "</div>" +
+          '<button class="picker-new" type="button">+ Add new ' + noun + "</button>" +
+        "</div>"
+      : "");
+    picker.appendChild(menu);
+
+    var list = menu.querySelector(".picker-options");
+    var compose = menu.querySelector(".picker-compose");
+    var input = compose ? compose.querySelector("input") : null;
+    var check = menu.querySelector(".picker-check");
+    var addBtn = menu.querySelector(".picker-new");
+
+    function place() {
+      var r = btn.getBoundingClientRect();
+      menu.style.left = r.left + "px";
+      menu.style.top = (r.bottom + 4) + "px";
+      menu.style.width = r.width + "px";
+    }
+
+    function paint() {
+      list.innerHTML = options.map(function (opt) {
+        var on = hidden.value === opt;
+        return '<button class="picker-opt' + (on ? " is-on" : "") + '" type="button" role="option" aria-selected="' + on + '">' + opt + "</button>";
+      }).join("");
+    }
+
+    function setValue(opt) {
+      hidden.value = opt || "";
+      valueEl.textContent = opt || "Select";
+      valueEl.classList.toggle("is-placeholder", !opt);
+      paint();
+    }
+
+    function close() {
+      menu.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+      if (compose) {
+        compose.hidden = true;
+        input.value = "";
+      }
+      if (openPicker === picker) openPicker = null;
+    }
+
+    function open() {
+      if (openPicker && openPicker !== picker) openPicker._close();
+      place();
+      menu.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      openPicker = picker;
+      paint();
+    }
+
+    function commit() {
+      var text = input.value.trim();
+      if (!text) {
+        input.focus();
+        return;
+      }
+      var existing = options.filter(function (opt) {
+        return opt.toLowerCase() === text.toLowerCase();
+      })[0];
+      if (!existing) {
+        options.push(text);
+        existing = text;
+      }
+      setValue(existing);
+      close();
+    }
+
+    picker._close = close;
+    if (hidden.value) setValue(hidden.value);
+    else paint();
+
+    btn.addEventListener("click", function () {
+      if (menu.hidden) open();
+      else close();
+    });
+
+    list.addEventListener("click", function (e) {
+      var opt = e.target.closest(".picker-opt");
+      if (!opt) return;
+      setValue(opt.textContent);
+      close();
+    });
+
+    if (addBtn) {
+      addBtn.addEventListener("click", function () {
+        compose.hidden = false;
+        input.focus();
+      });
+      check.addEventListener("click", commit);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commit();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          close();
+        }
+      });
+    }
+  });
+
+  icons();
+
+  document.addEventListener("click", function (e) {
+    if (!openPicker) return;
+    if (e.target.closest(".picker")) return;
+    openPicker._close();
+  });
+  window.addEventListener("resize", function () {
+    if (openPicker) openPicker._close();
+  });
+  document.querySelector(".form-scroll").addEventListener("scroll", function () {
+    if (openPicker) openPicker._close();
+  });
+
+  var stepNames = ["Account details", "Organization", "Address & status"];
+  function paintUx() {
+    var ux = form.getAttribute("data-ux");
+    var step = Number(form.getAttribute("data-step") || "1");
+    document.querySelectorAll(".mode-toggle [data-ux]").forEach(function (btn) {
+      var on = btn.getAttribute("data-ux") === ux;
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll("[data-step-tab]").forEach(function (btn) {
+      var n = Number(btn.getAttribute("data-step-tab"));
+      btn.classList.toggle("is-on", n === step);
+      btn.classList.toggle("is-done", n < step);
+    });
+    var title = document.getElementById("bar-title");
+    var hint = document.getElementById("bar-hint");
+    if (ux === "2" && step < 3) {
+      title.innerHTML = "<span>Step " + step + " of 3 · " + stepNames[step - 1] + "</span>";
+      hint.textContent = "Continue to the next step when this section looks right.";
+    } else if (ux === "2") {
+      title.innerHTML = "<span>Step 3 of 3 · Address & status</span>";
+      hint.textContent = "Save the student, or continue to assign courses.";
+    } else {
+      title.innerHTML = "<span>Add this student</span>";
+      hint.textContent = "Fill the required fields, then save or assign courses.";
+    }
+    if (openPicker) openPicker._close();
+    var scroller = document.querySelector(".form-scroll");
+    if (scroller) scroller.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll(".mode-toggle [data-ux]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      form.setAttribute("data-ux", btn.getAttribute("data-ux"));
+      paintUx();
+    });
+  });
+  document.querySelectorAll("[data-step-tab]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (form.getAttribute("data-ux") !== "2") return;
+      form.setAttribute("data-step", btn.getAttribute("data-step-tab"));
+      paintUx();
+    });
+  });
+  document.getElementById("step-back").addEventListener("click", function () {
+    var step = Number(form.getAttribute("data-step") || "1");
+    if (step > 1) form.setAttribute("data-step", String(step - 1));
+    paintUx();
+  });
+  document.getElementById("step-next").addEventListener("click", function () {
+    var step = Number(form.getAttribute("data-step") || "1");
+    if (step < 3) form.setAttribute("data-step", String(step + 1));
+    paintUx();
+  });
+  paintUx();
+
+  var menuBtn = document.getElementById("menu-btn");
+  var backdrop = document.getElementById("nav-backdrop");
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    backdrop.hidden = !open;
+  }
+  menuBtn.addEventListener("click", function () {
+    setNav(!document.body.classList.contains("nav-open"));
+  });
+  document.getElementById("user-btn").addEventListener("click", function () {
+    setNav(true);
+  });
+  backdrop.addEventListener("click", function () { setNav(false); });
+  document.querySelectorAll(".side a, .side button").forEach(function (el) {
+    el.addEventListener("click", function () { setNav(false); });
+  });
+
+  var phoneQuery = window.matchMedia("(max-width: 800px)");
+  function applyPhone() {
+    if (!phoneQuery.matches) setNav(false);
+  }
+  if (phoneQuery.addEventListener) phoneQuery.addEventListener("change", applyPhone);
+  else phoneQuery.addListener(applyPhone);
+
+  document.querySelectorAll(".pass-toggle").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var id = btn.getAttribute("data-toggle");
+      var input = document.getElementById(id);
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.innerHTML = show ? '<i data-lucide="eye-off"></i>' : '<i data-lucide="eye"></i>';
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      icons();
+    });
+  });
+
+  document.getElementById("upload-btn").addEventListener("click", function () {
+    document.getElementById("photo-input").click();
+  });
+  document.getElementById("photo-input").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var photo = document.querySelector(".photo");
+      photo.style.backgroundImage = "url(" + reader.result + ")";
+      photo.style.backgroundSize = "cover";
+      photo.style.backgroundPosition = "center";
+      photo.style.borderStyle = "solid";
+      photo.innerHTML = "";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      nextAction = btn.getAttribute("data-next") || "list";
+    });
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var first = document.getElementById("first-name").value.trim();
+    var last = document.getElementById("last-name").value.trim();
+    var user = document.getElementById("username").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var pass = document.getElementById("password").value;
+    var confirm = document.getElementById("confirm").value;
+
+    if (!first || !last || !user || !email || !pass || !confirm) {
+      toastMsg.textContent = "Please fill in all required fields.";
+      toast.hidden = false;
+      icons();
+      return;
+    }
+    if (pass !== confirm) {
+      toastMsg.textContent = "Passwords do not match.";
+      toast.hidden = false;
+      icons();
+      return;
+    }
+
+    var name = first + " " + last;
+    toastMsg.textContent = "Student “" + name + "” created.";
+    toast.hidden = false;
+    icons();
+
+    var qs = "?name=" + encodeURIComponent(name) +
+      "&email=" + encodeURIComponent(email) +
+      "&user=" + encodeURIComponent(user);
+
+    setTimeout(function () {
+      if (nextAction === "assign") {
+        location.href = "dashboard-company-student-assign.html" + qs;
+      } else {
+        location.href = "dashboard-company-users.html";
+      }
+    }, 700);
+  });
+})();
+</script>
+</body>
+</html>
